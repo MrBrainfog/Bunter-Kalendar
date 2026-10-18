@@ -338,6 +338,19 @@ nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow
 .cybars i{flex:1;background:#F2559A;border-radius:6px 6px 2px 2px;min-height:6px;position:relative}
 .cybars i span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11px;font-style:normal;color:var(--ink-2)}
 .overcard{border:2px dashed var(--c3);background:color-mix(in srgb,var(--c3) 12%,var(--surface))}
+.sug{background:color-mix(in srgb,var(--bg) 12%,transparent);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.sug .sugav{width:52px;height:52px;object-fit:cover;object-position:50% 12%;border-radius:50%;background:linear-gradient(160deg,var(--accent),var(--c3));flex:none}
+.sug b.st{font-family:var(--f-display);font-size:20px;display:block;line-height:1.2}
+.sug .btn{min-height:42px}
+.sug .btn.ghost{background:color-mix(in srgb,var(--bg) 22%,transparent);color:inherit}
+.sug .nag{margin:0;font-weight:700}
+.badge{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700;background:var(--surface-2);color:var(--ink-2)}
+.badge.warn{background:color-mix(in srgb,var(--c4) 18%,var(--surface));color:var(--c4)}
+.now .badge{background:color-mix(in srgb,var(--bg) 22%,transparent);color:inherit}
+.wrapcard{border:2px solid var(--c5)}
+.wraprow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-block:6px;border-top:1px solid var(--line)}
+.wraprow .grow{flex:1 1 100%;font-weight:700}
+.wraprow .chip{min-height:34px;padding:4px 10px;font-size:13px}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -560,6 +573,7 @@ const hasExamples = () => S.events.some(e=>e.ex) || S.projects.some(p=>p.ex) || 
 
 /* ---------- rendering ---------- */
 function render(){
+  rollover();
   document.documentElement.classList.toggle('calm', !!S.meta.calm);
   renderTabs();
   const app=$('#app');
@@ -621,7 +635,8 @@ function viewDay(){
     if(ut.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Aufgaben ohne Uhrzeit</span><span class="cnt num">${ut.length}</span></div><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
     const tm=timed(list), gh=ghostSlots(d,list), wt=waitsOn(d);
     if(gh.over && gh.over.length && ls.get('overAck_'+d,0)!==gh.over.length) h += `<div class="card stack overcard" style="gap:10px"><b>Heute passt nicht mehr alles rein</b><span class="hint">${gh.over.length===1?'Diese Aufgabe findet':'Diese '+gh.over.length+' Aufgaben finden'} bis 22 Uhr keine freie Lücke mehr: ${gh.over.map(e=>esc(e.title)).join(', ')}. Lieber auf morgen schieben, statt den Abend vollzustopfen?</span><div class="row"><button class="btn small" data-act="overTomorrow" data-d="${d}">Auf morgen schieben</button><button class="btn small ghost" data-act="overKeep" data-d="${d}" data-n="${gh.over.length}">Heute behalten</button></div></div>`;
-    if(tm.length||gh.length||wt.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${gh.length?`<span class="hint">Gestrichelt: Vorschläge für deine Aufgaben ohne Uhrzeit. Tipp drauf, um sie dort einzuplanen.</span>`:''}${wt.length?`<span class="hint">Gepunktete Linie rechts: Wartezeit. Da musst du nichts tun und kannst anderes planen.</span>`:''}${timeline(tm,isToday,gh,wt)}</div>`;
+    if(isToday && new Date().getHours()>=19){ const open=ut.filter(e=>!e.done); if(open.length) h += `<div class="card stack wrapcard" style="gap:8px"><b style="font-family:var(--f-display);font-size:18px">Heute offen geblieben</b><span class="hint">Kein Drama. Entscheide kurz, was damit passiert. Sonst nehme ich alles automatisch mit auf morgen.</span>${open.map(e=>`<div class="wraprow cat-${e.cat}"><span class="grow"><span class="swatch"></span> ${esc(e.title)} ${badges(e)}</span><button class="chip" data-act="wrapTomorrow" data-id="${e.id}">Morgen</button><button class="chip" data-act="wrapPick" data-id="${e.id}">Tag wählen</button><button class="chip" data-act="toggleDone" data-id="${e.id}">Erledigt</button><button class="chip" data-act="wrapDrop" data-id="${e.id}">Streichen</button></div>`).join('')}</div>`; }
+    if(tm.length||wt.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${wt.length?`<span class="hint">Gepunktete Linie rechts: Wartezeit. Da musst du nichts tun und kannst anderes planen.</span>`:''}${timeline(tm,isToday,[],wt)}</div>`;
   }
   if(isToday && needsBackup()) h += `<div class="card row" style="flex-wrap:nowrap"><div class="grow"><b>Zeit für eine Sicherung</b><br><span class="hint">Damit nichts verloren geht, wenn das Handy kaputtgeht oder du wechselst.</span></div><button class="btn small" data-act="exportData">Sichern</button></div>`;
   if(hasExamples()) h += `<button class="pillbtn" style="align-self:center" data-act="clearExamples">Beispiele entfernen</button>`;
@@ -643,6 +658,7 @@ function nowCard(list, wts=[]){
       ${cur.steps&&cur.steps.length?`<button class="btn small" style="background:var(--bg);color:var(--ink)" data-act="openEvent" data-id="${cur.id}">${stepsInfo(cur)} ansehen</button>`:''}`;
   } else {
     h+=`<div><span class="label">Jetzt</span><div class="now-title">${next?'Freie Zeit':'Nichts mehr geplant'}</div></div>`;
+    h+=sugBox(freeNow());
   }
   wts.filter(w=>w.s<=n && n<w.e).forEach(w=>{ const left=Math.max(1,Math.round((w.endAt-Date.now())/60000));
     h+=`<button class="next cat-${w.cat}" style="border:0;color:inherit;text-align:left" data-act="openEvent" data-id="${w.pid}"><span class="hglass">${ICON.hourglass}</span><span class="grow"><span class="label" style="display:block">Läuft gerade · fertig ${esc(w.endTxt)}</span><b>${esc(w.ptitle)}: ${esc(w.t)}</b></span><span class="countdown num" style="font-size:16px">noch ${dur(left)}</span></button>`; });
@@ -652,7 +668,7 @@ function nowCard(list, wts=[]){
 
 function taskRow(e){
   return `<div class="task cat-${e.cat} ${e.done?'done':''}"><button class="check ${e.done?'on':''}" data-act="toggleDone" data-id="${e.id}" aria-label="Erledigt">${e.done?ICON.tick:''}</button>
-    <button class="t" data-act="openEvent" data-id="${e.id}"><b>${esc(e.title)}</b><span class="hint">${e.start?`${e.start}–${fromMin(endMin(e))} · `:''}${CATS.find(c=>c.id===e.cat)?.name||''}${stepsInfo(e)?' · '+stepsInfo(e):''}</span></button></div>`;
+    <button class="t" data-act="openEvent" data-id="${e.id}"><b>${esc(e.title)}</b><span class="hint">${e.start?`${e.start}–${fromMin(endMin(e))} · `:''}${CATS.find(c=>c.id===e.cat)?.name||''}${stepsInfo(e)?' · '+stepsInfo(e):''}</span>${!e.start&&!e.done&&(e.due||e.origDate)?`<span style="display:block;margin-top:3px">${badges(e)}</span>`:''}</button></div>`;
 }
 
 /* Suggest free slots for untimed tasks (first fit, 5 min buffer) */
@@ -941,7 +957,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 const HELP = [
   ['Eintragen','--c3',`<p>Tipp auf das <b>orange Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die orange Linie ist „jetzt“.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
-  ['Aufgaben ohne Uhrzeit','--c3',`<p>Sie stehen oben in der Liste. Zusätzlich schlage ich sie dir <b>gestrichelt</b> in freien Lücken im Zeitplan vor. Ein Tipp darauf plant sie genau dort ein.</p>`],
+  ['Aufgaben ohne Uhrzeit','--c3',`<p>Sie stehen in der Liste „Aufgaben ohne Uhrzeit“. Sobald du frei hast, schlage ich dir in der Jetzt-Karte <b>eine</b> davon vor: <b>Mach ich jetzt</b> plant sie sofort ein, <b>Was anderes</b> zeigt die nächste.</p><ul><li>Bin ich nicht in der App, melde ich mich höchstens einmal pro Stunde, wenn du Zeit hast.</li><li>Was du dreimal wegklickst, spreche ich an. Dann zerlegen wir es oder geben ihm einen Termin.</li><li>Unerledigtes wandert automatisch auf den nächsten Tag, mit Hinweis „seit 2 Tagen offen“.</li><li>Ab 19 Uhr entscheidest du kurz: morgen, Tag wählen, erledigt oder streichen.</li><li>Mit <b>„Bis wann?“</b> gibst du einer Aufgabe eine Frist. Je näher sie rückt, desto eher schlage ich sie vor.</li></ul>`],
   ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li></ul>`],
   ['Verschieben & verpasst','--c4',`<p>Termine dürfen sich nicht überschneiden. Passiert es doch, biete ich dir die nächste freie Zeit an. Jeder Eintrag ist <b>fest</b> (Arzt, Termine) oder <b>flexibel</b>. Verschiebst du etwas, schlage ich vor, wie Flexibles mitrutscht. Feste Termine bleiben stehen.</p><p>Ist etwas vorbei und nicht abgehakt, frage ich: nachholen, erledigt, morgen oder lassen.</p><p class="say">„Rückschläge sind kein Rückzug. Wir sortieren neu und weiter geht's.“</p>`],
   ['Erinnerungen','--c3',`<p>Pro Eintrag einstellbar unter Extras → Erinnerung. Sie kommen mit Ton und Banner, solange die App geöffnet ist oder im Hintergrund noch läuft.</p><p>Mitteilungen erlaubst du unter <b>Tools → Sichern & Übertragen</b>. Ist die App ganz geschlossen, kann sie dich leider nicht erinnern. Für Wichtiges stell dir zusätzlich einen Wecker.</p>`],
@@ -1060,8 +1076,45 @@ function viewValka(){
   <div class="lgal">${g.map(([e,l,k])=>`<button class="lcard" data-act="hypeExpr" data-v="${e}" data-k="${k}" aria-label="Leona ${l}"><img src="leona-${e}.webp" alt="" loading="lazy"><span>${l}</span></button>`).join('')}</div>
   <span class="hint">Tipp auf ein Bild, um Leona in Aktion zu sehen.</span>
   <div class="field"><span>Sprüche anzeigen</span><div class="chips"><button class="chip ${on?'on':''}" data-act="hypeSet" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="hypeSet" data-v="0">Aus</button></div></div>
+  <div class="field"><span>Leona erinnert dich in freier Zeit</span><div class="chips"><button class="chip ${S.meta.nudge!==false?'on':''}" data-act="setPref" data-k="nudge" data-v="1">An</button><button class="chip ${S.meta.nudge===false?'on':''}" data-act="setPref" data-k="nudge" data-v="0">Aus</button></div><span class="hint">Höchstens einmal pro Stunde, zwischen 8 und 21 Uhr, wenn du gerade frei hast und Aufgaben offen sind.</span></div>
   <div class="field"><span>Leona mit Bild zeigen</span><div class="chips"><button class="chip ${av?'on':''}" data-act="setPref" data-k="hypeAv" data-v="1">An</button><button class="chip ${av?'':'on'}" data-act="setPref" data-k="hypeAv" data-v="0">Nur Sprechblase</button></div></div>
   <p class="hint">Leona meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Planen, beim Schlaf-Check und abends nach dem Blick auf morgen. Tipp auf sie, um sie wegzuschicken.</p></div>`;
+}
+
+/* ---------- open tasks: suggestions, rollover, deadlines ---------- */
+function rollover(){ const t=todayS(); let ch=false;
+  S.events.forEach(e=>{ if(!e.start && !e.done && !hasPh(e) && e.date<t){ if(!e.origDate) e.origDate=e.date; e.date=t; ch=true; } });
+  if(ch) save('events'); }
+function dueTxt(e){ if(!e.due) return ''; const n=dDiff(todayS(),e.due); return n<0?`${-n===1?'seit gestern':'seit '+(-n)+' Tagen'} überfällig`:n===0?'heute fällig':n===1?'bis morgen':`noch ${n} Tage`; }
+function ageTxt(e){ if(e.start || !e.origDate) return ''; const n=dDiff(e.origDate,todayS()); return n<=0?'':n===1?'seit gestern offen':`seit ${n} Tagen offen`; }
+function badges(e){ const b=[]; const d=dueTxt(e); if(d) b.push(`<span class="badge ${/überfällig|heute/.test(d)?'warn':''}">${d}</span>`); const a=ageTxt(e); if(a) b.push(`<span class="badge">${a}</span>`); return b.join(' '); }
+function freeNow(){ const t=todayS(), n=nowMin(), tm=timed(evOn(t)).filter(e=>!e.done);
+  if(tm.some(e=>toMin(e.start)<=n && endMin(e)>n)) return 0;
+  const nx=tm.find(e=>toMin(e.start)>n); return Math.max(0,(nx?toMin(nx.start):22*60)-n); }
+function taskScore(e,free){ const t=todayS(); let s=(e.skips||0)*3 + Math.min(dDiff(e.origDate||e.created||e.date,t),10)*2;
+  if(e.due){ const dl=dDiff(t,e.due); s+= dl<0?30: dl===0?25: dl<=2?15: dl<=6?5:0; }
+  if(free!=null) s+= (e.dur||30)<=free?8:-12; return s; }
+function suggestions(free){ const t=todayS(); return untimed(evOn(t)).filter(e=>!e.done && e.sugDay!==t).sort((a,b)=>taskScore(b,free)-taskScore(a,free)); }
+function sugBox(free){
+  const list=suggestions(free); if(!list.length || free<10) return '';
+  const e=list[(ui.sugIdx||0)%list.length], nag=(e.skips||0)>=3, av=S.meta.hypeAv!==false;
+  return `<div class="sug">
+    <div class="row" style="flex-wrap:nowrap;align-items:center">${av?`<img class="sugav" src="leona-${nag?'smirk':'wink'}.webp" alt="">`:''}<div class="grow"><span class="label" style="display:block">Leona schlägt vor · ${dur(Math.min(free,600))} frei</span><b class="st">${esc(e.title)}</b><span class="hint" style="color:inherit;opacity:.85">${dur(e.dur||30)}${list.length>1?` · noch ${list.length-1} weitere offen`:''}</span> ${badges(e)}</div></div>
+    ${nag?`<p class="nag">„${esc(e.title)}“ schiebst du jetzt zum ${e.skips}. Mal vor dir her. Zu groß? Dann zerlegen wir es. Oder du gibst ihm einen festen Termin.</p>
+      <div class="row"><button class="btn small" data-act="sugSplit" data-id="${e.id}">Zerlegen</button><button class="btn small ghost" data-act="sugDate" data-id="${e.id}">Termin geben</button><button class="btn small ghost" data-act="sugLater" data-id="${e.id}">Heute nicht</button></div>`
+     :`<div class="row"><button class="btn small" data-act="sugDo" data-id="${e.id}">Mach ich jetzt</button>${list.length>1?`<button class="btn small ghost" data-act="sugNext" data-id="${e.id}">Was anderes</button>`:`<button class="btn small ghost" data-act="sugLater" data-id="${e.id}">Heute nicht</button>`}</div>`}
+  </div>`;
+}
+function proactiveNudge(){
+  if(S.meta.nudge===false || S.meta.hype===false) return;
+  const h=new Date().getHours(); if(h<8 || h>=21) return;
+  if(Date.now()-ls.get('lastNudge',0) < 60*60000) return;
+  if(!document.hidden && ui.tab==='day' && ui.date===todayS() && !ui.sheets.length) return; // the Jetzt card already shows it
+  const free=freeNow(); if(free<15) return;
+  const e=suggestions(free)[0]; if(!e) return;
+  ls.set('lastNudge',Date.now());
+  showAlert({cat:e.cat,label:'Leona',title:`${dur(Math.min(free,600))} frei`,text:`Wie wär's mit „${e.title}“? Dauert etwa ${dur(e.dur||30)}.`,actions:[['Später','closeAlert'],['Mach ich jetzt','sugDo:'+e.id]]});
+  sysNotify(`Leona: ${dur(Math.min(free,600))} frei`,`Wie wär's mit „${e.title}“?`); beep(1);
 }
 
 /* ---------- no overlaps ---------- */
@@ -1171,8 +1224,8 @@ function evPreview(e){
 }
 function sheetEvent(a){
   if(!a._init){ const e=a.id?S.events.find(x=>x.id===a.id):null;
-    draft = e ? structuredClone(e) : {id:uid(),title:'',cat:'termin',date:a.date||todayS(),start:a.start||'',dur:30,remind:15,steps:[],done:false};
-    a._init=true; a.isNew=!e; a.open={steps:!!(e&&e.steps&&e.steps.length), phases:hasPh(e)}; }
+    draft = e ? structuredClone(e) : {id:uid(),created:todayS(),title:'',cat:'termin',date:a.date||todayS(),start:a.start||'',dur:30,remind:15,steps:[],done:false};
+    a._init=true; a.isNew=!e; a.open={steps:!!(e&&e.steps&&e.steps.length)||!!a.openSteps, phases:hasPh(e)}; }
   const e=draft, o=a.open;
   const remTxt=e.remind==null?'Keine':e.remind===0?'Zum Start':(e.remind>=60?`${e.remind/60} Std`:`${e.remind} Min`)+' vorher';
   const sd=e.steps.filter(x=>x.done).length;
@@ -1193,7 +1246,9 @@ function sheetEvent(a){
       <label class="field"><span class="hint">Minuten</span><input class="inp num" type="number" inputmode="numeric" min="0" max="59" step="5" id="fDurM" value="${e.dur%60}"></label>
       <label class="field"><span class="hint">Endet um</span><input class="inp" type="time" id="fEnd" value="${e.start?fromMin((toMin(e.start)+e.dur)%1440):''}"></label></div>
     ${e.start&&!a.isNew?`<div class="field"><span>Verschieben</span><div class="chips">${[[-15,'−15 Min'],[15,'+15 Min'],[30,'+30 Min'],[60,'+1 Std']].map(([v,l])=>`<button class="chip" data-act="fShift" data-v="${v}">${l}</button>`).join('')}</div></div>`:''}
-    <span class="hint">${hasPh(e)?'Die Uhrzeit ist der Start der ersten Etappe. Alles Weitere rechnet die App aus.':'Ohne Uhrzeit wird es eine Aufgabe für den Tag.'}</span>
+    <span class="hint">${hasPh(e)?'Die Uhrzeit ist der Start der ersten Etappe. Alles Weitere rechnet die App aus.':'Ohne Uhrzeit wird es eine Aufgabe für den Tag. Leona schlägt sie dir vor, sobald du Zeit hast.'}</span>
+    ${!e.start&&!hasPh(e)?(()=>{ const t=todayS(), wd=parseYmd(t).getDay(), fri=addDays(t,(5-wd+7)%7), sun=addDays(t,(7-wd)%7);
+      return `<div class="field"><span>Bis wann? (optional)</span><div class="chips">${[['','Ohne'],[t,'Heute'],[addDays(t,1),'Morgen'],[fri,'Freitag'],[sun,'Sonntag']].map(([v,l])=>`<button class="chip ${(e.due||'')===v&&(v||!e.due)?'on':''}" data-act="fDue" data-v="${v}">${l}</button>`).join('')}</div><input class="inp" type="date" id="fDue" value="${e.due||''}" style="max-width:190px" aria-label="Frist wählen"></div>`; })():''}
   </section>
 
   <section class="blockcard b3"><div class="bc-h"><span class="bc-n">3</span>Welcher Bereich?</div>
@@ -1228,6 +1283,7 @@ function readEventForm(){
   const dh=v('fDurH'), dm=v('fDurM'); if(dh!==null && dm!==null){ const t=Math.min(1439,Math.max(0,(+dh||0)*60+(+dm||0))); if(t>=5) draft.dur=t; }
   document.querySelectorAll('[data-step]').forEach(el=>{ const s=draft.steps[+el.dataset.step]; if(s) s.t=el.value; });
   const ns=v('fNewStep'); if(ns && ns.trim()){ draft.steps.push({t:ns.trim(),done:false}); }
+  const du=v('fDue'); if(du!==null) draft.due=du||null;
   document.querySelectorAll('[data-ph-t]').forEach(el=>{ const p=draft.phases&&draft.phases[+el.dataset.phT]; if(p) p.t=el.value; });
   document.querySelectorAll('[data-ph-d]').forEach(el=>{ const p=draft.phases&&draft.phases[+el.dataset.phD]; if(p){ const n=Math.round(+el.value); if(n>0) p.dur=n; } });
   if(hasPh(draft)) draft.dur=phTotal(draft);
@@ -1283,6 +1339,7 @@ function sheetTomorrow(){
     if(S.meta.focusOf[d]) h+=`<div class="focuschip"><div class="grow"><span class="label">Wichtigste Sache</span><b>${esc(S.meta.focusOf[d])}</b></div></div>`;
     if(tm.length) h+=`<section class="blockcard" style="--k:var(--c2)"><div class="bc-h">Zeitplan</div><div class="tasks">${tm.map(row).join('')}</div></section>`;
     if(ut.length) h+=`<section class="blockcard b1"><div class="bc-h">Aufgaben</div><div class="tasks">${ut.map(row).join('')}</div></section>`;
+    const openToday=untimed(evOn(todayS())).filter(e=>!e.done).length; if(openToday) h+=`<span class="hint">${openToday} offene ${openToday===1?'Aufgabe':'Aufgaben'} von heute wandern automatisch mit, wenn du sie nicht erledigst.</span>`;
     const prep=list.filter(e=>e.steps&&e.steps.some(x=>!x.done));
     if(prep.length) h+=`<span class="hint">Mini-Schritte vorbereitet bei: ${prep.map(e=>esc(e.title)).join(', ')}</span>`;
   }
@@ -1423,7 +1480,7 @@ function showAlert(a){ alertQ.push(a); if(alertQ.length===1) paintAlert(); }
 function paintAlert(){
   const a=alertQ[0]; const r=$('#alertRoot');
   if(!a){ r.innerHTML=''; return; }
-  r.innerHTML=`<div class="alert cat-${a.cat}" role="alert"><span class="label" style="color:inherit;opacity:.8">Erinnerung</span><b>${esc(a.title)}</b><span>${esc(a.text)}</span><div class="row">${a.actions.map(([l,c],i)=>`<button class="btn small ${i===0&&a.actions.length>1?'ghost':''}" data-act="alertAct" data-v="${esc(c)}">${l}</button>`).join('')}</div></div>`;
+  r.innerHTML=`<div class="alert cat-${a.cat}" role="alert"><span class="label" style="color:inherit;opacity:.8">${esc(a.label||'Erinnerung')}</span><b>${esc(a.title)}</b><span>${esc(a.text)}</span><div class="row">${a.actions.map(([l,c],i)=>`<button class="btn small ${i===0&&a.actions.length>1?'ghost':''}" data-act="alertAct" data-v="${esc(c)}">${l}</button>`).join('')}</div></div>`;
 }
 let actx=null;
 document.addEventListener('pointerdown',()=>{ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } else if(actx.state==='suspended') actx.resume().catch(()=>{}); },{passive:true});
@@ -1492,6 +1549,16 @@ const A = {
   cyDone(el){ const d=el.dataset.d, D=cyDays(), x=D[d]||(D[d]={}); const t=$('#cyTemp'), n=$('#cyNote'); if(t) x.temp=t.value?+(+t.value.replace(',','.')).toFixed(2):null; if(n) x.note=n.value.trim();
     const wasFlow=!!x.flow; cyClean(d); save('cycle'); closeSheet(); render(); if(wasFlow && x.flow!=='schmier') hype('period'); },
   cySetting(el){ S.cycle.set[el.dataset.k]=+el.dataset.v; save('cycle'); render(); },
+  sugDo(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.start=fromMin(Math.min(1435,Math.ceil((nowMin()+1)/5)*5)); if(overlapsFor(e).length){ const f=nextFreeStart(e); if(f) e.start=f; }
+    e.skips=0; ui.sugIdx=0; save('events'); render(); toast(`Eingeplant um ${e.start}`); hype('add'); },
+  sugNext(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(e){ e.skips=(e.skips||0)+1; save('events'); } ui.sugIdx=(ui.sugIdx||0)+1; render(); },
+  sugLater(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.sugDay=todayS(); save('events'); ui.sugIdx=0; render(); toast('Heute nicht mehr vorgeschlagen'); },
+  sugSplit(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.skips=0; save('events'); openSheet('event',{id:e.id,openSteps:true}); },
+  sugDate(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.skips=0; save('events'); openSheet('event',{id:e.id}); },
+  wrapTomorrow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; if(!e.origDate) e.origDate=e.date; e.date=addDays(todayS(),1); save('events'); render(); toast('Auf morgen gelegt'); },
+  wrapPick(el){ openSheet('event',{id:el.dataset.id}); },
+  wrapDrop(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; S.events=S.events.filter(x=>x!==e); save('events'); render(); toast('Gestrichen',()=>{ S.events.push(e); save('events'); render(); }); },
+  fDue(el){ readEventForm(); draft.due=el.dataset.v||null; renderSheet(); },
   showTomorrow(){ openSheet('tomorrow',{}); },
   tomorrowDone(){ closeSheet(); if(new Date().getHours()>=17 && evOn(addDays(todayS(),1)).length) hype('night'); },
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
@@ -1536,6 +1603,7 @@ const A = {
   tReset(){ stopTick(); T.remaining=T.total; T.endAt=null; ls.set('timer',T); paintTimer(); },
   tBreak(){ alertQ.shift(); paintAlert(); T.total=300; T.remaining=300; T.endAt=Date.now()+300000; ls.set('timer',T); startTick(); ui.tab='focus'; render(); },
   alertAct(el){ const v=el.dataset.v; if(v.startsWith('snooze:')){ const k=v.slice(7); snoozed[k]=Date.now()+300000; notified.delete(k); ls.set('snoozed',snoozed); ls.set('notified',[...notified]); alertQ.shift(); paintAlert(); }
+    else if(v.includes(':')){ const [fn,id]=v.split(':'); alertQ.shift(); paintAlert(); if(A[fn]) A[fn]({dataset:{id}}); }
     else if(A[v]) A[v](el); },
   closeAlert(){ alertQ.shift(); paintAlert(); },
   openTool(el){ ui.tool=el.dataset.v; render(); window.scrollTo(0,0); },
@@ -1609,6 +1677,7 @@ render();
 if(!ls.get('onboarded',false)) showOnboarding(0);
 if(T.endAt){ if(tLeft()>0) startTick(); else tickTimer(); }
 setInterval(checkReminders,15000); setTimeout(checkReminders,1500);
+setInterval(proactiveNudge,60000); setTimeout(proactiveNudge,8000);
 setInterval(()=>{ if(ui.tab==='day' && ui.date===todayS() && !ui.sheets.length) softRender(); },30000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkReminders(); if(T.endAt) tickTimer(); if(!ui.sheets.length) softRender(); } });
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
