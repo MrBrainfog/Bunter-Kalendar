@@ -1523,18 +1523,15 @@ const DG={raf:0,iv:0,snd:0,wake:null,parts:[]};
 function dgState(){
   const t=todayS(), n=nowMin(), tm=timed(evOn(t)).filter(e=>!e.done);
   const cur=tm.find(e=>toMin(e.start)<=n && endMin(e)>n), nx=tm.find(e=>toMin(e.start)>n && e!==cur);
-  const sug=!cur?suggestions(freeNow())[0]:null;
-  return {cur,nx,sug,n};
+  return {cur,nx,n};
 }
 function dgPaint(){
-  const r=$('#dgMain'); if(!r) return; const {cur,nx,sug,n}=dgState(), secNow=new Date().getSeconds();
+  const r=$('#dgMain'); if(!r) return; const {cur,nx,n}=dgState(), secNow=new Date().getSeconds();
   const left=m=>{ const tot=m*60-secNow; const h=Math.floor(tot/3600), mm=Math.floor(tot%3600/60), ss=tot%60; return h?`${h}:${pad(mm)}:${pad(ss)}`:`${mm}:${pad(ss)}`; };
   let h='';
   if(cur){ h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>${esc(cur.short||cur.title)}</b><span class="dg-sub num">bis ${fromMin(endMin(cur))}</span></div>
       <div class="dg-count num">${left(endMin(cur)-n)}<small>bis dieser Schritt endet</small></div>
       <button class="dg-btn" data-act="dgDone" data-id="${cur.id}">Geschafft</button>`; }
-  else if(sug){ h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>${esc(sug.title)}</b><span class="dg-sub">Freie Zeit. Leona schlägt das vor.</span></div>
-      <button class="dg-btn" data-act="dgStart" data-id="${sug.id}">Ich fange an</button>`; }
   else h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>Durchatmen</b><span class="dg-sub">Gerade steht nichts an. Leona hält Wache.</span></div>`;
   h+='<hr>';
   if(nx) h+=`<div class="dg-next"><span class="dg-lab">Als Nächstes</span><b>${esc(nx.short||nx.title)}</b><span class="dg-sub num">um ${nx.start}</span></div>
