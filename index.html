@@ -1083,8 +1083,8 @@ function parseQuick(txt){
   const days={'heute':0,'morgen':1,'übermorgen':2};
   m=t.match(/\s(heute|übermorgen|morgen)(?=\s)/i); if(m){ r.date=addDays(todayS(),days[m[1].toLowerCase()]); t=t.replace(m[0],' '); }
   const wd=['sonntag','montag','dienstag','mittwoch','donnerstag','freitag','samstag'];
-  m=t.match(/\s(?:am\s+)?(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag|so|mo|di|mi|do|fr|sa)(?=\s)/i);
-  if(m){ const k=m[1].toLowerCase(); const i=wd.findIndex(w=>w===k||w.slice(0,2)===k); if(i>=0){ const n=new Date(); let diff=(i-n.getDay()+7)%7; r.date=addDays(todayS(),diff); t=t.replace(m[0],' '); } }
+  m=t.match(/\s(?:am\s+)?(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag|so\.|mo\.|di\.|mi\.|do\.|fr\.|sa\.)(?=\s)/i);
+  if(m){ const k=m[1].toLowerCase().replace('.',''); const i=wd.findIndex(w=>w===k||w.slice(0,2)===k); if(i>=0){ const n=new Date(); let diff=(i-n.getDay()+7)%7; r.date=addDays(todayS(),diff); t=t.replace(m[0],' '); } }
   m=t.match(/\s(\d+(?:[.,]\d+)?)\s*(h|std\.?|stunden?|min\.?|minuten)(?=\s)/i);
   if(m){ const v=parseFloat(m[1].replace(',','.')); r.dur=/^m/i.test(m[2])?Math.round(v):Math.round(v*60); t=t.replace(m[0],' '); }
   m=t.match(/\s(?:um\s+)?(\d{1,2})[:.](\d{2})(?:\s*uhr)?(?=\s)/i)||t.match(/\s(?:um\s+)?(\d{1,2})\s*uhr(?=\s)/i);
@@ -1210,11 +1210,19 @@ function bindSheet(top){
     $('#fEnd').addEventListener('change',()=>{ const st=$('#fStart').value, en=$('#fEnd').value; if(!st||!en) return; let t=toMin(en)-toMin(st); if(t<=0) t+=1440; $('#fDurH').value=Math.floor(t/60); $('#fDurM').value=t%60; syncEnd(); });
     const ti=$('#fTitle');
     if(A0.isNew){
-      ti.addEventListener('input',()=>{ const r=parseQuick(ti.value), chips=[];
-        if(r.date){ draft.date=r.date; $('#fDate').value=r.date; chips.push(r.date===todayS()?'Heute':r.date===addDays(todayS(),1)?'Morgen':fmtDay(r.date,{weekday:'short',day:'numeric',month:'short'})); }
-        if(r.start){ draft.start=r.start; $('#fStart').value=r.start; chips.push(r.start+' Uhr'); }
-        if(r.dur){ draft.dur=r.dur; $('#fDurH').value=Math.floor(r.dur/60); $('#fDurM').value=r.dur%60; chips.push(dur(r.dur)); }
-        if(r.cat && !A0.catTouched && r.cat!==draft.cat){ draft.cat=r.cat; document.querySelectorAll('.catbtn').forEach(b=>b.classList.toggle('on',b.dataset.v===r.cat)); $('#fPreview').className='preview cat-'+r.cat; }
+      A0.base = A0.base || {date:draft.date, start:draft.start, dur:draft.dur, cat:draft.cat}; A0.pz = A0.pz || {};
+      $('#fDate').addEventListener('input',e=>{ A0.base.date=e.target.value; A0.pz.date=false; });
+      $('#fStart').addEventListener('input',e=>{ A0.base.start=e.target.value; A0.pz.start=false; });
+      const setDur=v=>{ draft.dur=v; $('#fDurH').value=Math.floor(v/60); $('#fDurM').value=v%60; };
+      const setCat=c=>{ draft.cat=c; document.querySelectorAll('.catbtn').forEach(b=>b.classList.toggle('on',b.dataset.v===c)); $('#fPreview').className='preview cat-'+c; };
+      ti.addEventListener('input',()=>{ const r=parseQuick(ti.value), chips=[], B=A0.base, P=A0.pz;
+        if(r.date){ draft.date=r.date; $('#fDate').value=r.date; P.date=true; chips.push(r.date===todayS()?'Heute':r.date===addDays(todayS(),1)?'Morgen':fmtDay(r.date,{weekday:'short',day:'numeric',month:'short'})); }
+        else if(P.date){ draft.date=B.date; $('#fDate').value=B.date; P.date=false; }
+        if(r.start){ draft.start=r.start; $('#fStart').value=r.start; P.start=true; chips.push(r.start+' Uhr'); }
+        else if(P.start){ draft.start=B.start; $('#fStart').value=B.start||''; P.start=false; }
+        if(r.dur){ setDur(r.dur); P.dur=true; chips.push(dur(r.dur)); }
+        else if(P.dur){ setDur(B.dur); P.dur=false; }
+        if(!A0.catTouched){ if(r.cat){ if(r.cat!==draft.cat) setCat(r.cat); P.cat=true; } else if(P.cat){ setCat(B.cat); P.cat=false; } }
         const tg=hasPh(draft)?null:tplGuess(ti.value);
         $('#fParsed').innerHTML = (chips.length ? `<span class="hint">Erkannt:</span>${chips.map(c=>`<span class="pchip">${esc(c)}</span>`).join('')}` : (tg?'':'<span class="hint">Tipp: Tag, Uhrzeit und Dauer einfach mitschreiben, der Rest füllt sich selbst.</span>'))
           + (tg?`<button class="pchip act" data-act="fTpl" data-v="${esc(tg)}">In Etappen planen: ${esc(tg)}</button>`:'');
@@ -1316,7 +1324,7 @@ const A = {
   tomorrowDone(){ closeSheet(); if(new Date().getHours()>=17 && evOn(addDays(todayS(),1)).length) hype('night'); },
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
   fOpen(el){ readEventForm(); const o=ui.sheets[ui.sheets.length-1].args.open; o[el.dataset.v]=!o[el.dataset.v]; renderSheet(); },
-  fDur(el){ readEventForm(); draft.dur=+el.dataset.v; renderSheet(); },
+  fDur(el){ readEventForm(); draft.dur=+el.dataset.v; const A0=ui.sheets[ui.sheets.length-1].args; if(A0.base){ A0.base.dur=draft.dur; if(A0.pz) A0.pz.dur=false; } renderSheet(); },
   fTpl(el){ readEventForm(); const A0=ui.sheets[ui.sheets.length-1].args, name=el.dataset.v, t=templates()[name]; if(!t) return;
     draft.phases=t.map(p=>({kind:p.kind,t:p.t,dur:+p.dur,done:false})); A0.tpl=name; A0.open.phases=true;
     if(!draft.title || (A0.isNew && tplGuess(draft.title)===name && !/\d/.test(draft.title))) draft.title=draft.title||name;
