@@ -644,7 +644,7 @@ function viewDay(){
     <button class="iconbtn" data-act="dayShift" data-v="1" aria-label="Nächster Tag">${ICON.right}</button>`;
   let h = header(title, sub, nav) + '<div class="stack">';
   const hr=new Date().getHours();
-  if(isToday && !S.meta.planned[d]) h += nudge(d,'Plane deinen Tag','Zwei Minuten: Was steht fest, was ist am wichtigsten?','Jetzt planen');
+  if(isToday && !S.meta.planned[d]) h += nudge(d,'Plane deinen Tag', sleepMode()==='low'?'Kurze Nacht: Plane heute weniger und mehr Pausen. Zwei Minuten reichen.':'Zwei Minuten: Was steht fest, was ist am wichtigsten?','Jetzt planen');
   else if(isToday && hr>=17 && !S.meta.planned[addDays(d,1)]) h += nudge(addDays(d,1),'Morgen schon geplant?','Kurz vorplanen macht den Morgen leichter.','Morgen planen');
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
   if(isToday) h += nowCard(list, waitsOn(d));
@@ -655,8 +655,7 @@ function viewDay(){
   if(list.length){ const sorted=[...timed(list),...untimed(list)], dn=list.filter(e=>e.done).length;
     h += `<div class="card dayprog"><div class="row" style="flex-wrap:nowrap"><b class="grow">${dn===list.length?'Alles erledigt!':'Erledigt'}</b><b class="num">${dn} von ${list.length}</b></div><div class="segs">${sorted.map(e=>`<i class="cat-${e.cat} ${e.done?'on':''}"></i>`).join('')}</div></div>`; }
   if(isToday && hasCycle()){ const c=cycInfo(); if(c.last && (c.inPeriod || c.toNext<=3 || c.late>0)) h += `<button class="checkin" data-act="cyOpen" data-v="${d}"><span class="ticon" style="background:${PINK};color:#fff;width:30px;height:30px;border-radius:50%">${ICON.drop.replace('<svg','<svg style="width:16px;height:16px"')}</span><span class="grow"><span class="label">Zyklus</span><b>${cycLine(c)}</b></span>${XI.chev}</button>`; }
-  if(isToday){ const z=S.sleep[d], t=sleepTxt(d);
-    h += `<button class="checkin" data-act="openSleep" data-v="${d}">${t?`<span class="mdot" style="background:var(--s${z.q||3})"></span><span class="grow"><span class="label">Schlaf letzte Nacht</span><b>${esc(t)}</b></span>`:`<span class="mdot"></span><span class="grow"><span class="label">Schlaf-Check · 5 Sekunden</span><b>Wie hast du geschlafen?</b></span>`}${XI.chev}</button>`; }
+  if(isToday && !sleepTxt(d)) h += `<button class="checkin" data-act="openSleep" data-v="${d}"><span class="mdot"></span><span class="grow"><span class="label">Schlaf-Check · 5 Sekunden</span><b>Wie hast du geschlafen?</b></span>${XI.chev}</button>`;
   if(!list.length){
     h += `<div class="card empty"><h3>${isToday?'Heute ist noch alles frei':'Noch nichts eingetragen'}</h3><p class="muted" style="margin:0">Tippe auf Plus und schreib einfach drauflos, zum Beispiel „Zahnarzt 14:30 1h“.</p>
       <div class="row" style="justify-content:center"><button class="btn" data-act="newEvent">Ersten Eintrag anlegen</button>${S.events.length?'':'<button class="btn ghost" data-act="loadExamples">Beispieltag ansehen</button>'}</div></div>`;
@@ -664,7 +663,7 @@ function viewDay(){
     const ut=untimed(list);
     if(ut.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Aufgaben ohne Uhrzeit</span><span class="cnt num">${ut.length}</span></div><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
     const tm=timed(list), gh=ghostSlots(d,list), wt=waitsOn(d);
-    if(gh.over && gh.over.length && ls.get('overAck_'+d,0)!==gh.over.length) h += `<div class="card stack overcard" style="gap:10px"><b>Heute passt nicht mehr alles rein</b><span class="hint">${gh.over.length===1?'Diese Aufgabe findet':'Diese '+gh.over.length+' Aufgaben finden'} bis 22 Uhr keine freie Lücke mehr: ${gh.over.map(e=>esc(e.title)).join(', ')}. Lieber auf morgen schieben, statt den Abend vollzustopfen?</span><div class="row"><button class="btn small" data-act="overTomorrow" data-d="${d}">Auf morgen schieben</button><button class="btn small ghost" data-act="overKeep" data-d="${d}" data-n="${gh.over.length}">Heute behalten</button></div></div>`;
+    if(gh.over && gh.over.length && ls.get('overAck_'+d,0)!==gh.over.length) h += `<div class="card stack overcard" style="gap:10px"><b>Heute passt nicht mehr alles rein</b><span class="hint">${gh.over.length===1?'Diese Aufgabe findet':'Diese '+gh.over.length+' Aufgaben finden'} bis ${dayEndMin()/60} Uhr keine freie Lücke mehr${sleepMode()==='low'?' (nach der kurzen Nacht plane ich heute nur bis 21 Uhr)':''}: ${gh.over.map(e=>esc(e.title)).join(', ')}. Lieber auf morgen schieben, statt den Abend vollzustopfen?</span><div class="row"><button class="btn small" data-act="overTomorrow" data-d="${d}">Auf morgen schieben</button><button class="btn small ghost" data-act="overKeep" data-d="${d}" data-n="${gh.over.length}">Heute behalten</button></div></div>`;
     if(isToday && new Date().getHours()>=19){ const open=ut.filter(e=>!e.done); if(open.length) h += `<div class="card stack wrapcard" style="gap:8px"><b style="font-family:var(--f-display);font-size:18px">Heute offen geblieben</b><span class="hint">Kein Drama. Entscheide kurz, was damit passiert. Sonst nehme ich alles automatisch mit auf morgen.</span>${open.map(e=>`<div class="wraprow cat-${e.cat}"><span class="grow"><span class="swatch"></span> ${esc(e.title)} ${badges(e)}</span><button class="chip" data-act="wrapTomorrow" data-id="${e.id}">Morgen</button><button class="chip" data-act="wrapPick" data-id="${e.id}">Tag wählen</button><button class="chip" data-act="toggleDone" data-id="${e.id}">Erledigt</button><button class="chip" data-act="wrapDrop" data-id="${e.id}">Streichen</button></div>`).join('')}</div>`; }
     if(tm.length||wt.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${wt.length?`<span class="hint">Gepunktete Linie rechts: Wartezeit. Da musst du nichts tun und kannst anderes planen.</span>`:''}${timeline(tm,isToday,[],wt)}</div>`;
   }
@@ -706,7 +705,7 @@ function taskRow(e){
 function ghostSlots(d,list){
   const t=todayS(); if(d<t) return [];
   const open=untimed(list).filter(e=>!e.done); if(!open.length) return [];
-  const BUF=10, dayEnd=22*60;
+  const BUF=10, dayEnd=dayEndMin();
   let from = d===t ? Math.ceil((nowMin()+BUF)/5)*5 : 8*60;
   const busy=timed(list).map(e=>[toMin(e.start),endMin(e)]);
   const out=[]; out.over=[];
@@ -1119,6 +1118,8 @@ function viewValka(){
 }
 
 /* ---------- open tasks: suggestions, rollover, deadlines ---------- */
+function sleepMode(){ const t=todayS(), z=S.sleep[t]; if(!z) return null; if(sleepPoor(t)) return 'low'; if((z.q&&z.q>=4) && (!z.h||z.h>=7)) return 'high'; return 'mid'; }
+const dayEndMin = () => sleepMode()==='low' ? 21*60 : 22*60;
 function rollover(){ const t=todayS(); let ch=false;
   S.events.forEach(e=>{ if(!e.start && !e.done && !hasPh(e) && e.date<t){ if(!e.origDate) e.origDate=e.date; e.date=t; ch=true; } });
   if(ch) save('events'); }
@@ -1127,8 +1128,9 @@ function ageTxt(e){ if(e.start || !e.origDate) return ''; const n=dDiff(e.origDa
 function badges(e){ const b=[]; const d=dueTxt(e); if(d) b.push(`<span class="badge ${/überfällig|heute/.test(d)?'warn':''}">${d}</span>`); const a=ageTxt(e); if(a) b.push(`<span class="badge">${a}</span>`); return b.join(' '); }
 function freeNow(){ const t=todayS(), n=nowMin(), tm=timed(evOn(t)).filter(e=>!e.done);
   if(tm.some(e=>toMin(e.start)<=n && endMin(e)>n)) return 0;
-  const nx=tm.find(e=>toMin(e.start)>n); return Math.max(0,(nx?toMin(nx.start):22*60)-n); }
+  const nx=tm.find(e=>toMin(e.start)>n); return Math.max(0,(nx?toMin(nx.start):dayEndMin())-n); }
 function taskScore(e,free){ const t=todayS(); let s=(e.skips||0)*3 + Math.min(dDiff(e.origDate||e.created||e.date,t),10)*2;
+  const sm=sleepMode(); const du=e.dur||30; if(sm==='low'){ s+= du<=30?10: du>60?-12:0; } else if(sm==='high'){ s+= du>=45?5:0; }
   if(e.due){ const dl=dDiff(t,e.due); s+= dl<0?30: dl===0?25: dl<=2?15: dl<=6?5:0; }
   if(free!=null) s+= (e.dur||30)<=free?8:-12; return s; }
 function suggestions(free){ const t=todayS(); return untimed(evOn(t)).filter(e=>!e.done && e.sugDay!==t).sort((a,b)=>taskScore(b,free)-taskScore(a,free)); }
@@ -1136,7 +1138,7 @@ function sugBox(free){
   const list=suggestions(free); if(!list.length || free<10) return '';
   const e=list[(ui.sugIdx||0)%list.length], nag=(e.skips||0)>=3, av=S.meta.hypeAv!==false;
   return `<div class="sug">
-    <div class="row" style="flex-wrap:nowrap;align-items:center">${av?`<img class="sugav" src="leona-${nag?'smirk':'wink'}.webp" alt="">`:''}<div class="grow"><span class="label" style="display:block">Leona schlägt vor · ${dur(Math.min(free,600))} frei</span><b class="st">${esc(e.title)}</b><span class="hint" style="color:inherit;opacity:.85">${dur(e.dur||30)}${list.length>1?` · noch ${list.length-1} weitere offen`:''}</span> ${badges(e)}</div></div>
+    <div class="row" style="flex-wrap:nowrap;align-items:center">${av?`<img class="sugav" src="leona-${nag?'smirk':'wink'}.webp" alt="">`:''}<div class="grow"><span class="label" style="display:block">${sleepMode()==='low'?'Kurze Nacht, also etwas Leichtes':'Leona schlägt vor'} · ${dur(Math.min(free,600))} frei</span><b class="st">${esc(e.title)}</b><span class="hint" style="color:inherit;opacity:.85">${dur(e.dur||30)}${list.length>1?` · noch ${list.length-1} weitere offen`:''}</span> ${badges(e)}</div></div>
     ${nag?`<p class="nag">„${esc(e.title)}“ schiebst du jetzt zum ${e.skips}. Mal vor dir her. Zu groß? Dann zerlegen wir es. Oder du gibst ihm einen festen Termin.</p>
       <div class="row"><button class="btn small" data-act="sugSplit" data-id="${e.id}">Zerlegen</button><button class="btn small ghost" data-act="sugDate" data-id="${e.id}">Termin geben</button><button class="btn small ghost" data-act="sugLater" data-id="${e.id}">Heute nicht</button></div>`
      :`<div class="row"><button class="btn small" data-act="sugDo" data-id="${e.id}">Mach ich jetzt</button>${list.length>1?`<button class="btn small ghost" data-act="sugNext" data-id="${e.id}">Was anderes</button>`:`<button class="btn small ghost" data-act="sugLater" data-id="${e.id}">Heute nicht</button>`}</div>`}
@@ -1145,7 +1147,7 @@ function sugBox(free){
 function proactiveNudge(){
   if(S.meta.nudge===false || S.meta.hype===false) return;
   const h=new Date().getHours(); if(h<8 || h>=21) return;
-  if(Date.now()-ls.get('lastNudge',0) < 60*60000) return;
+  if(Date.now()-ls.get('lastNudge',0) < (sleepMode()==='low'?90:60)*60000) return;
   if(!document.hidden && ui.tab==='day' && ui.date===todayS() && !ui.sheets.length) return; // the Jetzt card already shows it
   const free=freeNow(); if(free<15) return;
   const e=suggestions(free)[0]; if(!e) return;
