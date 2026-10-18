@@ -288,8 +288,8 @@ nav.tabs{overflow:visible}
 nav.tabs button.tmr{color:var(--ink);position:relative}
 nav.tabs button.tmr .knob{width:54px;height:54px;margin-top:-36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FF9CC8,#F2559A 70%);color:#fff;border:4px solid var(--surface);box-shadow:0 6px 16px rgba(242,85,154,.45),inset 0 -3px 0 rgba(0,0,0,.12)}
 nav.tabs button.tmr .knob svg{width:28px;height:28px;stroke:#fff}
-nav.tabs button.tmr .knob.orb{background:radial-gradient(circle at 40% 30%,#5A5560 0,#2A272E 45%,#0E0D10 100%);box-shadow:0 6px 18px rgba(142,16,36,.55),inset 0 0 0 2px #8E1024,inset 0 -4px 8px rgba(0,0,0,.5)}
-nav.tabs button.tmr .knob.orb svg{stroke:#ECE3D2}
+nav.tabs button.tmr .knob.orb{background:radial-gradient(circle at 40% 30%,#F6EBD3 0,#E3CBA0 35%,#B07A45 75%,#6B4226 100%);box-shadow:0 6px 18px rgba(179,18,46,.4),inset 0 0 0 2px #C99A4A,inset 0 -4px 8px rgba(60,30,10,.4)}
+nav.tabs button.tmr .knob.orb svg{stroke:#7A0C1E}
 nav.tabs button.tmr .knob.torchk{background:radial-gradient(circle at 50% 30%,#FFB347 0,#C2410C 35%,#2A1408 80%);box-shadow:0 6px 18px rgba(194,65,12,.5),inset 0 -4px 8px rgba(0,0,0,.4)}
 nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
 /* Onboarding */
@@ -375,51 +375,45 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .phc{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:12px;padding:8px 10px}
 .phc.wait{background:transparent;border:2px dashed var(--line);padding:6px 10px;font-size:14px;color:var(--ink-2)}
 .phc.done .grow b{text-decoration:line-through;color:var(--ink-2)}
-/* Hellsehen: bone oracle on an iron war table (dark imperial style) */
-.oscrim{background:rgba(5,3,4,.8)}
-.sheet.oracle{--ink:#ECE7E4;--ink-2:#A39C9A;--line:rgba(200,190,190,.16);--surface:rgba(255,255,255,.05);--surface-2:rgba(255,255,255,.08);
-  color:#ECE7E4;position:relative;overflow-x:hidden;border-top:3px solid #8E1024;
-  background:radial-gradient(80% 35% at 50% 0%,rgba(150,15,35,.35),transparent 70%),radial-gradient(90% 30% at 50% 100%,rgba(120,10,25,.3),transparent 70%),linear-gradient(#141215,#0A090B)}
-.sheet.oracle::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background:
-  repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px),
-  linear-gradient(135deg,transparent 0 47%,rgba(142,16,36,.18) 47% 53%,transparent 53%) 0 0/64px 64px}
-.sheet.oracle .grab{background:rgba(200,190,190,.3)}
-.hide{position:relative;flex:none;width:100%;max-width:370px;margin:-10px auto 0;aspect-ratio:16/10.4}
+/* Hellsehen: bone oracle on the commander's desk (warm parchment & wood) */
+.oscrim{background:rgba(20,10,4,.6)}
+.sheet.oracle{--ink:#2A1A0E;--ink-2:#6B5240;--line:rgba(90,60,35,.25);--surface:#F6EBD3;--surface-2:#EADBBD;
+  color:#FBF3E4;position:relative;overflow-x:hidden;border-top:2px solid #C99A4A;
+  background:radial-gradient(70% 28% at 50% 0%,rgba(255,190,100,.35),transparent 70%),radial-gradient(60% 25% at 0% 100%,rgba(255,170,80,.25),transparent 70%),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 2px,transparent 2px 9px,rgba(255,220,170,.03) 9px 11px,transparent 11px 23px),linear-gradient(#5A3720,#3A2414 60%,#2C1B0F)}
+.sheet.oracle::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,#C99A4A,transparent);opacity:.7}
+.sheet.oracle .grab{background:rgba(251,243,228,.4)}
+.hide{position:relative;flex:none;width:100%;max-width:370px;margin:-6px auto 0;aspect-ratio:16/10.6}
 .hide svg{width:100%;height:100%;display:block;overflow:visible}
 .hide .bone-drop{transform-box:fill-box;transform-origin:center}
-.otitle{text-align:center;display:flex;flex-direction:column;gap:2px;position:relative}
-.otitle span{font-family:var(--f-display);font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#C21B36}
-.otitle h2{font-size:34px;font-weight:800;color:#F2EEEC;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 2px 0 #000,0 0 18px rgba(194,27,54,.45)}
-.otitle em{font-style:normal;color:#A39C9A;letter-spacing:.08em}
+.otitle{text-align:center;display:flex;flex-direction:column;gap:2px;position:relative;margin-top:6px}
+.otitle span{font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#F0B9A0}
+.otitle h2{font-size:32px;font-weight:800;color:#FBF3E4;letter-spacing:.03em;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+.otitle em{font-style:normal;color:#E3CDAE}
 .odiv{display:block;width:220px;height:16px;margin:0 auto}
-.ocard{position:relative;padding:14px 16px;background:linear-gradient(170deg,#24212A,#17151A);border:1px solid #3A3640;
-  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.05),inset 3px 0 0 #8E1024;display:flex;flex-direction:column;gap:8px}
+.ocard{position:relative;padding:16px 18px;background:radial-gradient(120% 90% at 50% 30%,#FBF3E1,#EEDDBC);color:#2A1A0E;border-radius:4px;
+  box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 0 0 1px rgba(90,60,35,.35),inset 0 0 0 5px rgba(246,235,211,.9),inset 0 0 0 6px rgba(90,60,35,.3),inset 0 0 30px rgba(150,100,50,.18);display:flex;flex-direction:column;gap:8px}
 .ocard p{margin:0;line-height:1.5}
 .oreport p{font-size:16.5px}
-.orav{width:46px;height:46px;flex:none;object-fit:cover;object-position:50% 12%;border-radius:0;background:#2A0710;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-.otitle{margin-top:26px}
-.ocard .oprop{font-size:16.5px}
-.ocard .omen{color:#E4566C;font-weight:700}
-.ofocus span,.olab{font-family:var(--f-display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#C21B36;font-weight:700}
-.ofocus{background:linear-gradient(170deg,#4A0E19,#26080E)!important;box-shadow:inset 0 0 0 1px #8E1024,inset 0 2px 0 rgba(255,255,255,.08)!important}
-.ofocus b{font-size:19px;color:#F2EEEC}
+.ocard .omen{color:#8E1024;font-weight:700}
+.ofocus span,.olab{font-family:var(--f-display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8E1024;font-weight:700}
+.ofocus{background:linear-gradient(170deg,#B3122E,#7A0C1E)!important;color:#FBF3E4!important;box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 0 0 1px #C99A4A,inset 0 0 0 4px rgba(122,12,30,1),inset 0 0 0 5px rgba(201,154,74,.6)!important}
+.ofocus span{color:#F3D9A0}
+.ofocus b{font-size:19px;color:#FBF3E4}
 .olist{display:flex;flex-direction:column;gap:6px}
-.orow{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:10px;padding:10px 12px;background:#0F0E12;color:#ECE7E4;border-left:3px solid var(--c);
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.orow{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,250,240,.65);color:#2A1A0E;border-left:4px solid var(--c);border-radius:3px;box-shadow:inset 0 0 0 1px rgba(90,60,35,.18)}
 .orow .t{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
-.orow .od{color:#A39C9A;font-size:13px}
-.ogem{width:10px;height:10px;flex:none;transform:rotate(45deg);background:var(--c);box-shadow:0 0 0 2px #000}
-.ohint{margin:0;font-size:14px;color:#A39C9A;text-align:center}
-.obtn{background:#1D1B21!important;color:#ECE7E4!important;border:1px solid #4A4550!important;border-radius:0!important;
-  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
-.sheet.oracle .savebar{background:#0A090B;border-top:1px solid #2E2A33}
-.sheet.oracle .savebtn{border-radius:0;background:linear-gradient(180deg,#B3122E,#6E0A1A);color:#F7F2F0;letter-spacing:.06em;text-transform:uppercase;font-size:16px;
-  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
-.sheet.oracle .iconbtn{border-radius:0;border:0!important;background:#1D1B21!important;clip-path:polygon(25% 0,75% 0,100% 25%,100% 75%,75% 100%,25% 100%,0 75%,0 25%)}
+.orow .od{color:#6B5240;font-size:13px}
+.ogem{width:10px;height:10px;flex:none;transform:rotate(45deg);background:var(--c);box-shadow:0 0 0 1.5px rgba(42,26,14,.5)}
+.ohint{margin:0;font-size:14px;color:#E3CDAE;text-align:center}
+.orav{width:48px;height:48px;flex:none;object-fit:cover;object-position:50% 12%;border-radius:50%;background:linear-gradient(160deg,#B3122E,#D9A23A);box-shadow:0 0 0 2px #C99A4A}
+.obtn{background:rgba(251,243,228,.12)!important;color:#FBF3E4!important;border:1px solid rgba(251,243,228,.35)!important}
+.sheet.oracle .savebar{background:#2C1B0F;border-top:1px solid rgba(201,154,74,.35)}
+.sheet.oracle .savebtn{border-radius:999px;background:linear-gradient(180deg,#B3122E,#7A0C1E);color:#FBF3E4;box-shadow:0 3px 0 #4A0712,inset 0 1px 0 rgba(255,255,255,.25)}
+.sheet.oracle .iconbtn{background:rgba(40,25,15,.55)!important;border-color:rgba(251,243,228,.45)!important;color:#FBF3E4!important}
 @media (prefers-reduced-motion:no-preference){
   .hide .bone-drop{animation:bdrop .5s cubic-bezier(.3,1.4,.5,1) both}
-  .hide .ember{animation:eflick 1.4s ease-in-out infinite alternate}
+  .hide .ember{animation:eflick 1.7s ease-in-out infinite alternate}
   @keyframes bdrop{0%{transform:translate(0,-160px) rotate(-80deg) scale(1.3);opacity:0}55%{opacity:1}80%{transform:translate(0,3px) rotate(5deg)}100%{transform:none;opacity:1}}
   @keyframes eflick{from{opacity:.45}to{opacity:.85}}
 }
@@ -452,6 +446,24 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,170,90,.6),transparent)}
+/* Focus: battle plan scroll */
+.dg.plan{background:#1A110A;padding:0}
+.dgstage{position:absolute;left:50%;top:50%;width:max(100vw,66.67vh);height:max(100vh,150vw);transform:translate(-50%,-50%);background:url(focus-plan.webp) center/100% 100% no-repeat}
+.dgglow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(22% 16% at 6% 92%,rgba(255,190,90,.45),transparent 70%),radial-gradient(18% 12% at 94% 6%,rgba(255,190,90,.4),transparent 70%);mix-blend-mode:screen;opacity:.7}
+.dgshade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 45% at 50% 40%,transparent 55%,rgba(30,15,5,.35) 100%)}
+.dgbox{position:absolute;left:22%;right:20%;top:15%;bottom:29%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(8px,1.6vh,18px);text-align:center;color:#3A2618}
+.dg.plan .dg-lab{color:#8E1024;font-weight:700;letter-spacing:.3em;font-size:clamp(11px,1.5vh,14px)}
+.dg.plan .dg-now b{font-size:clamp(22px,3.6vh,34px);color:#2A1A0E;text-shadow:none;margin-top:4px}
+.dg.plan .dg-now .dg-sub,.dg.plan .dg-next .dg-sub{color:#6B5240;font-size:clamp(13px,1.8vh,16px);margin-top:4px}
+.dg.plan .dg-count{color:#8E1024;font-size:clamp(34px,5.6vh,56px);font-family:var(--f-display);font-weight:800;letter-spacing:.02em}
+.dg.plan .dg-count small{color:#6B5240;font-size:clamp(12px,1.6vh,14px);font-family:var(--f-body);font-weight:400;letter-spacing:0;margin-top:2px}
+.dg.plan .dg-next b{font-size:clamp(17px,2.6vh,22px);color:#2A1A0E}
+.dg.plan .dg-btn{border:0;background:linear-gradient(180deg,#B3122E,#7A0C1E);color:#FBF3E4;border-radius:999px;min-height:44px;padding:10px 24px;box-shadow:0 3px 0 #4A0712,inset 0 1px 0 rgba(255,255,255,.25)}
+.dg.plan hr{width:70%;background:linear-gradient(90deg,transparent,rgba(110,70,40,.55),transparent)}
+.dg.plan .dg-top{position:absolute;top:0;right:0;z-index:2;padding:calc(10px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 0 0}
+.dg.plan .dg-x{background:rgba(40,25,15,.55);border-color:rgba(251,243,228,.5)}
+@media (prefers-reduced-motion:no-preference){ .dg.plan .dgglow{animation:candle 1.7s ease-in-out infinite alternate} @keyframes candle{0%{opacity:.55}35%{opacity:.8}60%{opacity:.62}100%{opacity:.85}} }
+.calm .dg.plan .dgglow{animation:none}
 .repbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border-radius:12px;padding:10px}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
@@ -1081,8 +1093,9 @@ function hype(kind, expr){
 /* ---------- Onboarding with Leona ---------- */
 const OB = [
   {img:'cheer', h:'Willkommen im Trupp!', p:'Ich bin Leona. Diese App wurde für <b>besondere Gehirne</b> gebaut: Gehirne, die zehn geniale Ideen gleichzeitig haben und trotzdem vergessen, dass die Wäsche seit gestern in der Maschine liegt.', tip:'Mit dieser App kannst du die Weltherrschaft an dich reißen. Oder die Wäsche nicht vergessen. Wir fangen mit der Wäsche an.'},
-  {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>orange Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Alles Weitere ist optional und eingeklappt. Du musst nichts ausfüllen, was du nicht brauchst.'},
-  {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Abends wirfst du mit dem <b>Knochenorakel</b> unten einen Blick in den morgigen Tag. Und die <b>Fackel</b> daneben bringt dich in den Kerker: nur der nächste Schritt, sonst nichts.'},
+  {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>orange Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Kommt etwas jede Woche wieder? Unter „Wann?“ stellst du <b>Wiederholen</b> ein, und ich trag es dir ganz von allein ein.'},
+  {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Hast du gerade Luft, schlage ich dir <b>eine</b> offene Aufgabe vor. Nur eine. Ich kenne dich doch.'},
+  {img:'wink', h:'Ein Blick nach vorn', p:'Unten findest du <b>Hellsehen</b>: Ich war bei der Seherin, und sie wirft die Knochen auf die Karte. Jeder <b>Knochen</b> ist ein Termin von morgen, jede rote <b>Marke</b> eine Aufgabe ohne Uhrzeit. Darunter berichte ich dir, was dich erwartet.', tip:'Daneben liegt der <b>Fokus</b>: Ich lege dir den Schlachtplan auf den Tisch. Nur was jetzt dran ist, was danach kommt und wie viel Zeit bleibt. Der Rest der Welt darf warten.'},
   {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Für Wäsche, Spülmaschine und Co. gibt es <b>Etappen</b>: Ich erinnere dich genau dann, wenn du wieder ran musst.'},
   {img:'calm', h:'Auch Kriegerinnen ruhen sich aus', p:'Trag morgens kurz ein, wie du geschlafen hast. Im <b>Migränetagebuch</b> zeige ich dir mit der Zeit, ob schlechte Nächte Attacken begünstigen. An harten Tagen schaltest du unter Einstellungen den <b>ruhigen Modus</b> ein.', tip:'Deine Daten bleiben nur auf deinem Handy. Mach ab und zu eine Sicherung unter Tools.'},
   {img:'cheer', h:'Bereit?', p:'Wenn du nicht weiterweißt: <b>Tools → Hilfe</b>. Da erkläre ich dir alles noch mal, ohne zu meckern. Fast ohne.', tip:'Und jetzt raus mit dir. Der Tag erobert sich nicht von allein!'}
@@ -1101,6 +1114,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 
 /* ---------- Help ---------- */
 const HELP = [
+  ['Neu bei Leona','--c5',`<ul><li><b>Hellsehen</b> sieht jetzt aus wie eine Karte auf meinem Kommandotisch, mit Kerzenlicht. Die Knochen zeigen deine Termine von morgen.</li><li><b>Fokus</b> legt dir den Schlachtplan auf den Tisch: jetzt, als Nächstes und die Zeit bis dahin.</li><li><b>Serien</b>: wöchentlich, alle 2 Wochen und eigene Abstände.</li><li><b>Klänge</b> im Mittelalter-Stil, beim Abhaken mit Schwertklirren.</li><li>Ich schlage dir in freien Lücken von selbst eine Aufgabe vor.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>orange Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die orange Linie ist „jetzt“.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
@@ -1108,14 +1122,14 @@ const HELP = [
   ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li><li>Jede Etappe hat ein <b>Häkchen</b> direkt im Zeitplan. Hakst du früher oder später ab, rechne ich die nächsten Etappen neu.</li><li>Läuft die Maschine noch, zeigt die Jetzt-Karte <b>„Schon fertig“</b> und <b>„+15 Min“</b>.</li><li>Im Eintrag: <b>„Ganze Aufgabe erledigt“</b>.</li></ul>`],
   ['Verschieben & verpasst','--c4',`<p>Termine dürfen sich nicht überschneiden. Passiert es doch, biete ich dir die nächste freie Zeit an. Jeder Eintrag ist <b>fest</b> (Arzt, Termine) oder <b>flexibel</b>. Verschiebst du etwas, schlage ich vor, wie Flexibles mitrutscht. Feste Termine bleiben stehen.</p><p>Ist etwas vorbei und nicht abgehakt, frage ich: nachholen, erledigt, morgen oder lassen.</p><p class="say">„Rückschläge sind kein Rückzug. Wir sortieren neu und weiter geht's.“</p>`],
   ['Erinnerungen','--c3',`<p>Pro Eintrag einstellbar unter Extras → Erinnerung. Sie kommen mit Ton und Banner, solange die App geöffnet ist oder im Hintergrund noch läuft.</p><p>Mitteilungen erlaubst du unter <b>Tools → Sichern & Übertragen</b>. Ist die App ganz geschlossen, kann sie dich leider nicht erinnern. Für Wichtiges stell dir zusätzlich einen Wecker.</p>`],
-  ['Hellsehen & Fokus','--c5',`<p><b>Hellsehen</b> (die gekreuzten Knochen unten) wirft das Knochenorakel auf den eisernen Kriegstisch: Jeder <b>Knochen</b> ist ein Termin von <b>morgen</b>, jede <b>Eisenmarke</b> eine Aufgabe, das <b>rote Banner</b> deine wichtigste Sache. Darunter liest du, wann es losgeht und was dich erwartet. Ideal abends vorm Schlafen.</p><p><b>Fokus</b> (die Fackel daneben) öffnet den Kerker: schwarz, Fackeln, nur der <b>jetzige Schritt</b>, der <b>nächste</b> und die Zeit bis dahin. Alles andere verschwindet. Der Zeitmesser von früher heißt jetzt <b>Timer</b>.</p>`],
+  ['Hellsehen & Fokus','--c5',`<p><b>Hellsehen</b> (die gekreuzten Knochen unten): Ich war bei der Seherin, und sie wirft die Knochen auf die Karte auf meinem Tisch. Jeder <b>Knochen</b> ist ein Termin von <b>morgen</b>, mit Uhrzeit darauf. Jede rote <b>Marke</b> ist eine Aufgabe ohne Uhrzeit. Darunter berichte ich dir, wann es losgeht, wann du fertig bist und wie hart der Tag wird. Das <b>rote Banner</b> ist deine wichtigste Sache. Mit <b>Morgen planen</b> legst du sie fest.</p><p>Ideal abends vorm Schlafen. Mit <b>Gute Nacht, Leona</b> schließt du ab.</p><p><b>Fokus</b> (die Fackel daneben) legt dir den Schlachtplan auf den Tisch: nur der <b>jetzige Schritt</b>, der <b>nächste</b> und der Countdown bis dahin. Alles andere verschwindet, und der Bildschirm bleibt an. Oben rechts beendest du den Fokus.</p><p class="say">„Ein Schritt nach dem anderen. So erobert man Burgen. Und Küchen.“</p>`],
   ['Tagesplanung','--c3',`<p>Morgens erscheint die gelbe Karte „Plane deinen Tag“. In zwei Minuten: Was steht fest? Was ist die <b>eine wichtigste Sache</b>? Wie hast du geschlafen?</p>`],
-  ['Mini-Schritte & Fokus','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Fokus</b>-Tab läuft ein Timer, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
+  ['Mini-Schritte & Timer','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Timer</b>-Tab läuft ein Zeitmesser, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
   ['Monat','--c1',`<p>Der Monatsüberblick mit farbigen Punkten pro Eintrag und einer roten Raute an Migränetagen. Tipp auf einen Tag, um ihn zu öffnen.</p>`],
   ['Schlaf & Migräne','--c4',`<p>Morgens kurz eintragen, wie du geschlafen hast. Im <b>Migränetagebuch</b> siehst du den Schlaf der Nacht davor, eine Schlaf-Leiste und nach ein paar Wochen eine Auswertung. Bei einer schlechten Nacht schlage ich „Wenig Schlaf“ als Auslöser vor.</p><p>Die Auswertung ersetzt keinen Arzt, hilft dir aber, Muster zu erkennen.</p>`],
   ['Zyklus','--c5',`<p>Zuerst unter <b>Tools → Einstellungen</b> die Zyklus-Funktion einschalten. Dann trägst du unter <b>Tools → Zyklus</b> deine Periode ein: Blutungsstärke, Symptome, Stimmung und mehr. Daraus berechne ich deine nächste Periode, die fruchtbaren Tage und den Eisprung. Im Monat siehst du alles farbig markiert, im Migränetagebuch die Periodentage neben deinen Attacken.</p><p>Die Vorhersagen sind Schätzungen und kein Verhütungsmittel.</p>`],
   ['Projekte','--c2',`<p>Für alles, was länger dauert: Fortschritt in Prozent, der <b>nächste kleine Schritt</b> und Notizen, was du geschafft hast.</p>`],
-  ['Leona & Einstellungen','--c5',`<p>Unter <b>Tools → Leona</b> schaltest du mich aus oder auf „nur Sprechblase“. Wie kannst du nur.</p><p>Unter <b>Tools → Einstellungen</b>: ruhiger Modus ohne Animationen, Töne und Vibration.</p>`],
+  ['Leona & Einstellungen','--c5',`<p>Unter <b>Tools → Leona</b> schaltest du mich aus oder auf „nur Sprechblase“. Wie kannst du nur.</p><p>Unter <b>Tools → Einstellungen</b>: ruhiger Modus ohne Animationen, Töne und Vibration.</p><p><b>Klänge</b>: Schwertklirren mit Schlachtlärm beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Timer und Knochenklappern beim Hellsehen. Klänge und Schlachtgetümmel schaltest du unter Einstellungen einzeln ab.</p>`],
   ['Sicherung & neues Handy','--c1',`<p>Deine Daten liegen <b>nur auf diesem Handy</b>. Unter <b>Tools → Sichern & Übertragen</b> erstellst du eine Sicherungsdatei. Leg sie in iCloud oder Google Drive. Auf einem neuen Handy: App öffnen, „Sicherung laden“, fertig.</p>`],
   ['Installieren, offline & Updates','--c6',`<p><b>iPhone:</b> Link in Safari öffnen → Teilen → „Zum Home-Bildschirm“.<br><b>Android:</b> Link in Chrome öffnen → ⋮ → „App installieren“.</p><p>Danach läuft die App auch <b>ohne Internet</b>. Updates kommen automatisch, wenn du sie mit Internet öffnest. Öffne sie immer über das Symbol, nicht über den Browser.</p>`]
 ];
@@ -1212,7 +1226,7 @@ function viewSettings(){
   ${tg('calm',!!S.meta.calm,'Ruhiger Modus','Schaltet alle Bewegungen und Animationen ab. Gut für Tage mit Reizüberflutung oder Migräne.')}
   ${tg('cycleOn',cycOn(),'Zyklus-Funktion','Periode eintragen, Prognosen und Markierungen im Kalender. Schalte sie ein, wenn du einen Zyklus hast. Beim Ausschalten bleiben deine Einträge gespeichert, sie werden nur nicht mehr angezeigt.')}
   ${tg('sound',S.meta.sound!==false,'Töne bei Erinnerungen','Glockenschläge bei Erinnerungen und ein Hornruf, wenn Leona dir in freier Zeit etwas vorschlägt. Schaltet alle Töne der App an oder aus.')}
-  ${tg('sfx',S.meta.sfx!==false,'Klänge bei Erfolgen','Mittelalterliche Klänge: Schwertklirren beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Fokus-Timer.')}
+  ${tg('sfx',S.meta.sfx!==false,'Klänge bei Erfolgen','Mittelalterliche Klänge: Schwertklirren beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Timer, Knochenklappern beim Hellsehen.')}
   <button class="btn ghost" data-act="sfxDemo">Klänge anhören</button>
   ${tg('battle',S.meta.battle!==false,'Schlachtgetümmel','Hinter dem Schwertklirren und der großen Fanfare tobt in der Ferne eine Schlacht. Im ruhigen Modus automatisch aus.')}
   ${tg('vibe',S.meta.vibe!==false,'Vibration','Das Handy vibriert bei Erinnerungen und wenn Leona dich anfeuert.')}
@@ -1287,7 +1301,7 @@ function dgPaint(){
       <button class="dg-btn" data-act="dgDone" data-id="${cur.id}">Geschafft</button>`; }
   else if(sug){ h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>${esc(sug.title)}</b><span class="dg-sub">Freie Zeit. Leona schlägt das vor.</span></div>
       <button class="dg-btn" data-act="dgStart" data-id="${sug.id}">Ich fange an</button>`; }
-  else h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>Durchatmen</b><span class="dg-sub">Gerade steht nichts an.</span></div>`;
+  else h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>Durchatmen</b><span class="dg-sub">Gerade steht nichts an. Leona hält Wache.</span></div>`;
   h+='<hr>';
   if(nx) h+=`<div class="dg-next"><span class="dg-lab">Als Nächstes</span><b>${esc(nx.short||nx.title)}</b><span class="dg-sub num">um ${nx.start}</span></div>
       <div class="dg-count num" style="font-size:40px">${left(toMin(nx.start)-n)}<small>bis es losgeht</small></div>`;
@@ -1315,11 +1329,9 @@ function dgCrackle(){ if(S.meta.sound===false || S.meta.sfx===false || S.meta.ca
     for(let i=0;i<Math.round(R(2,6));i++) noiseB(c,{t:t+R(0,.9),dur:R(.01,.035),vol:R(.03,.09),filter:'bandpass',freq:R(1500,4500),q:1.5}); };
   tick(); DG.snd=setInterval(tick,900); }
 function dungeonOpen(){
-  const tch=`<div class="torch"><canvas></canvas><div class="cup"></div><div class="stick"></div><div class="ring"></div></div>`;
-  $('#dgRoot').innerHTML=`<div class="dg" role="dialog" aria-modal="true" aria-label="Fokus"><div class="wall"></div>${tch.replace('torch"','torch l"')}${tch.replace('torch"','torch r"')}
-    <div class="dg-top"><button class="dg-x" data-act="dungeonClose" aria-label="Fokus beenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <div class="dg-main" id="dgMain"></div></div>`;
-  document.body.style.overflow='hidden'; dgPaint(); DG.iv=setInterval(dgPaint,1000); dgFlames(); dgCrackle();
+  $('#dgRoot').innerHTML=`<div class="dg plan" role="dialog" aria-modal="true" aria-label="Fokus"><div class="dgstage"><div class="dgglow"></div><div class="dgshade"></div><div class="dgbox" id="dgMain"></div></div>
+    <div class="dg-top"><button class="dg-x" data-act="dungeonClose" aria-label="Fokus beenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>`;
+  document.body.style.overflow='hidden'; dgPaint(); DG.iv=setInterval(dgPaint,1000);
   try{ navigator.wakeLock?.request('screen').then(w=>DG.wake=w).catch(()=>{}); }catch(e){}
 }
 function dungeonClose(){ cancelAnimationFrame(DG.raf); clearInterval(DG.iv); clearInterval(DG.snd); try{ DG.wake?.release(); }catch(e){} DG.wake=null; $('#dgRoot').innerHTML=''; document.body.style.overflow=''; render(); }
@@ -1551,20 +1563,18 @@ function sheetPlan(a){
 function seeded(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return ((h^=h>>>16)>>>0)/4294967296; }; }
 function boneMat(d,tm,ut,focus){
   const rnd=seeded('leona'+d), W=320, H=208, cx=160, cy=106, rx=128, ry=72;
-  // angular iron war table: chamfered plate with spiked rim
-  const plate=`M ${cx-150} ${cy-40} L ${cx-118} ${cy-92} L ${cx-40} ${cy-100} L ${cx} ${cy-118} L ${cx+40} ${cy-100} L ${cx+118} ${cy-92} L ${cx+150} ${cy-40} L ${cx+158} ${cy} L ${cx+150} ${cy+40} L ${cx+118} ${cy+92} L ${cx+40} ${cy+100} L ${cx} ${cy+114} L ${cx-40} ${cy+100} L ${cx-118} ${cy+92} L ${cx-150} ${cy+40} L ${cx-158} ${cy} Z`;
-  const field=`M ${cx-122} ${cy-30} L ${cx-98} ${cy-72} L ${cx} ${cy-84} L ${cx+98} ${cy-72} L ${cx+122} ${cy-30} L ${cx+122} ${cy+30} L ${cx+98} ${cy+72} L ${cx} ${cy+84} L ${cx-98} ${cy+72} L ${cx-122} ${cy+30} Z`;
-  const rivets=[[-134,-44],[134,-44],[-134,44],[134,44],[-104,-84],[104,-84],[-104,84],[104,84],[0,-104],[0,100]].map(([x,y])=>`<circle cx="${cx+x}" cy="${cy+y}" r="2.6" fill="#7A747E" stroke="#111" stroke-width=".8"/>`).join('');
-  const chev=Array.from({length:9},(_,i)=>{ const x=cx-88+i*22; return `<path d="M ${x-5} ${cy-92} L ${x} ${cy-87} L ${x+5} ${cy-92}" fill="none" stroke="#8E1024" stroke-width="1.6"/><path d="M ${x-5} ${cy+92} L ${x} ${cy+87} L ${x+5} ${cy+92}" fill="none" stroke="#8E1024" stroke-width="1.6"/>`; }).join('');
+  const px=cx-146, py=cy-90, pw=292, ph=180;
+  const orn=(x,y)=>`<path d="M ${x} ${y-6} L ${x+3} ${y} L ${x} ${y+6} L ${x-3} ${y} Z M ${x-8} ${y} L ${x+8} ${y}" fill="#8A6A48" stroke="#8A6A48" stroke-width=".8"/>`;
+  const mountains=(x,y,s2)=>`<path d="M ${x} ${y} l ${6*s2} ${-9*s2} l ${4*s2} ${5*s2} l ${5*s2} ${-8*s2} l ${7*s2} ${12*s2}" fill="none" stroke="rgba(110,80,50,.45)" stroke-width=".9"/>`;
   const bone=(x,y,rot,len,label,i)=>`<g class="bone-drop" style="animation-delay:${.08+i*.12}s"><g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(0)})">
-    <g fill="url(#boneG)" stroke="#2A2320" stroke-width="1.1"><rect x="${-len/2}" y="-4" width="${len}" height="8" rx="2.5"/><circle cx="${-len/2}" cy="-4.5" r="5"/><circle cx="${-len/2}" cy="4.5" r="5"/><circle cx="${len/2}" cy="-4.5" r="5"/><circle cx="${len/2}" cy="4.5" r="5"/></g>
+    <g fill="url(#boneG)" stroke="#5A4630" stroke-width="1.1"><rect x="${-len/2}" y="-4" width="${len}" height="8" rx="2.5"/><circle cx="${-len/2}" cy="-4.5" r="5"/><circle cx="${-len/2}" cy="4.5" r="5"/><circle cx="${len/2}" cy="-4.5" r="5"/><circle cx="${len/2}" cy="4.5" r="5"/></g>
     <rect x="${-len/2+2}" y="-2.6" width="${len-4}" height="5.2" rx="2" fill="#E6DCC8"/>
-    ${label?`<text x="0" y="3.2" text-anchor="middle" font-size="8.5" font-weight="700" fill="#3A1218" font-family="Atkinson Hyperlegible,system-ui">${label}</text>`:''}</g></g>`;
+    ${label?`<text x="0" y="3.2" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4A2E18" font-family="Atkinson Hyperlegible,system-ui">${label}</text>`:''}</g></g>`;
   const token=(x,y,i,red)=>{ const r=red?12:7.5; return `<g class="bone-drop" style="animation-delay:${.15+i*.1}s"><g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">
     ${red?`<path d="M 0 ${-r-5} L ${r*.75} ${-r*.2} L ${r*.55} ${r} L 0 ${r*.6} L ${-r*.55} ${r} L ${-r*.75} ${-r*.2} Z" fill="#B3122E" stroke="#0A0A0A" stroke-width="1.4"/><path d="M 0 ${-r} L ${r*.4} ${-r*.1} L 0 ${r*.3} L ${-r*.4} ${-r*.1} Z" fill="#F2D7DB" opacity=".9"/>`
       :`<path d="M 0 ${-r} L ${r} 0 L 0 ${r} L ${-r} 0 Z" fill="#5E5963" stroke="#0A0A0A" stroke-width="1.2"/><path d="M 0 ${-r*.5} L ${r*.5} 0 L 0 ${r*.5} L ${-r*.5} 0 Z" fill="#B3122E"/>`}</g></g>`; };
   let items=''; const bones=tm.slice(0,7), stones=ut.slice(0,8), segs=[], pts=[];
-  const inMat=(x,y)=>((x-cx)/(rx-14))**2+((y-cy)/(ry-6))**2<=1;
+  const inMat=(x,y)=>x>cx-128 && x<cx+128 && y>cy-72 && y<cy+72 && !(x<cx-62 && y<cy-22) && !(x>cx+108 && y<cy-56);
   const dSeg=(px,py,[ax,ay,bx,by])=>{ const vx=bx-ax, vy=by-ay, t=Math.max(0,Math.min(1,((px-ax)*vx+(py-ay)*vy)/(vx*vx+vy*vy))); return Math.hypot(px-(ax+t*vx),py-(ay+t*vy)); };
   const segSeg=(A,B)=>Math.min(dSeg(A[0],A[1],B),dSeg(A[2],A[3],B),dSeg(B[0],B[1],A),dSeg(B[2],B[3],A));
   if(!bones.length && !stones.length) items=bone(cx-14,cy-6,32,58,'',0)+bone(cx+12,cy+6,-28,52,'',1);
@@ -1578,16 +1588,22 @@ function boneMat(d,tm,ut,focus){
     if(best){ pts.push([best[0],best[1],10]); items+=token(best[0],best[1],bones.length+i,false); } });
   if(focus) items+=token(cx,cy,bones.length+stones.length,true);
   return `<div class="hide" aria-hidden="true"><svg viewBox="0 0 ${W} ${H}">
-    <defs><linearGradient id="steelG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4C4852"/><stop offset=".5" stop-color="#26232B"/><stop offset="1" stop-color="#121015"/></linearGradient>
-      <radialGradient id="fieldG" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#5A0E1B"/><stop offset=".7" stop-color="#2E070E"/><stop offset="1" stop-color="#160407"/></radialGradient>
-      <linearGradient id="boneG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1E8D6"/><stop offset="1" stop-color="#B9AC92"/></linearGradient></defs>
-    <ellipse class="ember" cx="${cx}" cy="${cy+12}" rx="${rx+34}" ry="${ry+26}" fill="rgba(160,12,32,.35)" filter="blur(8px)"/>
-    <path d="${plate}" fill="url(#steelG)" stroke="#0A090B" stroke-width="2.5"/>
-    <path d="${plate}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1" transform="translate(${cx} ${cy}) scale(.965) translate(${-cx} ${-cy})"/>
-    ${[[-158,0,-174,0],[158,0,174,0],[0,-118,0,-134],[0,114,0,130]].map(([x1,y1,x2,y2])=>`<path d="M ${cx+x1+(y1?-6:0)} ${cy+y1+(x1?-6:0)} L ${cx+x2} ${cy+y2} L ${cx+x1+(y1?6:0)} ${cy+y1+(x1?6:0)} Z" fill="#2A272E" stroke="#0A090B" stroke-width="1.5"/>`).join('')}
-    <path d="${field}" fill="url(#fieldG)" stroke="#8E1024" stroke-width="1.6"/>
-    <path d="${field}" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="1" transform="translate(${cx} ${cy}) scale(.9) translate(${-cx} ${-cy})" stroke-dasharray="10 4"/>
-    ${chev}${rivets}
+    <defs><radialGradient id="parchG" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#FBF1DC"/><stop offset=".75" stop-color="#EBD7B2"/><stop offset="1" stop-color="#D6BB8C"/></radialGradient>
+      <linearGradient id="boneG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF8EA"/><stop offset="1" stop-color="#D8C6A2"/></linearGradient>
+      <linearGradient id="clothG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C21B36"/><stop offset="1" stop-color="#6E0A1A"/></linearGradient>
+      <radialGradient id="gemG" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#D8FFFA"/><stop offset=".45" stop-color="#3FD3C8"/><stop offset="1" stop-color="#0E7C77"/></radialGradient></defs>
+    <ellipse class="ember" cx="${cx}" cy="${cy}" rx="${rx+40}" ry="${ry+36}" fill="rgba(255,180,90,.28)" filter="blur(10px)"/>
+    <rect x="${px+3}" y="${py+5}" width="${pw}" height="${ph}" rx="3" fill="rgba(0,0,0,.35)" filter="blur(3px)"/>
+    <rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="3" fill="url(#parchG)"/>
+    <rect x="${px+9}" y="${py+9}" width="${pw-18}" height="${ph-18}" fill="none" stroke="#8A6A48" stroke-width="1"/>
+    <rect x="${px+12}" y="${py+12}" width="${pw-24}" height="${ph-24}" fill="none" stroke="#8A6A48" stroke-width=".5"/>
+    ${orn(cx,py+9)}${orn(cx,py+ph-9)}
+    ${mountains(px+20,py+40,1)}${mountains(px+36,py+48,.8)}${mountains(px+pw-58,py+ph-22,1)}
+    <path d="M ${px+pw-30} ${py+18} C ${px+pw-50} ${py+50}, ${px+pw-26} ${py+70}, ${px+pw-44} ${py+100}" fill="none" stroke="rgba(110,80,50,.4)" stroke-width="1"/>
+    <path d="M ${px+20} ${py+ph-20} C ${px+40} ${py+ph-50}, ${px+70} ${py+ph-30}, ${px+90} ${py+ph-56}" fill="none" stroke="rgba(110,80,50,.4)" stroke-width="1"/>
+    <path d="M ${px-10} ${py-12} L ${px+70} ${py-8} C ${px+58} ${py+12}, ${px+30} ${py+30}, ${px+6} ${py+62} L ${px-14} ${py+56} Z" fill="url(#clothG)" stroke="#4A0712" stroke-width="1"/>
+    <path d="M ${px+66} ${py-6} C ${px+54} ${py+12}, ${px+28} ${py+28}, ${px+4} ${py+58}" fill="none" stroke="#D9A23A" stroke-width="1.6"/>
+    <g transform="translate(${px+pw-8} ${py+4})"><path d="M -11 6 L 11 6 L 9 11 L -9 11 Z" fill="#B8893B" stroke="#6B4A1E" stroke-width=".8"/><path d="M -8 6 L -10 -4 L -3 -11 L 5 -10 L 10 -2 L 8 6 Z" fill="url(#gemG)" stroke="#0B5A56" stroke-width="1"/><path d="M -3 -11 L 0 6 M 5 -10 L 0 6 M -10 -4 L 10 -2" stroke="rgba(255,255,255,.45)" stroke-width=".6"/></g>
     ${items}</svg></div>`;
 }
 function sheetTomorrow(){
