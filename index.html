@@ -208,6 +208,36 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .toast{position:fixed;z-index:31;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;max-width:calc(100% - 32px)}
 .durrow{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
 .durrow .inp{min-width:0}
+/* Entry form */
+.sheet.ev{padding-bottom:0}
+.sh-head{display:flex;align-items:center;gap:8px}
+.sh-head h2{flex:1}
+.blockcard{border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:12px;background:color-mix(in srgb,var(--k) 14%,var(--surface));border:2px solid color-mix(in srgb,var(--k) 45%,transparent)}
+.blockcard.b1{--k:var(--c3)} .blockcard.b2{--k:var(--c1)} .blockcard.b3{--k:var(--c5)}
+.bc-h{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:19px}
+.bc-n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--k);color:var(--surface);font-size:16px;flex:none}
+.blockcard.b1 .bc-n{color:var(--c3-on)}
+.inp.big{font-size:19px;font-weight:700;min-height:56px;border-width:2px;border-color:color-mix(in srgb,var(--k) 60%,var(--line))}
+.parsed{display:flex;flex-wrap:wrap;gap:6px;min-height:22px;align-items:center}
+.pchip{background:var(--ink);color:var(--bg);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.catbtn{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 6px;font-weight:700;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:64px}
+.catbtn i{width:18px;height:18px;border-radius:50%;background:var(--c)}
+.catbtn.on{background:var(--c);color:var(--on);border-color:var(--ink)}
+.catbtn.on i{background:var(--on)}
+.extras{display:flex;flex-direction:column;gap:8px}
+.xrow{background:var(--surface);border-radius:16px;border:1.5px solid var(--line);overflow:hidden}
+.xhead{width:100%;border:0;background:none;display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left;min-height:56px}
+.xhead .xi{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--k) 22%,var(--surface));color:var(--ink);flex:none}
+.xhead .xi svg{width:18px;height:18px}
+.xhead b{display:block}
+.xhead .chev{width:20px;height:20px;transition:transform .2s;flex:none;color:var(--ink-2)}
+.xrow.open .chev{transform:rotate(90deg)}
+.xbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.savebar{position:sticky;bottom:0;z-index:2;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--bg);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.preview{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.preview::before{content:"";width:12px;height:12px;border-radius:4px;background:var(--c);flex:none}
+.savebtn{width:100%;font-size:18px;min-height:54px}
 /* Leona */
 .hype{position:fixed;z-index:25;left:max(6px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(62px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:2px;max-width:480px}
 .hype-av{width:128px;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
@@ -791,34 +821,64 @@ function renderSheet(){
   if(!top){ root.innerHTML=''; document.body.style.overflow=''; return; }
   document.body.style.overflow='hidden';
   const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj,shift:sheetShift}[top.type];
-  root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
+  const prev=root.querySelector('.sheet'), keep=prev&&prev.dataset.t===top.type+(top.args.id||'')?prev.scrollTop:0;
+  root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet ${top.type==='event'?'ev':''}" data-t="${top.type+(top.args.id||'')}" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
+  if(keep) root.querySelector('.sheet').scrollTop=keep;
   bindSheet(top);
 }
 
 let draft=null;
+const XI = {
+  rem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+  fix:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>',
+  steps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7l2 2 3-3M4 15l2 2 3-3M12 8h8M12 16h8"/></svg>',
+  chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>'
+};
+function evPreview(e){
+  const c=CATS.find(x=>x.id===e.cat)?.name||'';
+  const d=e.date===todayS()?'Heute':e.date===addDays(todayS(),1)?'Morgen':fmtDay(e.date,{weekday:'short',day:'numeric',month:'short'});
+  return `${d} · ${e.start?`${e.start}–${fromMin((toMin(e.start)+(e.dur||30))%1440)}`:'ohne Uhrzeit'} · ${c}`;
+}
 function sheetEvent(a){
   if(!a._init){ const e=a.id?S.events.find(x=>x.id===a.id):null;
     draft = e ? structuredClone(e) : {id:uid(),title:'',cat:'termin',date:a.date||ui.date,start:a.start||'',dur:30,remind:15,steps:[],done:false};
-    a._init=true; a.isNew=!e; }
-  const e=draft;
-  return `<h2>${a.isNew?'Neuer Eintrag':'Eintrag'}</h2>
-  ${a.isNew?`<label class="field"><span>Schnell eintippen</span><input class="inp quick" id="fQuick" placeholder="z. B. Zahnarzt morgen 14:30 1h" autocomplete="off" enterkeyhint="done"><span class="hint">Datum, Uhrzeit und Dauer werden erkannt und unten eingetragen.</span></label>`:''}
-  <label class="field"><span>Was?</span><input class="inp" id="fTitle" value="${esc(e.title)}" placeholder="Titel"></label>
-  <div class="field"><span>Farbe / Bereich</span><div class="chips">${CATS.map(c=>`<button class="chip cat cat-${c.id} ${e.cat===c.id?'on':''}" data-act="fCat" data-v="${c.id}">${c.name}</button>`).join('')}</div></div>
-  <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Datum</span><input class="inp" type="date" id="fDate" value="${e.date}"></label><label class="field grow"><span>Uhrzeit</span><input class="inp" type="time" id="fStart" value="${e.start||''}"></label></div>
-  <span class="hint" style="margin-top:-10px">Ohne Uhrzeit landet es als Aufgabe oben im Tag.</span>
-  <div class="field"><span>Dauer</span><div class="chips">${[15,30,45,60,90,120].map(m=>`<button class="chip ${e.dur===m?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}</div>
-    <div class="durrow"><label class="field"><span class="hint">Stunden</span><input class="inp num" type="number" inputmode="numeric" min="0" max="23" id="fDurH" value="${Math.floor(e.dur/60)}"></label>
-    <label class="field"><span class="hint">Minuten</span><input class="inp num" type="number" inputmode="numeric" min="0" max="59" step="5" id="fDurM" value="${e.dur%60}"></label>
-    <label class="field"><span class="hint">Endet um</span><input class="inp" type="time" id="fEnd" value="${e.start?fromMin((toMin(e.start)+e.dur)%1440):''}"></label></div></div>
-  ${e.start?`<div class="field"><span>Schnell verschieben</span><div class="chips">${[[-15,'−15 Min'],[15,'+15 Min'],[30,'+30 Min'],[60,'+1 Std']].map(([v,l])=>`<button class="chip" data-act="fShift" data-v="${v}">${l}</button>`).join('')}</div></div>`:''}
-  <div class="field"><span>Darf der Termin verschoben werden?</span><div class="chips"><button class="chip ${isFixed(e)?'on':''}" data-act="fFix" data-v="1">Fest (z. B. Arzt)</button><button class="chip ${isFixed(e)?'':'on'}" data-act="fFix" data-v="0">Flexibel</button></div><span class="hint">Flexible Einträge schiebe ich automatisch mit, wenn sich dein Tag verändert.</span></div>
-  <div class="field"><span>Erinnerung vorher</span><div class="chips">${[[null,'Keine'],[0,'Zum Start'],[5,'5 Min'],[15,'15 Min'],[30,'30 Min'],[60,'1 Std'],[120,'2 Std']].map(([v,l])=>`<button class="chip ${e.remind===v?'on':''}" data-act="fRem" data-v="${v}">${l}</button>`).join('')}</div></div>
-  <div class="field"><span>Mini-Schritte</span><div class="steps">${e.steps.map((s,i)=>`<div class="step"><button class="check ${s.done?'on':''} cat-${e.cat}" data-act="fStepDone" data-i="${i}" aria-label="Schritt erledigt">${s.done?ICON.tick:''}</button><input class="inp grow" data-step="${i}" value="${esc(s.t)}"><button class="x" data-act="fStepDel" data-i="${i}" aria-label="Schritt löschen">×</button></div>`).join('')}
-    <div class="step"><input class="inp grow" id="fNewStep" placeholder="Nächster kleiner Schritt" enterkeyhint="enter"><button class="btn small ghost" data-act="fStepAdd">Dazu</button></div></div></div>
-  <div class="row"><button class="btn grow" data-act="fSave">Speichern</button>${a.isNew?'':`<button class="btn ghost" data-act="fFocus">Fokus starten</button>`}</div>
-  ${a.isNew?'':`<button class="btn danger" data-act="fDel" id="fDel">Löschen</button>`}
-  <button class="btn ghost" data-act="closeSheet">Abbrechen</button>`;
+    a._init=true; a.isNew=!e; a.open={steps:!!(e&&e.steps&&e.steps.length)}; }
+  const e=draft, o=a.open;
+  const remTxt=e.remind==null?'Keine':e.remind===0?'Zum Start':(e.remind>=60?`${e.remind/60} Std`:`${e.remind} Min`)+' vorher';
+  const sd=e.steps.filter(x=>x.done).length;
+  const x=(key,k,label,sum,inner)=>`<div class="xrow ${o[key]?'open':''}" style="--k:var(${k})"><button class="xhead" data-act="fOpen" data-v="${key}" aria-expanded="${!!o[key]}"><span class="xi">${XI[key]}</span><span class="grow"><b>${label}</b><span class="hint">${sum}</span></span>${XI.chev}</button><div class="xbody" ${o[key]?'':'hidden'}>${inner}</div></div>`;
+  const durExact=![15,30,60,90].includes(e.dur);
+  return `<div class="sh-head"><h2>${a.isNew?'Neuer Eintrag':'Eintrag bearbeiten'}</h2><button class="iconbtn" data-act="closeSheet" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+
+  <section class="blockcard b1"><div class="bc-h"><span class="bc-n">1</span>Was steht an?</div>
+    <input class="inp big" id="fTitle" value="${esc(e.title)}" placeholder="${a.isNew?'z. B. Zahnarzt morgen 14:30':'Titel'}" autocomplete="off" enterkeyhint="done">
+    ${a.isNew?'<div class="parsed" id="fParsed"><span class="hint">Tipp: Tag, Uhrzeit und Dauer einfach mitschreiben, der Rest füllt sich selbst.</span></div>':''}
+  </section>
+
+  <section class="blockcard b2"><div class="bc-h"><span class="bc-n">2</span>Wann?</div>
+    <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Tag</span><input class="inp" type="date" id="fDate" value="${e.date}"></label><label class="field grow"><span>Uhrzeit</span><input class="inp" type="time" id="fStart" value="${e.start||''}"></label></div>
+    <div class="field"><span>Wie lange?</span><div class="chips">${[15,30,60,90].map(m=>`<button class="chip ${e.dur===m&&!o.dur?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}<button class="chip ${o.dur||durExact?'on':''}" data-act="fOpen" data-v="dur">${durExact&&!o.dur?dur(e.dur):'Genau …'}</button></div></div>
+    <div class="durrow" ${o.dur?'':'hidden'}><label class="field"><span class="hint">Stunden</span><input class="inp num" type="number" inputmode="numeric" min="0" max="23" id="fDurH" value="${Math.floor(e.dur/60)}"></label>
+      <label class="field"><span class="hint">Minuten</span><input class="inp num" type="number" inputmode="numeric" min="0" max="59" step="5" id="fDurM" value="${e.dur%60}"></label>
+      <label class="field"><span class="hint">Endet um</span><input class="inp" type="time" id="fEnd" value="${e.start?fromMin((toMin(e.start)+e.dur)%1440):''}"></label></div>
+    ${e.start&&!a.isNew?`<div class="field"><span>Verschieben</span><div class="chips">${[[-15,'−15 Min'],[15,'+15 Min'],[30,'+30 Min'],[60,'+1 Std']].map(([v,l])=>`<button class="chip" data-act="fShift" data-v="${v}">${l}</button>`).join('')}</div></div>`:''}
+    <span class="hint">Ohne Uhrzeit wird es eine Aufgabe für den Tag.</span>
+  </section>
+
+  <section class="blockcard b3"><div class="bc-h"><span class="bc-n">3</span>Welcher Bereich?</div>
+    <div class="catgrid">${CATS.map(c=>`<button class="catbtn cat-${c.id} ${e.cat===c.id?'on':''}" data-act="fCat" data-v="${c.id}"><i></i>${c.name}</button>`).join('')}</div>
+  </section>
+
+  <div class="extras"><span class="label">Extras · optional</span>
+  ${x('rem','--c3','Erinnerung',remTxt,`<div class="chips">${[[null,'Keine'],[0,'Zum Start'],[5,'5 Min'],[15,'15 Min'],[30,'30 Min'],[60,'1 Std'],[120,'2 Std']].map(([v,l])=>`<button class="chip ${e.remind===v?'on':''}" data-act="fRem" data-v="${v}">${l}</button>`).join('')}</div><span class="hint">Die Erinnerung kommt, solange die App geöffnet ist oder im Hintergrund läuft.</span>`)}
+  ${x('fix','--c2','Verschieben',isFixed(e)?'Fest, bleibt immer stehen':'Flexibel, darf mitrutschen',`<div class="chips"><button class="chip ${isFixed(e)?'on':''}" data-act="fFix" data-v="1">Fest (z. B. Arzt)</button><button class="chip ${isFixed(e)?'':'on'}" data-act="fFix" data-v="0">Flexibel</button></div><span class="hint">Flexible Einträge schiebe ich automatisch mit, wenn sich dein Tag verändert.</span>`)}
+  ${x('steps','--c6','Mini-Schritte',e.steps.length?`${sd} von ${e.steps.length} erledigt`:'Große Aufgabe in kleine Schritte teilen',`<div class="steps">${e.steps.map((st,i)=>`<div class="step"><button class="check ${st.done?'on':''} cat-${e.cat}" data-act="fStepDone" data-i="${i}" aria-label="Schritt erledigt">${st.done?ICON.tick:''}</button><input class="inp grow" data-step="${i}" value="${esc(st.t)}"><button class="x" data-act="fStepDel" data-i="${i}" aria-label="Schritt löschen">×</button></div>`).join('')}
+      <div class="step"><input class="inp grow" id="fNewStep" placeholder="Nächster kleiner Schritt" enterkeyhint="enter"><button class="btn small ghost" data-act="fStepAdd">Dazu</button></div></div>`)}
+  </div>
+
+  ${a.isNew?'':`<div class="row"><button class="btn ghost grow" data-act="fFocus">Fokus starten</button><button class="btn danger" data-act="fDel" id="fDel">Löschen</button></div>`}
+
+  <div class="savebar"><div class="preview cat-${e.cat}" id="fPreview">${esc(evPreview(e))}</div><button class="btn savebtn" data-act="fSave">${a.isNew?'Eintragen':'Speichern'}</button></div>`;
 }
 function readEventForm(){
   const v=id=>{ const el=document.getElementById(id); return el?el.value:null; };
@@ -914,19 +974,25 @@ function readProj(){ const g=id=>document.getElementById(id)?.value;
 let sampleNs=null;
 function bindSheet(top){
   if(top.type==='event'){
+    const A0=top.args;
+    const pv=()=>{ const t={...draft, date:$('#fDate').value||draft.date, start:$('#fStart').value, dur:(+$('#fDurH').value||0)*60+(+$('#fDurM').value||0)||draft.dur}; $('#fPreview').textContent=evPreview(t); };
     const syncEnd=()=>{ const st=$('#fStart').value, t=(+$('#fDurH').value||0)*60+(+$('#fDurM').value||0);
-      $('#fEnd').value = st&&t>0 ? fromMin((toMin(st)+t)%1440) : '';
-      document.querySelectorAll('[data-act="fDur"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===t)); };
-    ['fDurH','fDurM','fStart'].forEach(id=>$('#'+id).addEventListener('input',syncEnd));
+      $('#fEnd').value = st&&t>0 ? fromMin((toMin(st)+t)%1440) : ''; pv();
+      if(!top.args.open.dur) document.querySelectorAll('[data-act="fDur"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===t)); };
+    ['fDurH','fDurM','fStart','fDate'].forEach(id=>$('#'+id).addEventListener('input',syncEnd));
     $('#fEnd').addEventListener('change',()=>{ const st=$('#fStart').value, en=$('#fEnd').value; if(!st||!en) return; let t=toMin(en)-toMin(st); if(t<=0) t+=1440; $('#fDurH').value=Math.floor(t/60); $('#fDurM').value=t%60; syncEnd(); });
-    const q=$('#fQuick');
-    if(q){ q.addEventListener('input',()=>{ const r=parseQuick(q.value); readEventForm();
-        draft.title=r.title; if(r.date) draft.date=r.date; if(r.start) draft.start=r.start; if(r.dur) draft.dur=r.dur; if(r.cat) draft.cat=r.cat;
-        $('#fTitle').value=draft.title; $('#fDate').value=draft.date; $('#fStart').value=draft.start||''; $('#fDurH').value=Math.floor(draft.dur/60); $('#fDurM').value=draft.dur%60; syncEnd();
-        document.querySelectorAll('[data-act="fDur"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===draft.dur));
-        document.querySelectorAll('[data-act="fCat"]').forEach(b=>b.classList.toggle('on',b.dataset.v===draft.cat)); });
-      q.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); $('#fTitle').focus(); } });
-      if(!top.args._focused){ top.args._focused=true; setTimeout(()=>q.focus(),60); } }
+    const ti=$('#fTitle');
+    if(A0.isNew){
+      ti.addEventListener('input',()=>{ const r=parseQuick(ti.value), chips=[];
+        if(r.date){ draft.date=r.date; $('#fDate').value=r.date; chips.push(r.date===todayS()?'Heute':r.date===addDays(todayS(),1)?'Morgen':fmtDay(r.date,{weekday:'short',day:'numeric',month:'short'})); }
+        if(r.start){ draft.start=r.start; $('#fStart').value=r.start; chips.push(r.start+' Uhr'); }
+        if(r.dur){ draft.dur=r.dur; $('#fDurH').value=Math.floor(r.dur/60); $('#fDurM').value=r.dur%60; chips.push(dur(r.dur)); }
+        if(r.cat && !A0.catTouched && r.cat!==draft.cat){ draft.cat=r.cat; document.querySelectorAll('.catbtn').forEach(b=>b.classList.toggle('on',b.dataset.v===r.cat)); $('#fPreview').className='preview cat-'+r.cat; }
+        $('#fParsed').innerHTML = chips.length ? `<span class="hint">Erkannt:</span>${chips.map(c=>`<span class="pchip">${esc(c)}</span>`).join('')}` : '<span class="hint">Tipp: Tag, Uhrzeit und Dauer einfach mitschreiben, der Rest füllt sich selbst.</span>';
+        syncEnd(); });
+      if(!A0._focused){ A0._focused=true; setTimeout(()=>ti.focus(),60); }
+    }
+    ti.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); ti.blur(); } });
     const ns=$('#fNewStep'); ns&&ns.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); act('fStepAdd'); setTimeout(()=>$('#fNewStep')?.focus(),20); } });
   }
   if(top.type==='mig'){ const r=$('#mInt'); r.addEventListener('input',()=>{ const v=+r.value; const el=$('#mIntV'); el.textContent=v; el.style.background=v>=8?'var(--s1)':v>=5?'var(--s2)':'var(--s3)'; }); }
@@ -998,7 +1064,8 @@ const A = {
   missTomorrow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.date=addDays(e.date,1); save('events'); render(); toast('Auf morgen verschoben'); },
   missAck(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.missAck=true; save('events'); render(); },
   scrim(el,ev){ if(ev.target===el) closeSheet(); },
-  fCat(el){ readEventForm(); draft.cat=el.dataset.v; renderSheet(); },
+  fCat(el){ readEventForm(); draft.cat=el.dataset.v; ui.sheets[ui.sheets.length-1].args.catTouched=true; renderSheet(); },
+  fOpen(el){ readEventForm(); const o=ui.sheets[ui.sheets.length-1].args.open; o[el.dataset.v]=!o[el.dataset.v]; renderSheet(); },
   fDur(el){ readEventForm(); draft.dur=+el.dataset.v; renderSheet(); },
   fShift(el){ readEventForm(); if(!draft.start) return; draft.start=fromMin(Math.min(1435,Math.max(0,toMin(draft.start)+(+el.dataset.v)))); renderSheet(); },
   fFix(el){ readEventForm(); draft.fixed=el.dataset.v==='1'; renderSheet(); },
@@ -1006,7 +1073,7 @@ const A = {
   fStepAdd(){ readEventForm(); renderSheet(); },
   fStepDel(el){ readEventForm(); draft.steps.splice(+el.dataset.i,1); renderSheet(); },
   fStepDone(el){ readEventForm(); const s=draft.steps[+el.dataset.i]; s.done=!s.done; renderSheet(); if(s.done) hype('step'); },
-  fSave(){ readEventForm(); if(!draft.title){ $('#fTitle').focus(); $('#fTitle').placeholder='Bitte einen Titel eingeben'; return; }
+  fSave(){ readEventForm(); { const A0=ui.sheets[ui.sheets.length-1].args; if(A0.isNew){ const r=parseQuick(draft.title); if(r.title && (r.date||r.start||r.dur)) draft.title=r.title; } } if(!draft.title){ $('#fTitle').focus(); $('#fTitle').placeholder='Bitte einen Titel eingeben'; return; }
     const i=S.events.findIndex(x=>x.id===draft.id), isNew=i<0, old=isNew?null:S.events[i];
     if(isNew) S.events.push(draft); else S.events[i]=draft;
     save('events'); const sv=draft; closeSheet();
