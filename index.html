@@ -266,6 +266,8 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .crest{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-on);display:grid;place-items:center;flex:none}
 .crest svg{width:16px;height:16px}
 .hb-top{display:flex;align-items:center;gap:8px}
+.blk.ghost{background:color-mix(in srgb,var(--c) 14%,var(--bg));color:var(--ink);border:2.5px dashed var(--c);box-shadow:none;z-index:1}
+.blk.ghost small{opacity:1;color:var(--ink-2)}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -506,8 +508,8 @@ function viewDay(){
   } else {
     const ut=untimed(list);
     if(ut.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Aufgaben ohne Uhrzeit</span><span class="cnt num">${ut.length}</span></div><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
-    const tm=timed(list);
-    if(tm.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${timeline(tm,isToday)}</div>`;
+    const tm=timed(list), gh=ghostSlots(d,list);
+    if(tm.length||gh.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${gh.length?`<span class="hint">Gestrichelt: Vorschläge für deine Aufgaben ohne Uhrzeit. Tipp drauf, um sie dort einzuplanen.</span>`:''}${timeline(tm,isToday,gh)}</div>`;
   }
   if(isToday && needsBackup()) h += `<div class="card row" style="flex-wrap:nowrap"><div class="grow"><b>Zeit für eine Sicherung</b><br><span class="hint">Damit nichts verloren geht, wenn das Handy kaputtgeht oder du wechselst.</span></div><button class="btn small" data-act="exportData">Sichern</button></div>`;
   if(hasExamples()) h += `<button class="pillbtn" style="align-self:center" data-act="clearExamples">Beispiele entfernen</button>`;
@@ -539,10 +541,28 @@ function taskRow(e){
     <button class="t" data-act="openEvent" data-id="${e.id}"><b>${esc(e.title)}</b><span class="hint">${e.start?`${e.start}–${fromMin(endMin(e))} · `:''}${CATS.find(c=>c.id===e.cat)?.name||''}${stepsInfo(e)?' · '+stepsInfo(e):''}</span></button></div>`;
 }
 
-function timeline(tm,isToday){
+/* Suggest free slots for untimed tasks (first fit, 5 min buffer) */
+function ghostSlots(d,list){
+  const t=todayS(); if(d<t) return [];
+  const open=untimed(list).filter(e=>!e.done); if(!open.length) return [];
+  const BUF=5, dayEnd=22*60;
+  let from = d===t ? Math.ceil((nowMin()+BUF)/5)*5 : 8*60;
+  const busy=timed(list).map(e=>[toMin(e.start),endMin(e)]);
+  const out=[];
+  for(const e of open){
+    const du=e.dur||30; let st=Math.max(from,0), g=0, h;
+    const hits=x=>busy.filter(([a,b])=>x<b+BUF && x+du+BUF>a);
+    while((h=hits(st)).length && g++<80) st=Math.ceil((Math.max(...h.map(z=>z[1]))+BUF)/5)*5;
+    if(st+du>dayEnd) continue;
+    out.push({e,start:st}); busy.push([st,st+du]);
+  }
+  return out;
+}
+function timeline(tm,isToday,gh=[]){
   const PX=1.1;
   let sh=7, eh=22;
   tm.forEach(e=>{ sh=Math.min(sh,Math.floor(toMin(e.start)/60)); eh=Math.max(eh,Math.ceil(endMin(e)/60)); });
+  gh.forEach(g=>{ sh=Math.min(sh,Math.floor(g.start/60)); eh=Math.max(eh,Math.ceil((g.start+(g.e.dur||30))/60)); });
   if(isToday){ const n=nowMin(); sh=Math.min(sh,Math.floor(n/60)); eh=Math.max(eh,Math.ceil((n+1)/60)); }
   eh=Math.min(eh,24);
   const top=m=>(m-sh*60)*PX, H=(eh-sh)*60*PX;
@@ -565,6 +585,9 @@ function timeline(tm,isToday){
     h+=`<button class="blk cat-${e.cat} ${e.done?'done':''}" style="top:${top(toMin(e.start))+1}px;height:${ht-2}px;left:calc(${p.col*w}% + 6px);width:calc(${w}% - 8px)" data-act="openEvent" data-id="${e.id}">
       <b>${esc(e.title)}</b>${ht>44?`<small class="num">${e.start}–${fromMin(endMin(e))}${stepsInfo(e)?' · '+stepsInfo(e):''}</small>`:''}</button>`;
   });
+  gh.forEach(g=>{ const e=g.e, ht=Math.max((e.dur||30)*PX,30);
+    h+=`<button class="blk ghost cat-${e.cat}" style="top:${top(g.start)+1}px;height:${ht-2}px;left:6px;width:calc(100% - 8px)" data-act="ghostPlace" data-id="${e.id}" data-v="${fromMin(g.start)}" aria-label="${esc(e.title)} um ${fromMin(g.start)} einplanen">
+      <b>${esc(e.title)}</b>${ht>44?`<small class="num">Vorschlag ${fromMin(g.start)}–${fromMin(g.start+(e.dur||30))} · tippen zum Einplanen</small>`:`<small class="num">${fromMin(g.start)} · tippen</small>`}</button>`; });
   if(isToday) h+=`<div class="nowline" style="top:${top(nowMin())}px"></div>`;
   return h+'</div>';
 }
@@ -1131,6 +1154,7 @@ const A = {
   setSleep(el){ const d=el.dataset.d; const z=S.sleep[d]||(S.sleep[d]={}); const k=el.dataset.k, v=+el.dataset.v; z[k]=z[k]===v?undefined:v; save('sleep'); renderSheet(); render(); },
   sleepDone(){ const d=ui.sheets[ui.sheets.length-1].args.date; closeSheet(); if(S.sleep[d]&&S.sleep[d].q) hype(sleepPoor(d)?'sleepbad':'sleepgood'); },
   mSleep(){ readMig(); openSheet('sleep',{date:mdraft.date}); },
+  ghostPlace(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.start=el.dataset.v; save('events'); render(); toast(`Eingeplant um ${e.start}`); hype('add'); },
   showTomorrow(){ openSheet('tomorrow',{}); },
   tomorrowDone(){ closeSheet(); if(new Date().getHours()>=17 && evOn(addDays(todayS(),1)).length) hype('night'); },
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
