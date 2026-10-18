@@ -283,6 +283,11 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .waitbar span,.hglass{position:relative;width:24px;height:24px;border-radius:50%;background:var(--c);color:var(--on);display:grid;place-items:center;flex:none}
 .hglass{width:30px;height:30px}
 .waitbar svg,.hglass svg{width:14px;height:14px}
+nav.tabs{overflow:visible}
+nav.tabs button.tmr{color:var(--ink);position:relative}
+nav.tabs button.tmr .knob{width:60px;height:60px;margin-top:-36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FF9CC8,#F2559A 70%);color:#fff;border:4px solid var(--surface);box-shadow:0 6px 16px rgba(242,85,154,.45),inset 0 -3px 0 rgba(0,0,0,.12)}
+nav.tabs button.tmr .knob svg{width:28px;height:28px;stroke:#fff}
+nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -519,7 +524,7 @@ function softRender(){
 }
 function renderTabs(){
   const t=[['day','Tag'],['month','Monat'],['tomorrow','Morgen'],['focus','Fokus'],['tools','Tools']];
-  $('#tabs').innerHTML = t.map(([id,n])=>id==='tomorrow'?`<button data-act="showTomorrow" aria-label="Was steht morgen an?">${ICON.tomorrow}${n}</button>`:`<button class="${ui.tab===id?'on':''}" data-act="tab" data-v="${id}" aria-label="${n}">${ICON[id]}${n}</button>`).join('');
+  $('#tabs').innerHTML = t.map(([id,n])=>id==='tomorrow'?`<button class="tmr" data-act="showTomorrow" aria-label="Was steht morgen an?"><span class="knob">${ICON.tomorrow}</span>${n}</button>`:`<button class="${ui.tab===id?'on':''}" data-act="tab" data-v="${id}" aria-label="${n}">${ICON[id]}${n}</button>`).join('');
 }
 
 function header(title, sub, right=''){
