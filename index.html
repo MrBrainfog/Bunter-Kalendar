@@ -181,6 +181,7 @@ header.top .sub{display:block;font-family:var(--f-body);font-size:14px;font-weig
 textarea.inp{min-height:84px;resize:vertical}
 .quick{border-color:var(--accent);border-width:2px}
 .hint{font-size:13px;color:var(--ink-2)}
+.field>span.hint{font-weight:400}
 .steps{display:flex;flex-direction:column;gap:6px}
 .step{display:flex;gap:10px;align-items:center}
 .step .inp{min-height:42px;padding:8px 10px}
@@ -205,6 +206,28 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .alert .btn{background:var(--on,#fff);color:var(--c,var(--accent))}
 .alert .btn.ghost{background:transparent;color:inherit;border:2px solid currentColor}
 .toast{position:fixed;z-index:31;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;max-width:calc(100% - 32px)}
+.durrow{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+.durrow .inp{min-width:0}
+/* Valka */
+.hype{position:fixed;z-index:25;left:max(10px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(66px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:4px;max-width:470px}
+.hype-av{width:104px;flex:none;filter:drop-shadow(0 8px 12px rgba(0,0,0,.28))}
+.hype-av svg{width:100%;height:auto;display:block}
+.hype-bubble{position:relative;background:var(--surface);color:var(--ink);border:2.5px solid var(--ink);border-radius:18px 18px 18px 4px;padding:10px 14px;margin-bottom:34px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;min-width:0}
+.hype-bubble small{font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.hype-bubble span{font-weight:700;font-size:16px;line-height:1.3}
+.valka .m-shout{display:none}
+.valka.shout .m-shout{display:inline}
+.valka.shout .m-grin{display:none}
+.valka .spark{opacity:0}
+.valka-hero{width:min(60vw,220px);margin:0 auto}
+@media (prefers-reduced-motion:no-preference){
+  .hype .hype-av{animation:vjump .5s cubic-bezier(.3,1.6,.5,1)}
+  .hype .hype-bubble{animation:vpop .35s .12s ease-out both}
+  .hype .spark{animation:vspark .9s .15s ease-out}
+  @keyframes vjump{0%{transform:translateY(60px) scale(.8)}100%{transform:none}}
+  @keyframes vpop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes vspark{0%{opacity:0;transform:scale(.4)}30%{opacity:1}100%{opacity:0;transform:scale(1.3)}}
+}
 .empty{text-align:center;padding:22px 12px;display:flex;flex-direction:column;gap:10px;align-items:center}
 .empty h3{font-size:20px}
 @media (prefers-reduced-motion:no-preference){
@@ -221,6 +244,7 @@ nav.tabs button.on svg{stroke:var(--accent)}
 <nav class="tabs"><div class="in" id="tabs"></div></nav>
 <div id="sheetRoot"></div>
 <div id="alertRoot"></div>
+<div id="hypeRoot"></div>
 
 <script>
 (() => {
@@ -367,6 +391,9 @@ function viewDay(){
   else if(isToday && hr>=17 && !S.meta.planned[addDays(d,1)]) h += nudge(addDays(d,1),'Morgen schon geplant?','Kurz vorplanen macht den Morgen leichter.','Morgen planen');
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
   if(isToday) h += nowCard(list);
+  if(isToday){ const n=nowMin(); const miss=timed(list).find(e=>!e.done && !e.missAck && endMin(e)<=n);
+    if(miss) h += `<div class="card stack cat-${miss.cat}" style="gap:12px;border:2.5px solid var(--c)"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="swatch" style="width:14px;height:14px;margin-top:4px"></span><div class="grow"><span class="label">Verpasst oder vergessen?</span><br><b style="font-size:18px">${esc(miss.title)}</b> <span class="hint num">${miss.start}–${fromMin(endMin(miss))}</span></div></div>
+      <div class="row"><button class="btn small" data-act="missNow" data-id="${miss.id}">Jetzt nachholen</button><button class="btn small ghost" data-act="missDone" data-id="${miss.id}">War erledigt</button><button class="btn small ghost" data-act="missTomorrow" data-id="${miss.id}">Morgen</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button></div></div>`; }
   if(S.meta.focusOf[d]) h += `<div class="focuschip"><div class="grow"><span class="label">Wichtigste Sache</span><b>${esc(S.meta.focusOf[d])}</b></div><button class="pillbtn" data-act="plan" data-v="${d}">Ändern</button></div>`;
   if(isToday && !S.mood[d]) h += `<div class="card stack"><div class="row"><b class="grow">Kurzer Check-in: Wie geht's dir?</b></div>${scale('mood',null,MOOD)}${scale('energy',null,ENERGY)}</div>`;
   if(!list.length){
@@ -496,7 +523,7 @@ function paintTimer(){
 function tickTimer(){
   if(T.endAt && tLeft()<=0){
     T.endAt=null; T.remaining=0; ls.set('timer',T); stopTick();
-    beep(3); vibe([300,150,300]);
+    beep(3); vibe([300,150,300]); setTimeout(()=>hype('focus'),400);
     showAlert({cat:'pause', title:'Fokuszeit vorbei!', text:'Gut gemacht. Steh kurz auf, trink etwas.', actions:[['Pause 5 Min','tBreak'],['OK','closeAlert']]});
   }
   if(ui.tab==='focus') paintTimer();
@@ -508,6 +535,7 @@ function stopTick(){ clearInterval(tInt); tInt=null; try{ wake?.release(); }catc
 const TOOLS = [
   {id:'migraine', name:'Migränetagebuch', cat:'gesund', summary(){ const n=S.migraine.filter(x=>x.date>=addDays(todayS(),-29)).length; return n?`${n} Tage in den letzten 30`:'Attacken festhalten, Auslöser erkennen'; }, view:viewMigraine},
   {id:'projects', name:'Projekte', cat:'arbeit', summary(){ return S.projects.length?`${S.projects.length} Projekte · Ø ${Math.round(S.projects.reduce((a,p)=>a+p.progress,0)/S.projects.length)} %`:'Fortschritt und Notizen'; }, view:viewProjects},
+  {id:'valka', name:'Valka', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
   {id:'backup', name:'Sichern & Übertragen', cat:'termin', summary(){ const b=ls.get('lastBackup',null); return b?`Letzte Sicherung: ${fmtDay(b,{day:'numeric',month:'short'})}`:'Für ein neues Handy oder als Absicherung'; }, view:viewBackup},
   {id:'mood', name:'Stimmung & Energie', cat:'freizeit', summary(){ const m=S.mood[todayS()]; return m?`Heute: ${MOOD[(m.mood||3)-1]}, Energie ${ENERGY[(m.energy||3)-1]}`:'Täglicher Kurz-Check-in'; }, view:viewMood},
 ];
@@ -581,6 +609,109 @@ function sysNotify(title,body){
     navigator.serviceWorker?.ready.then(r=>r.showNotification(title,{body,icon:'icon-192.png',badge:'icon-192.png',tag:title,vibrate:[200,100,200]})).catch(()=>{}); }catch(e){}
 }
 
+/* ---------- Valka: original warrior avatar ---------- */
+const VALKA = `<svg viewBox="0 0 120 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g class="spark" style="transform-origin:60px 60px">
+    <path d="M10 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#FFC53D"/>
+    <path d="M106 18 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z" fill="#F2542D"/>
+    <path d="M104 62 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2z" fill="#22BFAA"/>
+  </g>
+  <path d="M12 132 C14 100 32 86 60 86 C88 86 106 100 108 132Z" fill="#0F6E68"/>
+  <path d="M30 76 C24 84 22 96 25 108 C27 116 23 122 19 126 C29 124 34 116 33 106 C32 96 34 86 38 80Z" fill="#2A1B16"/>
+  <circle cx="24" cy="118" r="3.4" fill="#C8D0DA"/>
+  <rect x="51" y="70" width="18" height="22" rx="6" fill="#B97A50"/>
+  <path d="M28 132 C30 106 42 94 60 94 C78 94 90 106 92 132Z" fill="#C99230"/>
+  <path d="M42 132 C44 112 50 102 60 100 C70 102 76 112 78 132Z" fill="#A87420"/>
+  <path d="M60 104 l7 9 -7 9 -7 -9z" fill="#22BFAA" stroke="#0F6E68" stroke-width="1.5"/>
+  <ellipse cx="29" cy="100" rx="19" ry="12" fill="#E3B341" stroke="#8A6418" stroke-width="2"/>
+  <ellipse cx="91" cy="100" rx="19" ry="12" fill="#E3B341" stroke="#8A6418" stroke-width="2"/>
+  <path d="M14 101 Q29 94 44 101" fill="none" stroke="#8A6418" stroke-width="1.6"/>
+  <path d="M76 101 Q91 94 106 101" fill="none" stroke="#8A6418" stroke-width="1.6"/>
+  <circle cx="22" cy="98" r="1.8" fill="#8A6418"/><circle cx="36" cy="98" r="1.8" fill="#8A6418"/>
+  <circle cx="84" cy="98" r="1.8" fill="#8A6418"/><circle cx="98" cy="98" r="1.8" fill="#8A6418"/>
+  <ellipse cx="38" cy="54" rx="4" ry="6" fill="#B97A50"/><ellipse cx="82" cy="54" rx="4" ry="6" fill="#B97A50"/>
+  <ellipse cx="60" cy="52" rx="22" ry="25" fill="#C98A5E"/>
+  <path d="M37 52 C33 26 48 17 62 18 C80 19 90 31 84 54 C82 44 77 37 70 34 C64 41 50 44 41 45 C39 47 38 50 37 52Z" fill="#2A1B16"/>
+  <path d="M41 41 Q60 31 81 40" fill="none" stroke="#C8D0DA" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M61 31.5 l3.5 4 -3.5 4 -3.5 -4z" fill="#22BFAA"/>
+  <path d="M44 47.5 L56 51" stroke="#2A1B16" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M76 47.5 L64 51" stroke="#2A1B16" stroke-width="3.4" stroke-linecap="round"/>
+  <ellipse cx="51" cy="55.5" rx="3.2" ry="3.6" fill="#1A1D2B"/><ellipse cx="69" cy="55.5" rx="3.2" ry="3.6" fill="#1A1D2B"/>
+  <circle cx="52.2" cy="54.2" r="1.1" fill="#fff"/><circle cx="70.2" cy="54.2" r="1.1" fill="#fff"/>
+  <path d="M64 62 L76 59.5" stroke="#22BFAA" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M65 66 L76 63.5" stroke="#22BFAA" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M44 58 L46.5 64" stroke="#9E6440" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M59 57 Q57 63 60.5 63.5" fill="none" stroke="#9E6440" stroke-width="1.6" stroke-linecap="round"/>
+  <g class="m-grin"><path d="M50.5 68 Q60 77.5 70 67.5 Q60 71.5 50.5 68Z" fill="#fff" stroke="#7A3A28" stroke-width="1.8" stroke-linejoin="round"/></g>
+  <g class="m-shout"><path d="M51 67 Q60 82 69 67 Q60 69.5 51 67Z" fill="#5A1E18" stroke="#7A3A28" stroke-width="1.8" stroke-linejoin="round"/><path d="M53.5 68.2 Q60 70 66.5 68.2 L66 70 Q60 71.6 54 70Z" fill="#fff"/><ellipse cx="60" cy="75.5" rx="4.2" ry="2.4" fill="#E06A5A"/></g>
+</svg>`;
+const VALKA_LINES = {
+  add:['Eingetragen! Ein Plan ist schon der halbe Sieg.','Notiert. Jetzt weiß der Tag, wer hier das Sagen hat!','Gut so! Wer plant, schlägt das Chaos.','Steht im Plan. Dein Kopf darf jetzt loslassen.','Ha! Noch ein Feldzug auf der Karte!'],
+  done:['HA! Erledigt! So wird gekämpft!','Abgehakt! Nicht nachlassen, weiter!','Treffer! Nächstes Ziel anvisieren!','Siehst du? Du schaffst mehr, als du denkst!','Sieg! Gönn dir einen Moment Stolz.','Das war stark. Ich hab nichts anderes erwartet!'],
+  alldone:['ALLES erledigt! Heute hast du das Schlachtfeld beherrscht!','Kein Punkt mehr offen. Legendär! Jetzt wird ausgeruht.'],
+  step:['Ein Schritt! Genau so wird ein Berg flach.','Weiter so, Schritt für Schritt!','Kleiner Schritt, echter Fortschritt!','Vorwärts! Der nächste Schritt wartet schon.'],
+  focus:['Fokuszeit überstanden! Respekt!','Das war Disziplin. Jetzt kurz durchatmen!','Durchgehalten! So trainiert man den Fokus.'],
+  plan:['Schlachtplan steht! Jetzt holen wir uns den Tag.','Ein Tag mit Plan ist ein gewonnener Tag. Los!'],
+  shift:['Plan angepasst. Flexibel bleiben ist auch Stärke!','Neu aufgestellt! Ein Rückschlag ist kein Rückzug.','Kein Drama. Wir kämpfen einfach von hier aus weiter!'],
+  mig:['Gut, dass du es festhältst. Ruh dich aus, ich halte Wache.','Notiert. Heute darfst du langsam machen, das ist auch Kampfgeist.'],
+  proj:['Fortschritt! Das Projekt zittert schon vor dir.','Weiter vorgerückt! So erobert man ein Projekt.'],
+  test:['Bereit, wenn du es bist! Ich feuere dich bei jedem Sieg an.']
+};
+let hypeT=null, lastLine='';
+function hype(kind){
+  if(S.meta.hype===false) return;
+  const pool=VALKA_LINES[kind]||VALKA_LINES.done; let line=pool[Math.floor(Math.random()*pool.length)];
+  if(line===lastLine && pool.length>1) line=pool[(pool.indexOf(line)+1)%pool.length]; lastLine=line;
+  const shout=['done','alldone','focus','plan','proj'].includes(kind);
+  $('#hypeRoot').innerHTML=`<div class="hype" role="status" data-act="hypeClose"><div class="hype-av valka ${shout?'shout':''}">${VALKA}</div><div class="hype-bubble"><small>Valka</small><span>${esc(line)}</span></div></div>`;
+  vibe(kind==='alldone'?[80,60,80,60,160]:40);
+  clearTimeout(hypeT); hypeT=setTimeout(()=>{ $('#hypeRoot').innerHTML=''; }, kind==='alldone'?6000:4200);
+}
+function viewValka(){
+  const on=S.meta.hype!==false;
+  return `<header class="top">${back()}<h1>Valka<span class="sub">Deine Kriegerin für mehr Antrieb</span></h1></header><div class="stack">
+  <div class="card stack" style="align-items:center;text-align:center"><div class="valka-hero valka shout">${VALKA}</div>
+  <p style="margin:0;font-weight:700;font-size:17px">„Ich bin Valka. Jedes Mal, wenn du etwas einträgst oder abhakst, bin ich da. Und ich werde laut.“</p></div>
+  <div class="field"><span>Valka anzeigen</span><div class="chips"><button class="chip ${on?'on':''}" data-act="hypeSet" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="hypeSet" data-v="0">Aus</button></div></div>
+  <button class="btn" data-act="hypeTest">Feuer mich an!</button>
+  <p class="hint">Valka meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Tagesplan und wenn du deinen Tag neu sortierst. Tipp auf sie, um sie wegzuschicken.</p></div>`;
+}
+
+/* ---------- rescheduling ---------- */
+const isFixed = e => e.fixed ?? (e.cat==='termin' || e.cat==='gesund');
+function planShift(id, buf){
+  const a=S.events.find(x=>x.id===id); if(!a || !a.start) return {changes:[],conflicts:[]};
+  const day=timed(evOn(a.date)).filter(x=>!x.done && x.id!==a.id);
+  const aS=toMin(a.start), aE=endMin(a);
+  const conflicts=day.filter(x=>isFixed(x) && aS<endMin(x) && aE>toMin(x.start));
+  const busy=[...day.filter(isFixed).map(x=>[toMin(x.start),endMin(x)]),[aS,aE]];
+  const hits=(st,d)=>busy.filter(([b0,b1])=>st<b1 && st+d>b0);
+  const changes=[]; let cursor=aE+buf;
+  const flex=day.filter(x=>!isFixed(x) && endMin(x)>aS).sort((p,q)=>toMin(p.start)-toMin(q.start));
+  for(const x of flex){
+    const d=x.dur||30; let st=toMin(x.start);
+    if(!hits(st,d).length){ busy.push([st,st+d]); continue; }
+    st=Math.ceil(Math.max(st,cursor)/5)*5;
+    let g=0, h; while((h=hits(st,d)).length && g++<60) st=Math.ceil((Math.max(...h.map(z=>z[1]))+buf)/5)*5;
+    if(st+d>23*60) changes.push({x,from:x.start,to:x.start,toDate:addDays(x.date,1)});
+    else { changes.push({x,from:x.start,to:fromMin(st)}); busy.push([st,st+d]); cursor=st+d+buf; }
+  }
+  return {changes,conflicts};
+}
+function offerShift(id){ const p=planShift(id,5); if(p.changes.length||p.conflicts.length){ openSheet('shift',{id,buf:5}); return true; } return false; }
+function sheetShift(a){
+  const ev=S.events.find(x=>x.id===a.id); if(!ev) return '<button class="btn" data-act="closeSheet">Schließen</button>';
+  const p=planShift(a.id,a.buf);
+  return `<h2>Tag anpassen?</h2>
+  <p style="margin:0"><b>${esc(ev.title)}</b> liegt jetzt bei <b class="num">${ev.start}–${fromMin(endMin(ev))}</b>.${p.changes.length?' Damit sich nichts überschneidet, schlage ich vor:':''}</p>
+  ${p.conflicts.length?`<div class="card" style="border:2px solid var(--c4)"><b>Achtung:</b> Das überschneidet sich mit festen Terminen: ${p.conflicts.map(x=>`${esc(x.title)} (${x.start})`).join(', ')}. Die verschiebe ich nicht.</div>`:''}
+  ${p.changes.length?`<div class="tasks">${p.changes.map(c=>`<div class="task cat-${c.x.cat}"><span class="swatch" style="width:14px;height:14px"></span><div class="grow"><b>${esc(c.x.title)}</b><span class="hint num" style="display:block"><s>${c.from}</s> → <b>${c.toDate?'morgen, '+c.to:c.to}</b></span></div></div>`).join('')}</div>
+  <div class="field"><span>Puffer zwischen den Einträgen</span><div class="chips">${[0,5,10,15].map(b=>`<button class="chip ${a.buf===b?'on':''}" data-act="shBuf" data-v="${b}">${b} Min</button>`).join('')}</div></div>
+  <button class="btn" data-act="shApply">Vorschlag übernehmen</button>
+  <button class="btn ghost" data-act="closeSheet">Nur diesen Eintrag ändern</button>`:'<button class="btn" data-act="closeSheet">Verstanden</button>'}
+  <span class="hint">Feste Termine werden nie verschoben. Das stellst du pro Eintrag ein.</span>`;
+}
+
 /* ---------- sheets ---------- */
 function openSheet(type,args={}){ ui.sheets.push({type,args}); renderSheet(); }
 function closeSheet(){ ui.sheets.pop(); renderSheet(); render(); }
@@ -588,7 +719,7 @@ function renderSheet(){
   const root=$('#sheetRoot'); const top=ui.sheets[ui.sheets.length-1];
   if(!top){ root.innerHTML=''; document.body.style.overflow=''; return; }
   document.body.style.overflow='hidden';
-  const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj}[top.type];
+  const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj,shift:sheetShift}[top.type];
   root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
   bindSheet(top);
 }
@@ -605,7 +736,12 @@ function sheetEvent(a){
   <div class="field"><span>Farbe / Bereich</span><div class="chips">${CATS.map(c=>`<button class="chip cat cat-${c.id} ${e.cat===c.id?'on':''}" data-act="fCat" data-v="${c.id}">${c.name}</button>`).join('')}</div></div>
   <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Datum</span><input class="inp" type="date" id="fDate" value="${e.date}"></label><label class="field grow"><span>Uhrzeit</span><input class="inp" type="time" id="fStart" value="${e.start||''}"></label></div>
   <span class="hint" style="margin-top:-10px">Ohne Uhrzeit landet es als Aufgabe oben im Tag.</span>
-  <div class="field"><span>Dauer</span><div class="chips">${[15,30,45,60,90,120,180].map(m=>`<button class="chip ${e.dur===m?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}</div></div>
+  <div class="field"><span>Dauer</span><div class="chips">${[15,30,45,60,90,120].map(m=>`<button class="chip ${e.dur===m?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}</div>
+    <div class="durrow"><label class="field"><span class="hint">Stunden</span><input class="inp num" type="number" inputmode="numeric" min="0" max="23" id="fDurH" value="${Math.floor(e.dur/60)}"></label>
+    <label class="field"><span class="hint">Minuten</span><input class="inp num" type="number" inputmode="numeric" min="0" max="59" step="5" id="fDurM" value="${e.dur%60}"></label>
+    <label class="field"><span class="hint">Endet um</span><input class="inp" type="time" id="fEnd" value="${e.start?fromMin((toMin(e.start)+e.dur)%1440):''}"></label></div></div>
+  ${e.start?`<div class="field"><span>Schnell verschieben</span><div class="chips">${[[-15,'−15 Min'],[15,'+15 Min'],[30,'+30 Min'],[60,'+1 Std']].map(([v,l])=>`<button class="chip" data-act="fShift" data-v="${v}">${l}</button>`).join('')}</div></div>`:''}
+  <div class="field"><span>Darf der Termin verschoben werden?</span><div class="chips"><button class="chip ${isFixed(e)?'on':''}" data-act="fFix" data-v="1">Fest (z. B. Arzt)</button><button class="chip ${isFixed(e)?'':'on'}" data-act="fFix" data-v="0">Flexibel</button></div><span class="hint">Flexible Einträge schiebe ich automatisch mit, wenn sich dein Tag verändert.</span></div>
   <div class="field"><span>Erinnerung vorher</span><div class="chips">${[[null,'Keine'],[0,'Zum Start'],[5,'5 Min'],[15,'15 Min'],[30,'30 Min'],[60,'1 Std'],[120,'2 Std']].map(([v,l])=>`<button class="chip ${e.remind===v?'on':''}" data-act="fRem" data-v="${v}">${l}</button>`).join('')}</div></div>
   <div class="field"><span>Mini-Schritte</span><div class="steps">${e.steps.map((s,i)=>`<div class="step"><button class="check ${s.done?'on':''} cat-${e.cat}" data-act="fStepDone" data-i="${i}" aria-label="Schritt erledigt">${s.done?ICON.tick:''}</button><input class="inp grow" data-step="${i}" value="${esc(s.t)}"><button class="x" data-act="fStepDel" data-i="${i}" aria-label="Schritt löschen">×</button></div>`).join('')}
     <div class="step"><input class="inp grow" id="fNewStep" placeholder="Nächster kleiner Schritt" enterkeyhint="enter"><button class="btn small ghost" data-act="fStepAdd">Dazu</button></div></div></div>
@@ -618,6 +754,7 @@ function readEventForm(){
   if(v('fTitle')!==null) draft.title=v('fTitle').trim();
   if(v('fDate')) draft.date=v('fDate');
   if(v('fStart')!==null) draft.start=v('fStart');
+  const dh=v('fDurH'), dm=v('fDurM'); if(dh!==null && dm!==null){ const t=Math.min(1439,Math.max(0,(+dh||0)*60+(+dm||0))); if(t>=5) draft.dur=t; }
   document.querySelectorAll('[data-step]').forEach(el=>{ const s=draft.steps[+el.dataset.step]; if(s) s.t=el.value; });
   const ns=v('fNewStep'); if(ns && ns.trim()){ draft.steps.push({t:ns.trim(),done:false}); }
 }
@@ -706,10 +843,15 @@ function readProj(){ const g=id=>document.getElementById(id)?.value;
 let sampleNs=null;
 function bindSheet(top){
   if(top.type==='event'){
+    const syncEnd=()=>{ const st=$('#fStart').value, t=(+$('#fDurH').value||0)*60+(+$('#fDurM').value||0);
+      $('#fEnd').value = st&&t>0 ? fromMin((toMin(st)+t)%1440) : '';
+      document.querySelectorAll('[data-act="fDur"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===t)); };
+    ['fDurH','fDurM','fStart'].forEach(id=>$('#'+id).addEventListener('input',syncEnd));
+    $('#fEnd').addEventListener('change',()=>{ const st=$('#fStart').value, en=$('#fEnd').value; if(!st||!en) return; let t=toMin(en)-toMin(st); if(t<=0) t+=1440; $('#fDurH').value=Math.floor(t/60); $('#fDurM').value=t%60; syncEnd(); });
     const q=$('#fQuick');
     if(q){ q.addEventListener('input',()=>{ const r=parseQuick(q.value); readEventForm();
         draft.title=r.title; if(r.date) draft.date=r.date; if(r.start) draft.start=r.start; if(r.dur) draft.dur=r.dur; if(r.cat) draft.cat=r.cat;
-        $('#fTitle').value=draft.title; $('#fDate').value=draft.date; $('#fStart').value=draft.start||'';
+        $('#fTitle').value=draft.title; $('#fDate').value=draft.date; $('#fStart').value=draft.start||''; $('#fDurH').value=Math.floor(draft.dur/60); $('#fDurM').value=draft.dur%60; syncEnd();
         document.querySelectorAll('[data-act="fDur"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===draft.dur));
         document.querySelectorAll('[data-act="fCat"]').forEach(b=>b.classList.toggle('on',b.dataset.v===draft.cat)); });
       q.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); $('#fTitle').focus(); } });
@@ -765,38 +907,46 @@ const A = {
   openDay(el){ ui.date=el.dataset.v; ui.tab='day'; ls.set('tab','day'); render(); window.scrollTo(0,0); },
   newEvent(){ openSheet('event',{date:ui.tab==='day'?ui.date:todayS()}); },
   openEvent(el){ openSheet('event',{id:el.dataset.id}); },
-  toggleDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=!e.done; save('events'); if(e.done){ toast('Erledigt. Stark!'); } render(); },
+  toggleDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=!e.done; save('events'); render(); if(e.done){ const td=evOn(e.date); hype(e.date===todayS() && td.length>1 && td.every(x=>x.done)?'alldone':'done'); } },
   setMood(el){ const d=el.dataset.d||todayS(); const m=S.mood[d]||(S.mood[d]={}); m[el.dataset.k]=+el.dataset.v; save('mood'); if(ui.sheets.length) renderSheet(); render(); },
   plan(el){ openSheet('plan',{date:el.dataset.v}); },
   planAdd(el){ openSheet('event',{date:el.dataset.v}); },
   planDone(el){ const f=$('#pFocus'); const d=el.dataset.v; if(f){ const v=f.value.trim(); if(v) S.meta.focusOf[d]=v; else delete S.meta.focusOf[d]; }
-    S.meta.planned[d]=true; save('meta'); closeSheet(); toast('Plan steht. Los geht\'s!'); },
+    S.meta.planned[d]=true; save('meta'); closeSheet(); hype('plan'); },
   closeSheet(){ closeSheet(); },
+  hypeClose(){ clearTimeout(hypeT); $('#hypeRoot').innerHTML=''; },
+  hypeSet(el){ S.meta.hype=el.dataset.v==='1'; save('meta'); render(); if(S.meta.hype) hype('test'); },
+  hypeTest(){ hype(['done','add','step','plan','focus'][Math.floor(Math.random()*5)]); },
+  shBuf(el){ ui.sheets[ui.sheets.length-1].args.buf=+el.dataset.v; renderSheet(); },
+  shApply(){ const a=ui.sheets[ui.sheets.length-1].args; const p=planShift(a.id,a.buf);
+    p.changes.forEach(c=>{ c.x.start=c.to; if(c.toDate) c.x.date=c.toDate; delete c.x.missAck; }); save('events'); closeSheet(); hype('shift'); },
+  missNow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.start=fromMin(Math.min(1435,Math.ceil((nowMin()+1)/5)*5)); delete e.missAck; save('events'); render();
+    if(!offerShift(e.id)) hype('shift'); },
+  missDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=true; save('events'); render(); hype('done'); },
+  missTomorrow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.date=addDays(e.date,1); save('events'); render(); toast('Auf morgen verschoben'); },
+  missAck(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.missAck=true; save('events'); render(); },
   scrim(el,ev){ if(ev.target===el) closeSheet(); },
   fCat(el){ readEventForm(); draft.cat=el.dataset.v; renderSheet(); },
   fDur(el){ readEventForm(); draft.dur=+el.dataset.v; renderSheet(); },
+  fShift(el){ readEventForm(); if(!draft.start) return; draft.start=fromMin(Math.min(1435,Math.max(0,toMin(draft.start)+(+el.dataset.v)))); renderSheet(); },
+  fFix(el){ readEventForm(); draft.fixed=el.dataset.v==='1'; renderSheet(); },
   fRem(el){ readEventForm(); draft.remind=el.dataset.v==='null'?null:+el.dataset.v; renderSheet(); },
   fStepAdd(){ readEventForm(); renderSheet(); },
   fStepDel(el){ readEventForm(); draft.steps.splice(+el.dataset.i,1); renderSheet(); },
-  fStepDone(el){ readEventForm(); const s=draft.steps[+el.dataset.i]; s.done=!s.done; renderSheet(); },
-  async fAiSteps(){ readEventForm(); if(!draft.title){ $('#aiMsg').textContent='Gib zuerst einen Titel ein.'; return; }
-    const btn=$('#aiBtn'); btn.disabled=true; $('#aiMsg').textContent='Claude denkt …';
-    try{
-      const prompt=`Zerlege diese Aufgabe für eine Person mit ADHS in 3 bis 7 sehr kleine, konkrete Schritte. Jeder Schritt höchstens 8 Wörter, beginnt mit einem Verb, auf Deutsch. Der erste Schritt soll in unter 2 Minuten machbar sein.\nAufgabe: "${draft.title}"\nAntworte nur mit JSON in dieser Form: {"steps":["...","..."]}`;
-      let out; try{ out=await sampleNs.json(prompt,{modelTier:'quick'}); }catch(e){ if(e&&e.code) throw e; const r=await sampleNs(prompt,{modelTier:'quick'}); out=JSON.parse((r.text.match(/\{[\s\S]*\}/)||['{}'])[0]); }
-      const steps=(out&&out.steps||[]).filter(s=>typeof s==='string').slice(0,8);
-      if(!steps.length) throw {};
-      draft.steps.push(...steps.map(t=>({t,done:false}))); renderSheet();
-    }catch(e){ const m=$('#aiMsg'); if(m) m.textContent=e&&e.code==='not_granted'?'Nicht erlaubt. Du kannst Schritte selbst eintragen.':'Hat gerade nicht geklappt. Versuch es gleich nochmal.'; const b=$('#aiBtn'); if(b) b.disabled=false; }
-  },
+  fStepDone(el){ readEventForm(); const s=draft.steps[+el.dataset.i]; s.done=!s.done; renderSheet(); if(s.done) hype('step'); },
   fSave(){ readEventForm(); if(!draft.title){ $('#fTitle').focus(); $('#fTitle').placeholder='Bitte einen Titel eingeben'; return; }
-    const i=S.events.findIndex(x=>x.id===draft.id); if(i>=0) S.events[i]=draft; else S.events.push(draft);
-    save('events'); const d=draft.date; closeSheet(); toast('Gespeichert'); if(ui.tab==='day' && ui.date!==d && !ui.sheets.length){ ui.date=d; render(); } },
+    const i=S.events.findIndex(x=>x.id===draft.id), isNew=i<0, old=isNew?null:S.events[i];
+    if(isNew) S.events.push(draft); else S.events[i]=draft;
+    save('events'); const sv=draft; closeSheet();
+    if(ui.tab==='day' && ui.date!==sv.date && !ui.sheets.length){ ui.date=sv.date; render(); }
+    const moved = sv.start && (isNew || old.start!==sv.start || old.date!==sv.date || old.dur!==sv.dur);
+    if(moved && offerShift(sv.id)) return;
+    if(isNew) hype('add'); else toast('Gespeichert'); },
   fDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; }
     S.events=S.events.filter(x=>x.id!==draft.id); save('events'); closeSheet(); toast('Gelöscht'); },
   fFocus(){ readEventForm(); const i=S.events.findIndex(x=>x.id===draft.id); if(i>=0){ S.events[i]=draft; save('events'); }
     T.taskId=draft.id; ls.set('timer',T); ui.sheets=[]; renderSheet(); ui.tab='focus'; ls.set('tab','focus'); render(); },
-  stepDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); const s=e.steps[+el.dataset.i]; s.done=!s.done; save('events'); render(); },
+  stepDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); const s=e.steps[+el.dataset.i]; s.done=!s.done; save('events'); render(); if(s.done) hype('step'); },
   tSet(el){ stopTick(); T.total=+el.dataset.v*60; T.remaining=T.total; T.endAt=null; ls.set('timer',T); render(); },
   tToggle(){ if(T.endAt){ T.remaining=tLeft(); T.endAt=null; stopTick(); } else { if(tLeft()<=0) T.remaining=T.total; T.endAt=Date.now()+T.remaining*1000; startTick(); } ls.set('timer',T); paintTimer(); },
   tPlus(){ if(T.endAt) T.endAt+=300000; else T.remaining+=300; T.total+=300; ls.set('timer',T); paintTimer(); },
@@ -811,14 +961,14 @@ const A = {
   mSide(el){ readMig(); mdraft.side=mdraft.side===el.dataset.v?'':el.dataset.v; renderSheet(); },
   mEff(el){ readMig(); mdraft.effect=mdraft.effect===el.dataset.v?'':el.dataset.v; renderSheet(); },
   mToggle(el){ readMig(); const a=mdraft[el.dataset.k], v=el.dataset.v, i=a.indexOf(v); i>=0?a.splice(i,1):a.push(v); renderSheet(); },
-  mSave(){ readMig(); const i=S.migraine.findIndex(x=>x.id===mdraft.id); if(i>=0) S.migraine[i]=mdraft; else S.migraine.push(mdraft); save('migraine'); closeSheet(); toast('Eingetragen. Gute Besserung!'); },
+  mSave(){ readMig(); const i=S.migraine.findIndex(x=>x.id===mdraft.id); if(i>=0) S.migraine[i]=mdraft; else S.migraine.push(mdraft); save('migraine'); closeSheet(); hype('mig'); },
   mDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } S.migraine=S.migraine.filter(x=>x.id!==mdraft.id); save('migraine'); closeSheet(); },
   newProj(){ openSheet('proj',{}); }, openProj(el){ openSheet('proj',{id:el.dataset.id}); },
   pCat(el){ readProj(); pdraft.cat=el.dataset.v; renderSheet(); },
   pNoteAdd(){ readProj(); const t=$('#pNote').value.trim(); if(!t) return; pdraft.notes.unshift({date:todayS(),text:t,pct:pdraft.progress}); renderSheet(); },
   pNoteDel(el){ readProj(); pdraft.notes.splice(+el.dataset.i,1); renderSheet(); },
   pSave(){ readProj(); const t=$('#pNote').value.trim(); if(t) pdraft.notes.unshift({date:todayS(),text:t,pct:pdraft.progress});
-    if(!pdraft.name){ $('#pName').focus(); return; } const i=S.projects.findIndex(x=>x.id===pdraft.id); if(i>=0) S.projects[i]=pdraft; else S.projects.push(pdraft); save('projects'); closeSheet(); toast('Gespeichert'); },
+    if(!pdraft.name){ $('#pName').focus(); return; } const i=S.projects.findIndex(x=>x.id===pdraft.id); const before=i>=0?S.projects[i].progress:0; if(i>=0) S.projects[i]=pdraft; else S.projects.push(pdraft); save('projects'); closeSheet(); if(pdraft.progress>before) hype('proj'); else toast('Gespeichert'); },
   pDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } S.projects=S.projects.filter(x=>x.id!==pdraft.id); save('projects'); closeSheet(); },
   async exportData(){
     const data={app:'bunter-kalender',version:1,exported:new Date().toISOString(),data:{events:S.events,migraine:S.migraine,projects:S.projects,mood:S.mood,meta:S.meta}};
