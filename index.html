@@ -378,30 +378,28 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 /* Hellsehen: bone oracle on the commander's desk (warm parchment & wood) */
 .oscrim{background:rgba(20,10,4,.6)}
 .sheet.oracle{--ink:#2A1A0E;--ink-2:#6B5240;--line:rgba(90,60,35,.25);--surface:#F6EBD3;--surface-2:#EADBBD;
-  color:#FBF3E4;position:relative;overflow-x:hidden;border-top:2px solid #C99A4A;
-  background:radial-gradient(70% 28% at 50% 0%,rgba(255,190,100,.35),transparent 70%),radial-gradient(60% 25% at 0% 100%,rgba(255,170,80,.25),transparent 70%),
-    repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 2px,transparent 2px 9px,rgba(255,220,170,.03) 9px 11px,transparent 11px 23px),linear-gradient(#5A3720,#3A2414 60%,#2C1B0F)}
-.sheet.oracle::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,#C99A4A,transparent);opacity:.7}
+  color:#FBF3E4;position:relative;overflow-x:hidden;border-top:1px solid rgba(201,154,74,.5);
+  background:linear-gradient(#4A2E1B,#33200F)}
 .sheet.oracle .grab{background:rgba(251,243,228,.4)}
 .hide{position:relative;flex:none;width:100%;max-width:370px;margin:-6px auto 0;aspect-ratio:16/10.6}
 .hide svg{width:100%;height:100%;display:block;overflow:visible}
 .hide .bone-drop{transform-box:fill-box;transform-origin:center}
 .otitle{text-align:center;display:flex;flex-direction:column;gap:2px;position:relative;margin-top:6px}
-.otitle span{font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#F0B9A0}
-.otitle h2{font-size:32px;font-weight:800;color:#FBF3E4;letter-spacing:.03em;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+.otitle span{font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#D9C2A6}
+.otitle h2{font-size:30px;font-weight:800;color:#FBF3E4}
 .otitle em{font-style:normal;color:#E3CDAE}
 .odiv{display:block;width:220px;height:16px;margin:0 auto}
-.ocard{position:relative;padding:16px 18px;background:radial-gradient(120% 90% at 50% 30%,#FBF3E1,#EEDDBC);color:#2A1A0E;border-radius:4px;
-  box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 0 0 1px rgba(90,60,35,.35),inset 0 0 0 5px rgba(246,235,211,.9),inset 0 0 0 6px rgba(90,60,35,.3),inset 0 0 30px rgba(150,100,50,.18);display:flex;flex-direction:column;gap:8px}
+.ocard{position:relative;padding:16px 18px;background:#F6EBD3;color:#2A1A0E;border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:8px}
 .ocard p{margin:0;line-height:1.5}
 .oreport p{font-size:16.5px}
 .ocard .omen{color:#8E1024;font-weight:700}
-.ofocus span,.olab{font-family:var(--f-display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8E1024;font-weight:700}
-.ofocus{background:linear-gradient(170deg,#B3122E,#7A0C1E)!important;color:#FBF3E4!important;box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 0 0 1px #C99A4A,inset 0 0 0 4px rgba(122,12,30,1),inset 0 0 0 5px rgba(201,154,74,.6)!important}
+.ofocus span,.olab{font-family:var(--f-display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8E1024;font-weight:700}
+.ofocus{background:#8E1024!important;color:#FBF3E4!important;box-shadow:0 2px 8px rgba(0,0,0,.25)!important}
 .ofocus span{color:#F3D9A0}
 .ofocus b{font-size:19px;color:#FBF3E4}
 .olist{display:flex;flex-direction:column;gap:6px}
-.orow{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,250,240,.65);color:#2A1A0E;border-left:4px solid var(--c);border-radius:3px;box-shadow:inset 0 0 0 1px rgba(90,60,35,.18)}
+.orow{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,250,240,.6);color:#2A1A0E;border-left:4px solid var(--c);border-radius:6px}
 .orow .t{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
 .orow .od{color:#6B5240;font-size:13px}
 .ogem{width:10px;height:10px;flex:none;transform:rotate(45deg);background:var(--c);box-shadow:0 0 0 1.5px rgba(42,26,14,.5)}
@@ -412,10 +410,8 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .sheet.oracle .savebtn{border-radius:999px;background:linear-gradient(180deg,#B3122E,#7A0C1E);color:#FBF3E4;box-shadow:0 3px 0 #4A0712,inset 0 1px 0 rgba(255,255,255,.25)}
 .sheet.oracle .iconbtn{background:rgba(40,25,15,.55)!important;border-color:rgba(251,243,228,.45)!important;color:#FBF3E4!important}
 @media (prefers-reduced-motion:no-preference){
-  .hide .bone-drop{animation:bdrop .5s cubic-bezier(.3,1.4,.5,1) both}
-  .hide .ember{animation:eflick 1.7s ease-in-out infinite alternate}
-  @keyframes bdrop{0%{transform:translate(0,-160px) rotate(-80deg) scale(1.3);opacity:0}55%{opacity:1}80%{transform:translate(0,3px) rotate(5deg)}100%{transform:none;opacity:1}}
-  @keyframes eflick{from{opacity:.45}to{opacity:.85}}
+  .hide .bone-drop{animation:bdrop .45s ease-out both}
+  @keyframes bdrop{from{transform:translate(0,-8px);opacity:0}to{transform:none;opacity:1}}
 }
 .calm .hide .bone-drop{animation:none}
 /* Dungeon focus */
@@ -449,10 +445,12 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 /* Focus: battle plan scroll */
 .dg.plan{background:#1A110A;padding:0}
 .dgstage{position:absolute;left:50%;top:50%;width:max(100vw,66.67vh);height:max(100vh,150vw);transform:translate(-50%,-50%);background:url(focus-plan.webp) center/100% 100% no-repeat}
-.dgglow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(22% 16% at 6% 92%,rgba(255,190,90,.45),transparent 70%),radial-gradient(18% 12% at 94% 6%,rgba(255,190,90,.4),transparent 70%);mix-blend-mode:screen;opacity:.7}
-.dgshade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 45% at 50% 40%,transparent 55%,rgba(30,15,5,.35) 100%)}
+.dgglow{display:none;position:absolute;inset:0;pointer-events:none;background:radial-gradient(22% 16% at 6% 92%,rgba(255,190,90,.45),transparent 70%),radial-gradient(18% 12% at 94% 6%,rgba(255,190,90,.4),transparent 70%);mix-blend-mode:screen;opacity:.7}
+.dgshade{position:absolute;inset:0;pointer-events:none;background:rgba(26,16,8,.5)}
+.dg.plan .dgbox{background:#EADBBD;border-radius:24px;box-shadow:0 0 24px 18px #EADBBD;padding:8px 4px}
+.calm .dgstage{background:#F1E4C8}.calm .dgshade{display:none}
 .dgbox{position:absolute;left:22%;right:20%;top:15%;bottom:29%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(8px,1.6vh,18px);text-align:center;color:#3A2618}
-.dg.plan .dg-lab{color:#8E1024;font-weight:700;letter-spacing:.3em;font-size:clamp(11px,1.5vh,14px)}
+.dg.plan .dg-lab{color:#8E1024;font-weight:700;letter-spacing:.14em;font-size:clamp(11px,1.5vh,14px)}
 .dg.plan .dg-now b{font-size:clamp(22px,3.6vh,34px);color:#2A1A0E;text-shadow:none;margin-top:4px}
 .dg.plan .dg-now .dg-sub,.dg.plan .dg-next .dg-sub{color:#6B5240;font-size:clamp(13px,1.8vh,16px);margin-top:4px}
 .dg.plan .dg-count{color:#8E1024;font-size:clamp(34px,5.6vh,56px);font-family:var(--f-display);font-weight:800;letter-spacing:.02em}
@@ -462,7 +460,7 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg.plan hr{width:70%;background:linear-gradient(90deg,transparent,rgba(110,70,40,.55),transparent)}
 .dg.plan .dg-top{position:absolute;top:0;right:0;z-index:2;padding:calc(10px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 0 0}
 .dg.plan .dg-x{background:rgba(40,25,15,.55);border-color:rgba(251,243,228,.5)}
-@media (prefers-reduced-motion:no-preference){ .dg.plan .dgglow{animation:candle 1.7s ease-in-out infinite alternate} @keyframes candle{0%{opacity:.55}35%{opacity:.8}60%{opacity:.62}100%{opacity:.85}} }
+
 .calm .dg.plan .dgglow{animation:none}
 .repbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border-radius:12px;padding:10px}
 /* Leona */
@@ -1574,7 +1572,7 @@ function boneMat(d,tm,ut,focus){
     ${red?`<path d="M 0 ${-r-5} L ${r*.75} ${-r*.2} L ${r*.55} ${r} L 0 ${r*.6} L ${-r*.55} ${r} L ${-r*.75} ${-r*.2} Z" fill="#B3122E" stroke="#0A0A0A" stroke-width="1.4"/><path d="M 0 ${-r} L ${r*.4} ${-r*.1} L 0 ${r*.3} L ${-r*.4} ${-r*.1} Z" fill="#F2D7DB" opacity=".9"/>`
       :`<path d="M 0 ${-r} L ${r} 0 L 0 ${r} L ${-r} 0 Z" fill="#5E5963" stroke="#0A0A0A" stroke-width="1.2"/><path d="M 0 ${-r*.5} L ${r*.5} 0 L 0 ${r*.5} L ${-r*.5} 0 Z" fill="#B3122E"/>`}</g></g>`; };
   let items=''; const bones=tm.slice(0,7), stones=ut.slice(0,8), segs=[], pts=[];
-  const inMat=(x,y)=>x>cx-128 && x<cx+128 && y>cy-72 && y<cy+72 && !(x<cx-62 && y<cy-22) && !(x>cx+108 && y<cy-56);
+  const inMat=(x,y)=>x>cx-128 && x<cx+128 && y>cy-72 && y<cy+72;
   const dSeg=(px,py,[ax,ay,bx,by])=>{ const vx=bx-ax, vy=by-ay, t=Math.max(0,Math.min(1,((px-ax)*vx+(py-ay)*vy)/(vx*vx+vy*vy))); return Math.hypot(px-(ax+t*vx),py-(ay+t*vy)); };
   const segSeg=(A,B)=>Math.min(dSeg(A[0],A[1],B),dSeg(A[2],A[3],B),dSeg(B[0],B[1],A),dSeg(B[2],B[3],A));
   if(!bones.length && !stones.length) items=bone(cx-14,cy-6,32,58,'',0)+bone(cx+12,cy+6,-28,52,'',1);
@@ -1592,18 +1590,9 @@ function boneMat(d,tm,ut,focus){
       <linearGradient id="boneG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF8EA"/><stop offset="1" stop-color="#D8C6A2"/></linearGradient>
       <linearGradient id="clothG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C21B36"/><stop offset="1" stop-color="#6E0A1A"/></linearGradient>
       <radialGradient id="gemG" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#D8FFFA"/><stop offset=".45" stop-color="#3FD3C8"/><stop offset="1" stop-color="#0E7C77"/></radialGradient></defs>
-    <ellipse class="ember" cx="${cx}" cy="${cy}" rx="${rx+40}" ry="${ry+36}" fill="rgba(255,180,90,.28)" filter="blur(10px)"/>
     <rect x="${px+3}" y="${py+5}" width="${pw}" height="${ph}" rx="3" fill="rgba(0,0,0,.35)" filter="blur(3px)"/>
     <rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="3" fill="url(#parchG)"/>
-    <rect x="${px+9}" y="${py+9}" width="${pw-18}" height="${ph-18}" fill="none" stroke="#8A6A48" stroke-width="1"/>
-    <rect x="${px+12}" y="${py+12}" width="${pw-24}" height="${ph-24}" fill="none" stroke="#8A6A48" stroke-width=".5"/>
-    ${orn(cx,py+9)}${orn(cx,py+ph-9)}
-    ${mountains(px+20,py+40,1)}${mountains(px+36,py+48,.8)}${mountains(px+pw-58,py+ph-22,1)}
-    <path d="M ${px+pw-30} ${py+18} C ${px+pw-50} ${py+50}, ${px+pw-26} ${py+70}, ${px+pw-44} ${py+100}" fill="none" stroke="rgba(110,80,50,.4)" stroke-width="1"/>
-    <path d="M ${px+20} ${py+ph-20} C ${px+40} ${py+ph-50}, ${px+70} ${py+ph-30}, ${px+90} ${py+ph-56}" fill="none" stroke="rgba(110,80,50,.4)" stroke-width="1"/>
-    <path d="M ${px-10} ${py-12} L ${px+70} ${py-8} C ${px+58} ${py+12}, ${px+30} ${py+30}, ${px+6} ${py+62} L ${px-14} ${py+56} Z" fill="url(#clothG)" stroke="#4A0712" stroke-width="1"/>
-    <path d="M ${px+66} ${py-6} C ${px+54} ${py+12}, ${px+28} ${py+28}, ${px+4} ${py+58}" fill="none" stroke="#D9A23A" stroke-width="1.6"/>
-    <g transform="translate(${px+pw-8} ${py+4})"><path d="M -11 6 L 11 6 L 9 11 L -9 11 Z" fill="#B8893B" stroke="#6B4A1E" stroke-width=".8"/><path d="M -8 6 L -10 -4 L -3 -11 L 5 -10 L 10 -2 L 8 6 Z" fill="url(#gemG)" stroke="#0B5A56" stroke-width="1"/><path d="M -3 -11 L 0 6 M 5 -10 L 0 6 M -10 -4 L 10 -2" stroke="rgba(255,255,255,.45)" stroke-width=".6"/></g>
+    <rect x="${px+9}" y="${py+9}" width="${pw-18}" height="${ph-18}" fill="none" stroke="rgba(138,106,72,.45)" stroke-width="1"/>
     ${items}</svg></div>`;
 }
 function sheetTomorrow(){
