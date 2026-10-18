@@ -238,6 +238,24 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .preview{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
 .preview::before{content:"";width:12px;height:12px;border-radius:4px;background:var(--c);flex:none}
 .savebtn{width:100%;font-size:18px;min-height:54px}
+.blockcard .bc-n{color:var(--kon,var(--surface))}
+.dayprog{display:flex;flex-direction:column;gap:10px;padding:14px 16px}
+.segs{display:flex;gap:4px}
+.segs i{flex:1;height:12px;border-radius:6px;background:color-mix(in srgb,var(--c) 22%,var(--surface-2))}
+.segs i.on{background:var(--c)}
+.checkin{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow);min-height:60px}
+.checkin b{display:block}
+.checkin .chev{width:20px;height:20px;color:var(--ink-2);flex:none}
+.mdot{width:30px;height:30px;border-radius:50%;flex:none;background:conic-gradient(var(--s1),var(--s2),var(--s3),var(--s4),var(--s5),var(--s1))}
+.secthead{display:flex;align-items:center;gap:8px}
+.secthead .cnt{background:var(--surface-2);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;color:var(--ink-2)}
+.sev{display:flex;align-items:center;gap:14px}
+.sevnum{min-width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-family:var(--f-display);font-size:30px;color:#1A1D2B;flex:none}
+.bigpct{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1}
+.toast{display:flex;align-items:center;gap:12px}
+.toast .undo{border:0;background:var(--accent);color:var(--accent-on);border-radius:8px;padding:6px 10px;font-weight:700;font-size:14px}
+.setrow{display:flex;flex-direction:column;gap:10px}
+.calm *,.calm *::before,.calm *::after{animation:none!important;transition:none!important}
 /* Leona */
 .hype{position:fixed;z-index:25;left:max(6px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(62px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:2px;max-width:480px}
 .hype-av{width:128px;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
@@ -276,7 +294,7 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .empty{text-align:center;padding:22px 12px;display:flex;flex-direction:column;gap:10px;align-items:center}
 .empty h3{font-size:20px}
 @media (prefers-reduced-motion:no-preference){
-  .sheet{animation:up .22s ease-out}
+  .sheet.anim{animation:up .22s ease-out}
   .alert{animation:drop .25s ease-out}
   @keyframes up{from{transform:translateY(40px);opacity:.4}}
   @keyframes drop{from{transform:translateY(-30px);opacity:0}}
@@ -393,6 +411,7 @@ const hasExamples = () => S.events.some(e=>e.ex) || S.projects.some(p=>p.ex) || 
 
 /* ---------- rendering ---------- */
 function render(){
+  document.documentElement.classList.toggle('calm', !!S.meta.calm);
   renderTabs();
   const app=$('#app');
   if(ui.tab==='day') app.innerHTML = viewDay();
@@ -440,15 +459,18 @@ function viewDay(){
     if(miss) h += `<div class="card stack cat-${miss.cat}" style="gap:12px;border:2.5px solid var(--c)"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="swatch" style="width:14px;height:14px;margin-top:4px"></span><div class="grow"><span class="label">Verpasst oder vergessen?</span><br><b style="font-size:18px">${esc(miss.title)}</b> <span class="hint num">${miss.start}–${fromMin(endMin(miss))}</span></div></div>
       <div class="row"><button class="btn small" data-act="missNow" data-id="${miss.id}">Jetzt nachholen</button><button class="btn small ghost" data-act="missDone" data-id="${miss.id}">War erledigt</button><button class="btn small ghost" data-act="missTomorrow" data-id="${miss.id}">Morgen</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button></div></div>`; }
   if(S.meta.focusOf[d]) h += `<div class="focuschip"><div class="grow"><span class="label">Wichtigste Sache</span><b>${esc(S.meta.focusOf[d])}</b></div><button class="pillbtn" data-act="plan" data-v="${d}">Ändern</button></div>`;
-  if(isToday && !S.mood[d]) h += `<div class="card stack"><div class="row"><b class="grow">Kurzer Check-in: Wie geht's dir?</b></div>${scale('mood',null,MOOD)}${scale('energy',null,ENERGY)}</div>`;
+  if(list.length){ const sorted=[...timed(list),...untimed(list)], dn=list.filter(e=>e.done).length;
+    h += `<div class="card dayprog"><div class="row" style="flex-wrap:nowrap"><b class="grow">${dn===list.length?'Alles erledigt!':'Erledigt'}</b><b class="num">${dn} von ${list.length}</b></div><div class="segs">${sorted.map(e=>`<i class="cat-${e.cat} ${e.done?'on':''}"></i>`).join('')}</div></div>`; }
+  if(isToday){ const m=S.mood[d];
+    h += `<button class="checkin" data-act="openMood" data-v="${d}">${m&&m.mood?`<span class="mdot" style="background:var(--s${m.mood})"></span><span class="grow"><span class="label">Check-in</span><b>Stimmung ${MOOD[m.mood-1]}${m.energy?' · Energie '+ENERGY[m.energy-1]:''}</b></span>`:`<span class="mdot"></span><span class="grow"><span class="label">Check-in · 10 Sekunden</span><b>Wie geht's dir heute?</b></span>`}${XI.chev}</button>`; }
   if(!list.length){
     h += `<div class="card empty"><h3>${isToday?'Heute ist noch alles frei':'Noch nichts eingetragen'}</h3><p class="muted" style="margin:0">Tippe auf Plus und schreib einfach drauflos, zum Beispiel „Zahnarzt 14:30 1h“.</p>
       <div class="row" style="justify-content:center"><button class="btn" data-act="newEvent">Ersten Eintrag anlegen</button>${S.events.length?'':'<button class="btn ghost" data-act="loadExamples">Beispieltag ansehen</button>'}</div></div>`;
   } else {
     const ut=untimed(list);
-    if(ut.length) h += `<div class="stack" style="gap:8px"><span class="label">Ohne Uhrzeit</span><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
+    if(ut.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Aufgaben ohne Uhrzeit</span><span class="cnt num">${ut.length}</span></div><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
     const tm=timed(list);
-    if(tm.length) h += `<div class="stack" style="gap:8px"><span class="label">Zeitplan</span>${timeline(tm,isToday)}</div>`;
+    if(tm.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${timeline(tm,isToday)}</div>`;
   }
   if(isToday && needsBackup()) h += `<div class="card row" style="flex-wrap:nowrap"><div class="grow"><b>Zeit für eine Sicherung</b><br><span class="hint">Damit nichts verloren geht, wenn das Handy kaputtgeht oder du wechselst.</span></div><button class="btn small" data-act="exportData">Sichern</button></div>`;
   if(hasExamples()) h += `<button class="pillbtn" style="align-self:center" data-act="clearExamples">Beispiele entfernen</button>`;
@@ -510,8 +532,8 @@ function timeline(tm,isToday){
   return h+'</div>';
 }
 
-function scale(kind, val, labels, date){
-  return `<div class="field"><span>${kind==='mood'?'Stimmung':'Energie'}</span><div class="scale">${labels.map((l,i)=>`<button class="${val===i+1?'on':''}" style="--sc:var(--s${i+1})" data-act="setMood" data-k="${kind}" data-v="${i+1}" ${date?`data-d="${date}"`:''}><b>${i+1}</b>${l}</button>`).join('')}</div></div>`;
+function scale(kind, val, labels, date, noLabel){
+  return `<div class="field">${noLabel?'':`<span>${kind==='mood'?'Stimmung':'Energie'}</span>`}<div class="scale">${labels.map((l,i)=>`<button class="${val===i+1?'on':''}" style="--sc:var(--s${i+1})" data-act="setMood" data-k="${kind}" data-v="${i+1}" ${date?`data-d="${date}"`:''}><b>${i+1}</b>${l}</button>`).join('')}</div></div>`;
 }
 
 function viewMonth(){
@@ -549,8 +571,8 @@ function viewFocus(){
   h+=`<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="12"/><circle id="arc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="0"/></svg>
     <div class="center"><div><div class="time num" id="ttime">25:00</div><div class="muted" id="tstate"></div></div></div></div>`;
   h+=`<div class="row" style="justify-content:center"><button class="btn" id="tmain" data-act="tToggle" style="min-width:140px">Start</button><button class="btn ghost" data-act="tPlus">+5 Min</button><button class="btn ghost" data-act="tReset">Zurück</button></div>`;
-  h+=`<div class="field"><span>Dauer</span><div class="chips">${[5,10,15,25,45,60].map(m=>`<button class="chip ${T.total===m*60?'on':''}" data-act="tSet" data-v="${m}">${m} Min</button>`).join('')}</div></div>`;
-  h+=`<div class="field"><span>Woran arbeitest du?</span><select class="inp" id="tTask"><option value="">Nichts Bestimmtes</option>${opts.map(e=>`<option value="${e.id}" ${e.id===T.taskId?'selected':''}>${esc(e.title)}</option>`).join('')}</select></div>`;
+  h+=`<section class="blockcard" style="--k:var(--c1)"><div class="bc-h">Wie lange?</div><div class="chips">${[5,10,15,25,45,60].map(m=>`<button class="chip ${T.total===m*60?'on':''}" data-act="tSet" data-v="${m}">${m} Min</button>`).join('')}</div></section>`;
+  h+=`<section class="blockcard" style="--k:var(--c2)"><div class="bc-h">Woran arbeitest du?</div><select class="inp" id="tTask"><option value="">Nichts Bestimmtes</option>${opts.map(e=>`<option value="${e.id}" ${e.id===T.taskId?'selected':''}>${esc(e.title)}</option>`).join('')}</select></section>`;
   if(task && task.steps && task.steps.length){
     h+=`<div class="card stack cat-${task.cat}" style="gap:8px"><span class="label">Mini-Schritte</span>${task.steps.map((s,i)=>`<div class="row" style="flex-wrap:nowrap"><button class="check ${s.done?'on':''}" data-act="stepDone" data-id="${task.id}" data-i="${i}" aria-label="Schritt erledigt">${s.done?ICON.tick:''}</button><span class="grow" style="${s.done?'text-decoration:line-through;color:var(--ink-2)':''}">${esc(s.t)}</span></div>`).join('')}</div>`;
   }
@@ -580,6 +602,7 @@ function stopTick(){ clearInterval(tInt); tInt=null; try{ wake?.release(); }catc
 const TOOLS = [
   {id:'migraine', name:'Migränetagebuch', cat:'gesund', summary(){ const n=S.migraine.filter(x=>x.date>=addDays(todayS(),-29)).length; return n?`${n} Tage in den letzten 30`:'Attacken festhalten, Auslöser erkennen'; }, view:viewMigraine},
   {id:'projects', name:'Projekte', cat:'arbeit', summary(){ return S.projects.length?`${S.projects.length} Projekte · Ø ${Math.round(S.projects.reduce((a,p)=>a+p.progress,0)/S.projects.length)} %`:'Fortschritt und Notizen'; }, view:viewProjects},
+  {id:'settings', name:'Einstellungen', cat:'pause', summary(){ return [S.meta.calm?'Ruhiger Modus':'Normale Bewegung', S.meta.sound===false?'Töne aus':'Töne an'].join(' · '); }, view:viewSettings},
   {id:'valka', name:'Leona', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
   {id:'backup', name:'Sichern & Übertragen', cat:'termin', summary(){ const b=ls.get('lastBackup',null); return b?`Letzte Sicherung: ${fmtDay(b,{day:'numeric',month:'short'})}`:'Für ein neues Handy oder als Absicherung'; }, view:viewBackup},
   {id:'mood', name:'Stimmung & Energie', cat:'freizeit', summary(){ const m=S.mood[todayS()]; return m?`Heute: ${MOOD[(m.mood||3)-1]}, Energie ${ENERGY[(m.energy||3)-1]}`:'Täglicher Kurz-Check-in'; }, view:viewMood},
@@ -768,6 +791,14 @@ function hype(kind){
   vibe(kind==='alldone'?[80,60,80,60,160]:40);
   clearTimeout(hypeT); hypeT=setTimeout(()=>{ $('#hypeRoot').innerHTML=''; }, kind==='alldone'?6000:4200);
 }
+function viewSettings(){
+  const tg=(k,on,label,desc)=>`<div class="card setrow"><b style="font-family:var(--f-display);font-size:18px">${label}</b><span class="muted">${desc}</span><div class="chips"><button class="chip ${on?'on':''}" data-act="setPref" data-k="${k}" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="setPref" data-k="${k}" data-v="0">Aus</button></div></div>`;
+  return `<header class="top">${back()}<h1>Einstellungen<span class="sub">So, wie es dir guttut</span></h1></header><div class="stack">
+  ${tg('calm',!!S.meta.calm,'Ruhiger Modus','Schaltet alle Bewegungen und Animationen ab. Gut für Tage mit Reizüberflutung oder Migräne.')}
+  ${tg('sound',S.meta.sound!==false,'Töne bei Erinnerungen','Ein kurzer Ton, wenn ein Termin ansteht oder der Fokus-Timer abläuft.')}
+  ${tg('vibe',S.meta.vibe!==false,'Vibration','Das Handy vibriert bei Erinnerungen und wenn Leona dich anfeuert.')}
+  <button class="btn ghost" data-act="openTool" data-v="valka">Leona ein- oder ausschalten</button></div>`;
+}
 function viewValka(){
   const on=S.meta.hype!==false;
   return `<header class="top">${back()}<h1>Leona<span class="sub">Deine Kriegerin für mehr Antrieb</span></h1></header><div class="stack">
@@ -820,15 +851,23 @@ function renderSheet(){
   const root=$('#sheetRoot'); const top=ui.sheets[ui.sheets.length-1];
   if(!top){ root.innerHTML=''; document.body.style.overflow=''; return; }
   document.body.style.overflow='hidden';
-  const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj,shift:sheetShift}[top.type];
+  const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj,shift:sheetShift,mood:sheetMood}[top.type];
   const prev=root.querySelector('.sheet'), keep=prev&&prev.dataset.t===top.type+(top.args.id||'')?prev.scrollTop:0;
-  root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet ${top.type==='event'?'ev':''}" data-t="${top.type+(top.args.id||'')}" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
+  root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet ${['event','mig','proj','plan','mood'].includes(top.type)?'ev':''} ${prev&&prev.dataset.t===top.type+(top.args.id||'')?'':'anim'}" data-t="${top.type+(top.args.id||'')}" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
   if(keep) root.querySelector('.sheet').scrollTop=keep;
   bindSheet(top);
 }
 
 let draft=null;
+const shHead = t => `<div class="sh-head"><h2>${t}</h2><button class="iconbtn" data-act="closeSheet" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
+function xrow(o,key,k,label,sum,inner,icon){
+  return `<div class="xrow ${o[key]?'open':''}" style="--k:var(${k})"><button class="xhead" data-act="xOpen" data-v="${key}" aria-expanded="${!!o[key]}"><span class="xi">${XI[icon]||XI.note}</span><span class="grow"><b>${label}</b><span class="hint">${esc(sum)}</span></span>${XI.chev}</button><div class="xbody" ${o[key]?'':'hidden'}>${inner}</div></div>`;
+}
 const XI = {
+  sym:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  trig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>',
+  med:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="M10 7.5l4 8"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   rem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
   fix:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>',
   steps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7l2 2 3-3M4 15l2 2 3-3M12 8h8M12 16h8"/></svg>',
@@ -914,39 +953,52 @@ function parseQuick(txt){
 }
 
 function sheetPlan(a){
-  const d=a.date, list=evOn(d), m=S.mood[d]||{};
-  const isToday=d===todayS();
-  return `<h2>${isToday?'Tagesplanung':fmtDay(d)+' planen'}</h2>
-  <div class="card stack" style="gap:10px"><span class="label">1 · Was steht fest?</span>
+  const d=a.date, list=evOn(d), m=S.mood[d]||{}, isToday=d===todayS();
+  return `${shHead(isToday?'Tagesplanung':fmtDay(d,{weekday:'long',day:'numeric',month:'long'}))}
+  <section class="blockcard" style="--k:var(--c1)"><div class="bc-h"><span class="bc-n">1</span>Was steht fest?</div>
     ${list.length?`<div class="tasks">${[...timed(list),...untimed(list)].map(e=>`<div class="row cat-${e.cat}" style="flex-wrap:nowrap"><span class="swatch"></span><span class="grow">${e.start?`<b class="num">${e.start}</b> `:''}${esc(e.title)}</span></div>`).join('')}</div>`:'<span class="muted">Noch nichts eingetragen.</span>'}
-    <button class="btn small ghost" data-act="planAdd" data-v="${d}">Termin oder Aufgabe dazu</button></div>
-  <div class="card stack" style="gap:10px"><span class="label">2 · Die eine wichtigste Sache</span>
-    <input class="inp" id="pFocus" value="${esc(S.meta.focusOf[d]||'')}" placeholder="Wenn ich nur eine Sache schaffe, dann …"></div>
-  ${isToday?`<div class="card stack" style="gap:10px"><span class="label">3 · Wie geht's dir?</span>${scale('mood',m.mood,MOOD,d)}${scale('energy',m.energy,ENERGY,d)}</div>`:`<div class="card stack" style="gap:6px"><span class="label">3 · Pausen eingeplant?</span><span class="muted">Ein Pausenblock (grün) hilft, den Tag nicht zu überladen.</span></div>`}
-  <button class="btn" data-act="planDone" data-v="${d}">Fertig geplant</button>
-  <button class="btn ghost" data-act="closeSheet">Später</button>`;
+    <button class="btn small ghost" style="background:var(--surface)" data-act="planAdd" data-v="${d}">Termin oder Aufgabe dazu</button></section>
+  <section class="blockcard b1"><div class="bc-h"><span class="bc-n">2</span>Die eine wichtigste Sache</div>
+    <input class="inp big" id="pFocus" value="${esc(S.meta.focusOf[d]||'')}" placeholder="Wenn ich nur eine Sache schaffe …"></section>
+  ${isToday?`<section class="blockcard" style="--k:var(--c5)"><div class="bc-h"><span class="bc-n">3</span>Wie geht's dir?</div>${scale('mood',m.mood,MOOD,d)}${scale('energy',m.energy,ENERGY,d)}<span class="hint">Wenig Energie? Plane heute weniger und mehr Pausen. Das ist klug, nicht schwach.</span></section>`
+   :`<section class="blockcard" style="--k:var(--c6);--kon:var(--c6-on)"><div class="bc-h"><span class="bc-n">3</span>Pausen eingeplant?</div><span>Ein grüner Pausenblock hilft, den Tag nicht zu überladen.</span></section>`}
+  <div class="savebar"><button class="btn savebtn" data-act="planDone" data-v="${d}">Fertig geplant</button></div>`;
+}
+
+function sheetMood(a){
+  const d=a.date, m=S.mood[d]||{};
+  return `${shHead('Kurzer Check-in')}
+  <section class="blockcard" style="--k:var(--c5)"><div class="bc-h"><span class="bc-n">1</span>Wie ist deine Stimmung?</div>${scale('mood',m.mood,MOOD,d,true)}</section>
+  <section class="blockcard" style="--k:var(--c6);--kon:var(--c6-on)"><div class="bc-h"><span class="bc-n">2</span>Wie viel Energie hast du?</div>${scale('energy',m.energy,ENERGY,d,true)}</section>
+  <label class="field"><span>Notiz (optional)</span><textarea class="inp" id="moodNote" placeholder="Was hilft dir heute, was stört?">${esc(m.note||'')}</textarea></label>
+  <div class="savebar"><button class="btn savebtn" data-act="moodDone">Fertig</button></div>`;
 }
 
 let mdraft=null;
+const sevCol = v => v>=8?'var(--s1)':v>=5?'var(--s2)':'var(--s3)';
+const migPrev = x => `Stärke ${x.intensity} von 10${x.side?' · '+x.side:''}${x.hours?' · '+x.hours+' Std':''}`;
 function sheetMig(a){
   if(!a._init){ const x=a.id?S.migraine.find(y=>y.id===a.id):null; const n=new Date();
     mdraft=x?structuredClone(x):{id:uid(),date:todayS(),start:`${pad(n.getHours())}:${pad(n.getMinutes())}`,hours:'',intensity:5,side:'',symptoms:[],triggers:[],meds:'',effect:'',note:''};
-    a._init=true; a.isNew=!x; }
-  const x=mdraft, col=+x.intensity>=8?'var(--s1)':+x.intensity>=5?'var(--s2)':'var(--s3)';
+    a._init=true; a.isNew=!x; a.open={}; }
+  const x=mdraft, o=a.open;
   const multi=(k,arr)=>`<div class="chips">${arr.map(v=>`<button class="chip ${x[k].includes(v)?'on':''}" data-act="mToggle" data-k="${k}" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
-  return `<h2>${a.isNew?'Attacke eintragen':'Eintrag bearbeiten'}</h2>
-  <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Datum</span><input class="inp" type="date" id="mDate" value="${x.date}"></label><label class="field grow"><span>Beginn</span><input class="inp" type="time" id="mStart" value="${x.start}"></label></div>
-  <label class="field"><span>Stärke: <b class="num" id="mIntV" style="background:${col};color:#1A1D2B;border-radius:8px;padding:0 8px">${x.intensity}</b> von 10</span><input class="range" type="range" min="1" max="10" id="mInt" value="${x.intensity}"></label>
-  <label class="field"><span>Dauer in Stunden</span><input class="inp" type="number" inputmode="decimal" min="0" step="0.5" id="mHours" value="${x.hours}" placeholder="z. B. 4"></label>
-  <div class="field"><span>Seite</span><div class="chips">${['links','rechts','beidseitig'].map(v=>`<button class="chip ${x.side===v?'on':''}" data-act="mSide" data-v="${v}">${v}</button>`).join('')}</div></div>
-  <div class="field"><span>Symptome</span>${multi('symptoms',SYMPTOMS)}</div>
-  <div class="field"><span>Mögliche Auslöser</span>${multi('triggers',TRIGGERS)}</div>
-  <label class="field"><span>Medikament</span><input class="inp" id="mMeds" value="${esc(x.meds)}" placeholder="Name und Uhrzeit"></label>
-  <div class="field"><span>Hat es geholfen?</span><div class="chips">${['gut','etwas','gar nicht'].map(v=>`<button class="chip ${x.effect===v?'on':''}" data-act="mEff" data-v="${v}">${v}</button>`).join('')}</div></div>
-  <label class="field"><span>Notiz</span><textarea class="inp" id="mNote">${esc(x.note)}</textarea></label>
-  <button class="btn" data-act="mSave">Speichern</button>
+  return `${shHead(a.isNew?'Migräne eintragen':'Eintrag bearbeiten')}
+  <section class="blockcard" style="--k:var(--c4)"><div class="bc-h"><span class="bc-n">1</span>Wann?</div>
+    <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Tag</span><input class="inp" type="date" id="mDate" value="${x.date}"></label><label class="field grow"><span>Beginn</span><input class="inp" type="time" id="mStart" value="${x.start}"></label></div>
+    <label class="field"><span>Wie lange? (Stunden, falls bekannt)</span><input class="inp" type="number" inputmode="decimal" min="0" step="0.5" id="mHours" value="${x.hours}" placeholder="z. B. 4"></label></section>
+  <section class="blockcard" style="--k:var(--s2);--kon:#1A1D2B"><div class="bc-h"><span class="bc-n">2</span>Wie stark?</div>
+    <div class="sev"><b class="num sevnum" id="mIntV" style="background:${sevCol(x.intensity)}">${x.intensity}</b><input class="range grow" type="range" min="1" max="10" id="mInt" value="${x.intensity}" aria-label="Stärke von 1 bis 10"></div>
+    <div class="row hint"><span class="grow">1 · leicht</span><span>10 · unerträglich</span></div>
+    <div class="field"><span>Seite</span><div class="chips">${['links','rechts','beidseitig'].map(v=>`<button class="chip ${x.side===v?'on':''}" data-act="mSide" data-v="${v}">${v}</button>`).join('')}</div></div></section>
+  <div class="extras"><span class="label">Extras · optional</span>
+    ${xrow(o,'sym','--c5','Symptome',x.symptoms.length?x.symptoms.join(', '):'Keine angegeben',multi('symptoms',SYMPTOMS),'sym')}
+    ${xrow(o,'trig','--c3','Mögliche Auslöser',x.triggers.length?x.triggers.join(', '):'Keine angegeben',multi('triggers',TRIGGERS),'trig')}
+    ${xrow(o,'med','--c2','Medikament',x.meds?x.meds+(x.effect?' · Wirkung: '+x.effect:''):'Keins',`<input class="inp" id="mMeds" value="${esc(x.meds)}" placeholder="Name und Uhrzeit"><div class="field"><span>Hat es geholfen?</span><div class="chips">${['gut','etwas','gar nicht'].map(v=>`<button class="chip ${x.effect===v?'on':''}" data-act="mEff" data-v="${v}">${v}</button>`).join('')}</div></div>`,'med')}
+    ${xrow(o,'note','--c1','Notiz',x.note?x.note.slice(0,50):'Keine',`<textarea class="inp" id="mNote">${esc(x.note)}</textarea>`,'note')}
+  </div>
   ${a.isNew?'':`<button class="btn danger" data-act="mDel" id="mDel">Löschen</button>`}
-  <button class="btn ghost" data-act="closeSheet">Abbrechen</button>`;
+  <div class="savebar"><div class="preview" id="mPrev" style="--c:${sevCol(x.intensity)}">${esc(migPrev(x))}</div><button class="btn savebtn" data-act="mSave">Speichern</button></div>`;
 }
 function readMig(){ const g=id=>document.getElementById(id)?.value;
   mdraft.date=g('mDate')||mdraft.date; mdraft.start=g('mStart')??''; mdraft.intensity=+g('mInt'); mdraft.hours=g('mHours')??''; mdraft.meds=g('mMeds')??''; mdraft.note=g('mNote')??''; }
@@ -954,24 +1006,27 @@ function readMig(){ const g=id=>document.getElementById(id)?.value;
 let pdraft=null;
 function sheetProj(a){
   if(!a._init){ const p=a.id?S.projects.find(y=>y.id===a.id):null;
-    pdraft=p?structuredClone(p):{id:uid(),name:'',cat:'arbeit',progress:0,next:'',notes:[]}; a._init=true; a.isNew=!p; }
-  const p=pdraft;
-  return `<h2>${a.isNew?'Neues Projekt':esc(p.name)||'Projekt'}</h2>
-  <label class="field"><span>Name</span><input class="inp" id="pName" value="${esc(p.name)}" placeholder="z. B. Steuererklärung"></label>
-  <div class="field"><span>Farbe</span><div class="chips">${CATS.map(c=>`<button class="chip cat cat-${c.id} ${p.cat===c.id?'on':''}" data-act="pCat" data-v="${c.id}">${c.name}</button>`).join('')}</div></div>
-  <label class="field cat-${p.cat}"><span>Fortschritt: <b class="num" id="pProgV">${p.progress} %</b></span><input class="range" type="range" min="0" max="100" step="5" id="pProg" value="${p.progress}"><div class="bar" style="background:var(--surface-2)"><i id="pBar" style="width:${p.progress}%"></i></div></label>
-  <label class="field"><span>Nächster kleiner Schritt</span><input class="inp" id="pNext" value="${esc(p.next)}" placeholder="Was ist das Allererste, das du tun kannst?"></label>
-  <div class="field"><span>Notizen zum Fortschritt</span><textarea class="inp" id="pNote" placeholder="Was hast du geschafft? Wo hakt es?"></textarea>
-    <button class="btn small ghost" data-act="pNoteAdd" style="align-self:flex-start">Notiz speichern</button>
-    ${p.notes.map((n,i)=>`<div class="note"><small>${fmtDay(n.date,{weekday:'short',day:'numeric',month:'long'})} · ${n.pct??''} %</small>${esc(n.text)}<button class="x" style="float:right;margin-top:-28px" data-act="pNoteDel" data-i="${i}" aria-label="Notiz löschen">×</button></div>`).join('')}</div>
-  <button class="btn" data-act="pSave">Speichern</button>
+    pdraft=p?structuredClone(p):{id:uid(),name:'',cat:'arbeit',progress:0,next:'',notes:[]}; a._init=true; a.isNew=!p; a.open={notes:!!(p&&p.notes.length)}; }
+  const p=pdraft, o=a.open;
+  return `${shHead(a.isNew?'Neues Projekt':'Projekt')}
+  <section class="blockcard b1"><div class="bc-h"><span class="bc-n">1</span>Welches Projekt?</div>
+    <input class="inp big" id="pName" value="${esc(p.name)}" placeholder="z. B. Steuererklärung">
+    <div class="catgrid">${CATS.map(c=>`<button class="catbtn cat-${c.id} ${p.cat===c.id?'on':''}" data-act="pCat" data-v="${c.id}"><i></i>${c.name}</button>`).join('')}</div></section>
+  <section class="blockcard cat-${p.cat}" style="--k:var(--c)"><div class="bc-h"><span class="bc-n" style="color:var(--on)">2</span>Wo stehst du?</div>
+    <div class="row" style="flex-wrap:nowrap;align-items:flex-end"><span class="bigpct num" id="pProgV">${p.progress} %</span><span class="hint grow">geschafft</span></div>
+    <input class="range" style="accent-color:var(--c)" type="range" min="0" max="100" step="5" id="pProg" value="${p.progress}" aria-label="Fortschritt in Prozent">
+    <label class="field"><span>Nächster kleiner Schritt</span><input class="inp" id="pNext" value="${esc(p.next)}" placeholder="Was ist das Allererste, das du tun kannst?"></label></section>
+  <div class="extras"><span class="label">Extras · optional</span>
+    ${xrow(o,'notes','--c1','Notizen zum Fortschritt',p.notes.length?`${p.notes.length} Notizen`:'Noch keine',`<textarea class="inp" id="pNote" placeholder="Was hast du geschafft? Wo hakt es?"></textarea>
+      <button class="btn small ghost" data-act="pNoteAdd" style="align-self:flex-start">Notiz speichern</button>
+      ${p.notes.map((n,i)=>`<div class="note row" style="flex-wrap:nowrap;align-items:flex-start"><div class="grow"><small>${fmtDay(n.date,{weekday:'short',day:'numeric',month:'long'})} · ${n.pct??''} %</small>${esc(n.text)}</div><button class="x" data-act="pNoteDel" data-i="${i}" aria-label="Notiz löschen">×</button></div>`).join('')}`,'note')}
+  </div>
   ${a.isNew?'':`<button class="btn danger" data-act="pDel" id="pDel">Löschen</button>`}
-  <button class="btn ghost" data-act="closeSheet">Abbrechen</button>`;
+  <div class="savebar"><div class="preview cat-${p.cat}">${esc(p.name||'Neues Projekt')} · ${p.progress} %</div><button class="btn savebtn" data-act="pSave">Speichern</button></div>`;
 }
 function readProj(){ const g=id=>document.getElementById(id)?.value;
   if(g('pName')!==undefined) pdraft.name=g('pName').trim(); pdraft.progress=+g('pProg'); pdraft.next=g('pNext')??''; }
 
-let sampleNs=null;
 function bindSheet(top){
   if(top.type==='event'){
     const A0=top.args;
@@ -995,8 +1050,8 @@ function bindSheet(top){
     ti.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); ti.blur(); } });
     const ns=$('#fNewStep'); ns&&ns.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); act('fStepAdd'); setTimeout(()=>$('#fNewStep')?.focus(),20); } });
   }
-  if(top.type==='mig'){ const r=$('#mInt'); r.addEventListener('input',()=>{ const v=+r.value; const el=$('#mIntV'); el.textContent=v; el.style.background=v>=8?'var(--s1)':v>=5?'var(--s2)':'var(--s3)'; }); }
-  if(top.type==='proj'){ const r=$('#pProg'); r.addEventListener('input',()=>{ $('#pProgV').textContent=r.value+' %'; $('#pBar').style.width=r.value+'%'; }); }
+  if(top.type==='mig'){ const r=$('#mInt'); r.addEventListener('input',()=>{ const v=+r.value; const el=$('#mIntV'); el.textContent=v; el.style.background=sevCol(v); mdraft.intensity=v; const pv=$('#mPrev'); pv.textContent=migPrev(mdraft); pv.style.setProperty('--c',sevCol(v)); }); }
+  if(top.type==='proj'){ const r=$('#pProg'); r.addEventListener('input',()=>{ $('#pProgV').textContent=r.value+' %'; }); }
   if(top.type==='plan'){ const f=$('#pFocus'); f.addEventListener('change',()=>{ const v=f.value.trim(); if(v) S.meta.focusOf[top.args.date]=v; else delete S.meta.focusOf[top.args.date]; save('meta'); }); }
 }
 
@@ -1029,11 +1084,14 @@ function paintAlert(){
 }
 let actx=null;
 document.addEventListener('pointerdown',()=>{ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } else if(actx.state==='suspended') actx.resume().catch(()=>{}); },{passive:true});
-function beep(n=1){ if(!actx) return; try{ for(let i=0;i<n;i++){ const o=actx.createOscillator(), g=actx.createGain(); o.frequency.value=880; o.type='sine';
+function beep(n=1){ if(!actx || S.meta.sound===false) return; try{ for(let i=0;i<n;i++){ const o=actx.createOscillator(), g=actx.createGain(); o.frequency.value=880; o.type='sine';
   const t=actx.currentTime+i*0.35; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.25,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
   o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.3); } }catch(e){} }
-function vibe(p){ try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
-function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
+function vibe(p){ if(S.meta.vibe===false) return; try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
+function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remove()); const el=document.createElement('div'); el.className='toast'; el.setAttribute('role','status');
+  el.innerHTML=`<span>${esc(msg)}</span>${undo?'<button class="undo">Rückgängig</button>':''}`;
+  if(undo) el.querySelector('.undo').addEventListener('click',ev=>{ ev.stopPropagation(); undo(); el.remove(); toast('Wiederhergestellt'); });
+  document.body.appendChild(el); setTimeout(()=>el.remove(), undo?6000:2200); }
 
 /* ---------- actions ---------- */
 const A = {
@@ -1065,6 +1123,10 @@ const A = {
   missAck(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.missAck=true; save('events'); render(); },
   scrim(el,ev){ if(ev.target===el) closeSheet(); },
   fCat(el){ readEventForm(); draft.cat=el.dataset.v; ui.sheets[ui.sheets.length-1].args.catTouched=true; renderSheet(); },
+  xOpen(el){ const top=ui.sheets[ui.sheets.length-1]; ({mig:readMig,proj:readProj}[top.type]||(()=>{}))(); top.args.open=top.args.open||{}; top.args.open[el.dataset.v]=!top.args.open[el.dataset.v]; renderSheet(); },
+  openMood(el){ openSheet('mood',{date:el.dataset.v}); },
+  moodDone(){ const d=ui.sheets[ui.sheets.length-1].args.date, n=$('#moodNote'); if(n){ (S.mood[d]||(S.mood[d]={})).note=n.value; save('mood'); } closeSheet(); if(S.mood[d]&&S.mood[d].mood) toast('Check-in gespeichert'); },
+  setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
   fOpen(el){ readEventForm(); const o=ui.sheets[ui.sheets.length-1].args.open; o[el.dataset.v]=!o[el.dataset.v]; renderSheet(); },
   fDur(el){ readEventForm(); draft.dur=+el.dataset.v; renderSheet(); },
   fShift(el){ readEventForm(); if(!draft.start) return; draft.start=fromMin(Math.min(1435,Math.max(0,toMin(draft.start)+(+el.dataset.v)))); renderSheet(); },
@@ -1082,7 +1144,8 @@ const A = {
     if(moved && offerShift(sv.id)) return;
     if(isNew) hype('add'); else toast('Gespeichert'); },
   fDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; }
-    S.events=S.events.filter(x=>x.id!==draft.id); save('events'); closeSheet(); toast('Gelöscht'); },
+    const gone=S.events.find(x=>x.id===draft.id); S.events=S.events.filter(x=>x.id!==draft.id); save('events'); closeSheet();
+    toast('Gelöscht', gone?()=>{ S.events.push(gone); save('events'); render(); }:null); },
   fFocus(){ readEventForm(); const i=S.events.findIndex(x=>x.id===draft.id); if(i>=0){ S.events[i]=draft; save('events'); }
     T.taskId=draft.id; ls.set('timer',T); ui.sheets=[]; renderSheet(); ui.tab='focus'; ls.set('tab','focus'); render(); },
   stepDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); const s=e.steps[+el.dataset.i]; s.done=!s.done; save('events'); render(); if(s.done) hype('step'); },
@@ -1101,14 +1164,14 @@ const A = {
   mEff(el){ readMig(); mdraft.effect=mdraft.effect===el.dataset.v?'':el.dataset.v; renderSheet(); },
   mToggle(el){ readMig(); const a=mdraft[el.dataset.k], v=el.dataset.v, i=a.indexOf(v); i>=0?a.splice(i,1):a.push(v); renderSheet(); },
   mSave(){ readMig(); const i=S.migraine.findIndex(x=>x.id===mdraft.id); if(i>=0) S.migraine[i]=mdraft; else S.migraine.push(mdraft); save('migraine'); closeSheet(); hype('mig'); },
-  mDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } S.migraine=S.migraine.filter(x=>x.id!==mdraft.id); save('migraine'); closeSheet(); },
+  mDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } const gone=S.migraine.find(x=>x.id===mdraft.id); S.migraine=S.migraine.filter(x=>x.id!==mdraft.id); save('migraine'); closeSheet(); toast('Gelöscht', gone?()=>{ S.migraine.push(gone); save('migraine'); render(); }:null); },
   newProj(){ openSheet('proj',{}); }, openProj(el){ openSheet('proj',{id:el.dataset.id}); },
   pCat(el){ readProj(); pdraft.cat=el.dataset.v; renderSheet(); },
   pNoteAdd(){ readProj(); const t=$('#pNote').value.trim(); if(!t) return; pdraft.notes.unshift({date:todayS(),text:t,pct:pdraft.progress}); renderSheet(); },
   pNoteDel(el){ readProj(); pdraft.notes.splice(+el.dataset.i,1); renderSheet(); },
   pSave(){ readProj(); const t=$('#pNote').value.trim(); if(t) pdraft.notes.unshift({date:todayS(),text:t,pct:pdraft.progress});
     if(!pdraft.name){ $('#pName').focus(); return; } const i=S.projects.findIndex(x=>x.id===pdraft.id); const before=i>=0?S.projects[i].progress:0; if(i>=0) S.projects[i]=pdraft; else S.projects.push(pdraft); save('projects'); closeSheet(); if(pdraft.progress>before) hype('proj'); else toast('Gespeichert'); },
-  pDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } S.projects=S.projects.filter(x=>x.id!==pdraft.id); save('projects'); closeSheet(); },
+  pDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } const gone=S.projects.find(x=>x.id===pdraft.id); S.projects=S.projects.filter(x=>x.id!==pdraft.id); save('projects'); closeSheet(); toast('Gelöscht', gone?()=>{ S.projects.push(gone); save('projects'); render(); }:null); },
   async exportData(){
     const data={app:'bunter-kalender',version:1,exported:new Date().toISOString(),data:{events:S.events,migraine:S.migraine,projects:S.projects,mood:S.mood,meta:S.meta}};
     const name=`bunter-kalender-sicherung-${todayS()}.json`;
