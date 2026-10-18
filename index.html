@@ -194,8 +194,8 @@ textarea.inp{min-height:84px;resize:vertical}
 
 /* Tab bar */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-nav.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:560px}
-nav.tabs button{border:0;background:none;padding:8px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:700;color:var(--ink-2);min-height:58px}
+nav.tabs .in{display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:560px}
+nav.tabs button{border:0;background:none;padding:8px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;white-space:nowrap;font-weight:700;color:var(--ink-2);min-height:58px}
 nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--ink)}
 nav.tabs button.on svg{stroke:var(--accent)}
@@ -286,8 +286,10 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .waitbar svg,.hglass svg{width:14px;height:14px}
 nav.tabs{overflow:visible}
 nav.tabs button.tmr{color:var(--ink);position:relative}
-nav.tabs button.tmr .knob{width:60px;height:60px;margin-top:-36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FF9CC8,#F2559A 70%);color:#fff;border:4px solid var(--surface);box-shadow:0 6px 16px rgba(242,85,154,.45),inset 0 -3px 0 rgba(0,0,0,.12)}
+nav.tabs button.tmr .knob{width:54px;height:54px;margin-top:-36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FF9CC8,#F2559A 70%);color:#fff;border:4px solid var(--surface);box-shadow:0 6px 16px rgba(242,85,154,.45),inset 0 -3px 0 rgba(0,0,0,.12)}
 nav.tabs button.tmr .knob svg{width:28px;height:28px;stroke:#fff}
+nav.tabs button.tmr .knob.orb{background:radial-gradient(circle at 34% 28%,#FFD6F0 0,#F27BC2 22%,#B03FA8 58%,#4B1C74 100%);box-shadow:0 6px 18px rgba(176,63,168,.5),inset 0 -4px 8px rgba(30,0,50,.35)}
+nav.tabs button.tmr .knob.torchk{background:radial-gradient(circle at 50% 30%,#FFB347 0,#C2410C 35%,#2A1408 80%);box-shadow:0 6px 18px rgba(194,65,12,.5),inset 0 -4px 8px rgba(0,0,0,.4)}
 nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
 /* Onboarding */
 .ob{position:fixed;inset:0;z-index:40;background:linear-gradient(170deg,var(--accent) 0%,var(--c3) 60%,var(--c3) 100%);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -372,6 +374,75 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .phc{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:12px;padding:8px 10px}
 .phc.wait{background:transparent;border:2px dashed var(--line);padding:6px 10px;font-size:14px;color:var(--ink-2)}
 .phc.done .grow b{text-decoration:line-through;color:var(--ink-2)}
+/* Hellsehen: occult vision */
+.oscrim{background:rgba(8,2,20,.72)}
+.sheet.oracle{--ink:#F1E8FF;--ink-2:#BFA9DE;--line:rgba(220,190,255,.22);--surface:rgba(255,255,255,.07);--surface-2:rgba(255,255,255,.1);
+  color:#F1E8FF;border-top:2px solid rgba(214,170,255,.55);
+  background:radial-gradient(120% 50% at 50% 0%,#3B1766 0%,#1B0B33 55%,#0D0619 100%);position:relative;overflow-x:hidden}
+.sheet.oracle::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.8;background-image:
+  radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 78% 9%,#fff,transparent),radial-gradient(1.4px 1.4px at 62% 31%,#F9D9FF,transparent),
+  radial-gradient(1px 1px at 28% 42%,#fff,transparent),radial-gradient(1.2px 1.2px at 88% 47%,#E9D2FF,transparent),radial-gradient(1px 1px at 6% 66%,#fff,transparent),
+  radial-gradient(1.3px 1.3px at 47% 74%,#fff,transparent),radial-gradient(1px 1px at 92% 82%,#F9D9FF,transparent),radial-gradient(1px 1px at 33% 92%,#fff,transparent)}
+.sheet.oracle .grab{background:rgba(220,190,255,.35)}
+.oball{position:relative;flex:none;width:132px;height:132px;margin:-26px auto 4px;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 35% 30%,#FFE9FF 0,#E7A8FF 14%,#9B4FD6 40%,#3C1475 72%,#14062A 100%);
+  box-shadow:0 0 40px 10px rgba(190,120,255,.45),0 0 90px 30px rgba(120,60,220,.25),inset 0 -10px 24px rgba(10,0,30,.6)}
+.omist{position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent 0 20%,rgba(255,220,255,.35) 30%,transparent 45%,rgba(200,150,255,.3) 65%,transparent 80%);filter:blur(8px)}
+.omist.m2{inset:-20%;background:conic-gradient(from 120deg,transparent 0 30%,rgba(255,255,255,.25) 40%,transparent 55%,rgba(255,190,240,.25) 75%,transparent 90%)}
+.oshine{position:absolute;left:22%;top:14%;width:30%;height:20%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.85),transparent 70%);transform:rotate(-25deg)}
+.otitle{text-align:center;display:flex;flex-direction:column;gap:2px;position:relative}
+.otitle span{font-family:var(--f-display);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#D7B8FF}
+.otitle h2{font-size:32px;color:#FFF3FF;text-shadow:0 0 18px rgba(214,150,255,.75)}
+.otitle em{font-style:normal;color:#CDB4F0}
+.ocard{position:relative;border-radius:18px;padding:14px 16px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(214,170,255,.32);box-shadow:inset 0 0 24px rgba(160,90,255,.12);display:flex;flex-direction:column;gap:8px}
+.ocard p{margin:0;line-height:1.5}
+.ocard .oprop{font-size:16.5px}
+.ocard .omen{color:#FFCF8A;font-weight:700}
+.ofocus span,.olab{font-family:var(--f-display);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#D7B8FF}
+.ofocus b{font-size:19px;color:#FFE6A8}
+.olist{display:flex;flex-direction:column;gap:6px}
+.orow{width:100%;border:0;text-align:left;display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;background:rgba(10,0,25,.45);color:#F1E8FF;border:1px solid rgba(214,170,255,.18)}
+.orow .t{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.orow .od{color:#BFA9DE;font-size:13px}
+.ogem{width:12px;height:12px;flex:none;transform:rotate(45deg);border-radius:2px;background:var(--c);box-shadow:0 0 10px var(--c)}
+.ohint{margin:0;font-size:14px;color:#BFA9DE;text-align:center}
+.obtn{background:rgba(255,255,255,.08)!important;color:#F1E8FF!important;border:1px solid rgba(214,170,255,.35)!important}
+.sheet.oracle .savebar{background:#0D0619;border-top-color:rgba(214,170,255,.25)}
+.sheet.oracle .savebtn{background:linear-gradient(160deg,#9B4FD6,#5B23A0);color:#fff;box-shadow:0 0 18px rgba(155,79,214,.5),inset 0 0 0 1.5px rgba(255,220,255,.4)}
+@media (prefers-reduced-motion:no-preference){
+  .sheet.oracle .omist{animation:oswirl 9s linear infinite}.sheet.oracle .omist.m2{animation:oswirl 13s linear infinite reverse}
+  .sheet.oracle .oball{animation:opulse 3.2s ease-in-out infinite alternate}
+  @keyframes oswirl{to{transform:rotate(360deg)}}
+  @keyframes opulse{from{box-shadow:0 0 30px 6px rgba(190,120,255,.35),0 0 70px 20px rgba(120,60,220,.18),inset 0 -10px 24px rgba(10,0,30,.6)}to{box-shadow:0 0 50px 14px rgba(210,140,255,.55),0 0 110px 40px rgba(130,70,230,.3),inset 0 -10px 24px rgba(10,0,30,.6)}}
+}
+/* Dungeon focus */
+.dg{position:fixed;inset:0;z-index:45;background:#000;color:#fff;display:flex;flex-direction:column;overflow:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.dg .wall{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(60% 45% at 0% 38%,rgba(255,140,40,var(--gl,.22)),transparent 70%),
+  radial-gradient(60% 45% at 100% 38%,rgba(255,140,40,var(--gr,.22)),transparent 70%),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 46px),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 2px,transparent 2px 92px)}
+.torch{position:absolute;top:22%;width:64px;height:190px;pointer-events:none}
+.torch.l{left:max(2px,env(safe-area-inset-left,0px))}.torch.r{right:max(2px,env(safe-area-inset-right,0px))}
+.torch canvas{position:absolute;left:0;top:0;width:64px;height:120px}
+.torch .stick{position:absolute;left:27px;top:104px;width:10px;height:86px;border-radius:3px;background:linear-gradient(90deg,#3B2414,#6B4426 50%,#3B2414)}
+.torch .cup{position:absolute;left:17px;top:96px;width:30px;height:16px;border-radius:2px 2px 10px 10px;background:linear-gradient(#5A5D66,#2A2C32);box-shadow:inset 0 2px 0 rgba(255,255,255,.18)}
+.torch .ring{position:absolute;left:19px;top:150px;width:26px;height:8px;border-radius:3px;background:#3A3C44}
+.dg-top{position:relative;display:flex;justify-content:flex-end;padding-block:10px}
+.dg-x{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}
+.dg-x svg{width:20px;height:20px}
+.dg-main{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:34px;max-width:420px;width:100%;margin:0 auto;padding-inline:52px;text-align:center}
+.dg-lab{font-family:var(--f-display);font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.dg-now b{display:block;font-family:var(--f-display);font-size:34px;line-height:1.15;margin-top:8px;overflow-wrap:anywhere;text-shadow:0 0 22px rgba(255,150,60,.35)}
+.dg-now .dg-sub{display:block;margin-top:8px;color:rgba(255,255,255,.75);font-size:17px}
+.dg-count{font-size:56px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.dg-count small{display:block;font-size:15px;font-weight:400;color:rgba(255,255,255,.65);margin-top:8px;font-family:var(--f-body)}
+.dg-next b{display:block;font-size:22px;margin-top:6px;overflow-wrap:anywhere}
+.dg-next .dg-sub{display:block;margin-top:4px;color:rgba(255,255,255,.65)}
+.dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
+.dg-btn:active{background:rgba(255,255,255,.12)}
+.dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,170,90,.6),transparent)}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -450,6 +521,7 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 <div id="alertRoot"></div>
 <div id="hypeRoot"></div>
 <div id="obRoot"></div>
+<div id="dgRoot"></div>
 
 <script>
 (() => {
@@ -473,6 +545,8 @@ const ls = { get(k,d){ try{ const v=localStorage.getItem('bk_'+k); return v?JSON
 const ICON = {
   day:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
   month:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
+  orb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10.5" r="7"/><path d="M8.6 8.2a4 4 0 0 1 3.4-1.9"/><path d="M6.5 21h11M8 17.6l-1.5 3.4M16 17.6l1.5 3.4"/></svg>',
+  torch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c2.4 2.3 3.4 4.2 3.4 5.9a3.4 3.4 0 0 1-6.8 0c0-1.1.5-2 1.3-2.8.2 1 .8 1.6 1.4 1.8-.4-1.6-.1-3.2.7-4.9z"/><path d="M8.5 12h7l-1.5 2.5h-4zM11 14.5 10.4 22M13 14.5l.6 7.5"/></svg>',
   focus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>',
   tools:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><path d="M17.25 14v6.5M14 17.25h6.5"/></svg>',
   left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
@@ -625,8 +699,10 @@ function softRender(){
   render();
 }
 function renderTabs(){
-  const t=[['day','Tag'],['month','Monat'],['tomorrow','Morgen'],['focus','Fokus'],['tools','Tools']];
-  $('#tabs').innerHTML = t.map(([id,n])=>id==='tomorrow'?`<button class="tmr" data-act="showTomorrow" aria-label="Was steht morgen an?"><span class="knob">${ICON.tomorrow}</span>${n}</button>`:`<button class="${ui.tab===id?'on':''}" data-act="tab" data-v="${id}" aria-label="${n}">${ICON[id]}${n}</button>`).join('');
+  const t=[['day','Tag'],['month','Monat'],['tomorrow','Hellsehen'],['dungeon','Fokus'],['focus','Timer'],['tools','Tools']];
+  $('#tabs').innerHTML = t.map(([id,n])=>id==='tomorrow'?`<button class="tmr" data-act="showTomorrow" aria-label="Hellsehen: Was bringt der morgige Tag?"><span class="knob orb">${ICON.orb}</span>${n}</button>`
+    : id==='dungeon'?`<button class="tmr" data-act="dungeonOpen" aria-label="Fokus: nur der nächste Schritt"><span class="knob torchk">${ICON.torch}</span>${n}</button>`
+    : `<button class="${ui.tab===id?'on':''}" data-act="tab" data-v="${id}" aria-label="${n}">${ICON[id]}${n}</button>`).join('');
 }
 
 function header(title, sub, right=''){
@@ -969,7 +1045,7 @@ function hype(kind, expr){
 const OB = [
   {img:'cheer', h:'Willkommen im Trupp!', p:'Ich bin Leona. Diese App wurde für <b>besondere Gehirne</b> gebaut: Gehirne, die zehn geniale Ideen gleichzeitig haben und trotzdem vergessen, dass die Wäsche seit gestern in der Maschine liegt.', tip:'Mit dieser App kannst du die Weltherrschaft an dich reißen. Oder die Wäsche nicht vergessen. Wir fangen mit der Wäsche an.'},
   {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>orange Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Alles Weitere ist optional und eingeklappt. Du musst nichts ausfüllen, was du nicht brauchst.'},
-  {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Abends drückst du den <b>rosa Knopf</b> unten in der Mitte und siehst sofort, was morgen auf dich wartet.'},
+  {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Abends blickst du mit der <b>Kristallkugel</b> unten in den morgigen Tag. Und die <b>Fackel</b> daneben bringt dich in den Kerker: nur der nächste Schritt, sonst nichts.'},
   {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Für Wäsche, Spülmaschine und Co. gibt es <b>Etappen</b>: Ich erinnere dich genau dann, wenn du wieder ran musst.'},
   {img:'calm', h:'Auch Kriegerinnen ruhen sich aus', p:'Trag morgens kurz ein, wie du geschlafen hast. Im <b>Migränetagebuch</b> zeige ich dir mit der Zeit, ob schlechte Nächte Attacken begünstigen. An harten Tagen schaltest du unter Einstellungen den <b>ruhigen Modus</b> ein.', tip:'Deine Daten bleiben nur auf deinem Handy. Mach ab und zu eine Sicherung unter Tools.'},
   {img:'cheer', h:'Bereit?', p:'Wenn du nicht weiterweißt: <b>Tools → Hilfe</b>. Da erkläre ich dir alles noch mal, ohne zu meckern. Fast ohne.', tip:'Und jetzt raus mit dir. Der Tag erobert sich nicht von allein!'}
@@ -994,7 +1070,7 @@ const HELP = [
   ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li><li>Jede Etappe hat ein <b>Häkchen</b> direkt im Zeitplan. Hakst du früher oder später ab, rechne ich die nächsten Etappen neu.</li><li>Läuft die Maschine noch, zeigt die Jetzt-Karte <b>„Schon fertig“</b> und <b>„+15 Min“</b>.</li><li>Im Eintrag: <b>„Ganze Aufgabe erledigt“</b>.</li></ul>`],
   ['Verschieben & verpasst','--c4',`<p>Termine dürfen sich nicht überschneiden. Passiert es doch, biete ich dir die nächste freie Zeit an. Jeder Eintrag ist <b>fest</b> (Arzt, Termine) oder <b>flexibel</b>. Verschiebst du etwas, schlage ich vor, wie Flexibles mitrutscht. Feste Termine bleiben stehen.</p><p>Ist etwas vorbei und nicht abgehakt, frage ich: nachholen, erledigt, morgen oder lassen.</p><p class="say">„Rückschläge sind kein Rückzug. Wir sortieren neu und weiter geht's.“</p>`],
   ['Erinnerungen','--c3',`<p>Pro Eintrag einstellbar unter Extras → Erinnerung. Sie kommen mit Ton und Banner, solange die App geöffnet ist oder im Hintergrund noch läuft.</p><p>Mitteilungen erlaubst du unter <b>Tools → Sichern & Übertragen</b>. Ist die App ganz geschlossen, kann sie dich leider nicht erinnern. Für Wichtiges stell dir zusätzlich einen Wecker.</p>`],
-  ['Der rosa Morgen-Knopf','--c5',`<p>Unten in der Mitte. Zeigt dir mit einem Tipp, was <b>morgen</b> ansteht: wie viele Termine, wann es losgeht, deine wichtigste Sache. Ideal abends vorm Schlafen.</p>`],
+  ['Hellsehen & Fokus','--c5',`<p><b>Hellsehen</b> (die Kristallkugel unten) zeigt dir als Vision, was <b>morgen</b> ansteht: wann es losgeht, wie viele Termine und Aufgaben, das Zeichen des Tages. Ideal abends vorm Schlafen.</p><p><b>Fokus</b> (die Fackel daneben) öffnet den Kerker: schwarz, Fackeln, nur der <b>jetzige Schritt</b>, der <b>nächste</b> und die Zeit bis dahin. Alles andere verschwindet. Der Zeitmesser von früher heißt jetzt <b>Timer</b>.</p>`],
   ['Tagesplanung','--c3',`<p>Morgens erscheint die gelbe Karte „Plane deinen Tag“. In zwei Minuten: Was steht fest? Was ist die <b>eine wichtigste Sache</b>? Wie hast du geschlafen?</p>`],
   ['Mini-Schritte & Fokus','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Fokus</b>-Tab läuft ein Timer, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
   ['Monat','--c1',`<p>Der Monatsüberblick mit farbigen Punkten pro Eintrag und einer roten Raute an Migränetagen. Tipp auf einen Tag, um ihn zu öffnen.</p>`],
@@ -1156,6 +1232,60 @@ function proactiveNudge(){
   sysNotify(`Leona: ${dur(Math.min(free,600))} frei`,`Wie wär's mit „${e.title}“?`); sfx('call');
 }
 
+/* ---------- Dungeon focus overlay ---------- */
+const DG={raf:0,iv:0,snd:0,wake:null,parts:[]};
+function dgState(){
+  const t=todayS(), n=nowMin(), tm=timed(evOn(t)).filter(e=>!e.done);
+  const cur=tm.find(e=>toMin(e.start)<=n && endMin(e)>n), nx=tm.find(e=>toMin(e.start)>n && e!==cur);
+  const sug=!cur?suggestions(freeNow())[0]:null;
+  return {cur,nx,sug,n};
+}
+function dgPaint(){
+  const r=$('#dgMain'); if(!r) return; const {cur,nx,sug,n}=dgState(), secNow=new Date().getSeconds();
+  const left=m=>{ const tot=m*60-secNow; const h=Math.floor(tot/3600), mm=Math.floor(tot%3600/60), ss=tot%60; return h?`${h}:${pad(mm)}:${pad(ss)}`:`${mm}:${pad(ss)}`; };
+  let h='';
+  if(cur){ h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>${esc(cur.short||cur.title)}</b><span class="dg-sub num">bis ${fromMin(endMin(cur))}</span></div>
+      <div class="dg-count num">${left(endMin(cur)-n)}<small>bis dieser Schritt endet</small></div>
+      <button class="dg-btn" data-act="dgDone" data-id="${cur.id}">Geschafft</button>`; }
+  else if(sug){ h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>${esc(sug.title)}</b><span class="dg-sub">Freie Zeit. Leona schlägt das vor.</span></div>
+      <button class="dg-btn" data-act="dgStart" data-id="${sug.id}">Ich fange an</button>`; }
+  else h+=`<div class="dg-now"><span class="dg-lab">Jetzt</span><b>Durchatmen</b><span class="dg-sub">Gerade steht nichts an.</span></div>`;
+  h+='<hr>';
+  if(nx) h+=`<div class="dg-next"><span class="dg-lab">Als Nächstes</span><b>${esc(nx.short||nx.title)}</b><span class="dg-sub num">um ${nx.start}</span></div>
+      <div class="dg-count num" style="font-size:40px">${left(toMin(nx.start)-n)}<small>bis es losgeht</small></div>`;
+  else h+=`<div class="dg-next"><span class="dg-lab">Als Nächstes</span><b>Nichts mehr heute</b></div>`;
+  r.innerHTML=h;
+}
+function dgFlames(){
+  const cvs=[...document.querySelectorAll('.dg canvas')]; if(!cvs.length) return; const calm=S.meta.calm || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ctxs=cvs.map(c=>{ const dpr=Math.min(2,devicePixelRatio||1); c.width=64*dpr; c.height=120*dpr; const x=c.getContext('2d'); x.scale(dpr,dpr); return {x,p:[]}; });
+  const wall=$('.dg .wall');
+  const step=()=>{ ctxs.forEach((o,k)=>{ const x=o.x; x.globalCompositeOperation='source-over'; x.clearRect(0,0,64,120);
+      for(let i=0;i<(calm?1:4);i++) o.p.push({x:32+R(-6,6),y:104,vx:R(-.35,.35),vy:R(-1.9,-1.1),life:1,r:R(6,11)});
+      x.globalCompositeOperation='lighter';
+      o.p=o.p.filter(q=>q.life>0); o.p.forEach(q=>{ q.x+=q.vx+Math.sin((q.y+performance.now()/90)/9)*.25; q.y+=q.vy; q.life-=calm?.02:.028; q.r*=.985;
+        const g=x.createRadialGradient(q.x,q.y,0,q.x,q.y,q.r*1.6); const a=Math.max(0,q.life);
+        g.addColorStop(0,`rgba(255,${200+Math.round(40*a)},${120*a|0},${.55*a})`); g.addColorStop(.45,`rgba(255,${110+Math.round(60*a)},20,${.35*a})`); g.addColorStop(1,'rgba(120,20,0,0)');
+        x.fillStyle=g; x.beginPath(); x.arc(q.x,q.y,q.r*1.6,0,Math.PI*2); x.fill(); });
+      if(Math.random()<(calm?0:.06)){ x.fillStyle='rgba(255,200,120,.9)'; x.fillRect(32+R(-8,8),R(10,60),1.5,1.5); } });
+    if(wall && !calm){ wall.style.setProperty('--gl',(.18+Math.random()*.08).toFixed(3)); wall.style.setProperty('--gr',(.18+Math.random()*.08).toFixed(3)); }
+    DG.raf=requestAnimationFrame(step); };
+  step();
+}
+function dgCrackle(){ if(S.meta.sound===false || S.meta.sfx===false || S.meta.calm) return; const c=ac(); if(!c) return;
+  const tick=()=>{ const t=c.currentTime+.02; noiseB(c,{t,dur:R(.6,1.2),vol:.018,filter:'lowpass',freq:500,attack:.2});
+    for(let i=0;i<Math.round(R(2,6));i++) noiseB(c,{t:t+R(0,.9),dur:R(.01,.035),vol:R(.03,.09),filter:'bandpass',freq:R(1500,4500),q:1.5}); };
+  tick(); DG.snd=setInterval(tick,900); }
+function dungeonOpen(){
+  const tch=`<div class="torch"><canvas></canvas><div class="cup"></div><div class="stick"></div><div class="ring"></div></div>`;
+  $('#dgRoot').innerHTML=`<div class="dg" role="dialog" aria-modal="true" aria-label="Fokus"><div class="wall"></div>${tch.replace('torch"','torch l"')}${tch.replace('torch"','torch r"')}
+    <div class="dg-top"><button class="dg-x" data-act="dungeonClose" aria-label="Fokus beenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="dg-main" id="dgMain"></div></div>`;
+  document.body.style.overflow='hidden'; dgPaint(); DG.iv=setInterval(dgPaint,1000); dgFlames(); dgCrackle();
+  try{ navigator.wakeLock?.request('screen').then(w=>DG.wake=w).catch(()=>{}); }catch(e){}
+}
+function dungeonClose(){ cancelAnimationFrame(DG.raf); clearInterval(DG.iv); clearInterval(DG.snd); try{ DG.wake?.release(); }catch(e){} DG.wake=null; $('#dgRoot').innerHTML=''; document.body.style.overflow=''; render(); }
+
 /* ---------- no overlaps ---------- */
 function segsOf(e){
   if(!e.start) return [];
@@ -1234,7 +1364,7 @@ function renderSheet(){
   document.body.style.overflow='hidden';
   const f={event:sheetEvent,plan:sheetPlan,mig:sheetMig,proj:sheetProj,shift:sheetShift,sleep:sheetSleep,tomorrow:sheetTomorrow,conflict:sheetConflict,cyc:sheetCyc}[top.type];
   const prev=root.querySelector('.sheet'), keep=prev&&prev.dataset.t===top.type+(top.args.id||'')?prev.scrollTop:0;
-  root.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet ${['event','mig','proj','plan','sleep','tomorrow','cyc'].includes(top.type)?'ev':''} ${prev&&prev.dataset.t===top.type+(top.args.id||'')?'':'anim'}" data-t="${top.type+(top.args.id||'')}" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
+  root.innerHTML=`<div class="scrim ${top.type==='tomorrow'?'oscrim':''}" data-act="scrim"><div class="sheet ${top.type==='tomorrow'?'oracle':''} ${['event','mig','proj','plan','sleep','tomorrow','cyc'].includes(top.type)?'ev':''} ${prev&&prev.dataset.t===top.type+(top.args.id||'')?'':'anim'}" data-t="${top.type+(top.args.id||'')}" role="dialog" aria-modal="true"><div class="grab"></div>${f(top.args)}</div></div>`;
   if(keep) root.querySelector('.sheet').scrollTop=keep;
   bindSheet(top);
 }
@@ -1371,23 +1501,22 @@ function sheetPlan(a){
 function sheetTomorrow(){
   const d=addDays(todayS(),1), list=evOn(d), tm=timed(list), ut=untimed(list), first=tm[0], last=tm[tm.length-1];
   const late=new Date().getHours()>=17;
-  const row=e=>`<button class="trow cat-${e.cat}" data-act="openEvent" data-id="${e.id}"><span class="swatch" style="width:14px;height:14px"></span>${e.start?`<b class="num">${e.start}</b>`:''}<span class="t">${esc(e.title)}</span><span class="hint num">${e.start?dur(e.dur||30):''}</span></button>`;
-  let h=`${shHead('Morgen')}<p class="muted" style="margin:-8px 0 0">${fmtDay(d,{weekday:'long',day:'numeric',month:'long'})}</p>`;
+  const row=e=>`<button class="orow cat-${e.cat}" data-act="openEvent" data-id="${e.id}"><span class="ogem"></span>${e.start?`<b class="num">${e.start}</b>`:'<b>✦</b>'}<span class="t">${esc(e.title)}</span><span class="num od">${e.start?dur(e.dur||30):''}</span></button>`;
+  let h=`<div class="sh-head"><span></span><button class="iconbtn" data-act="closeSheet" aria-label="Vision schließen" style="margin-left:auto;background:transparent;border-color:rgba(230,210,255,.35);color:#EADCff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="oball" aria-hidden="true"><i class="omist"></i><i class="omist m2"></i><i class="oshine"></i></div>
+  <div class="otitle"><span>Die Kugel offenbart</span><h2>${fmtDay(d,{weekday:'long'})}</h2><em>${fmtDay(d,{day:'numeric',month:'long'})}</em></div>`;
   if(!list.length){
-    h+=`<div class="card empty"><h3>Morgen ist noch frei</h3><p class="muted" style="margin:0">Nichts eingetragen. Willst du schon etwas festhalten, damit dein Kopf heute Abend abschalten kann?</p></div>`;
+    h+=`<div class="ocard" style="text-align:center"><b>Der Nebel bleibt leer.</b><p>Noch hat das Schicksal für morgen nichts geschrieben. Willst du es selbst tun, damit dein Geist heute ruhen kann?</p></div>`;
   } else {
-    h+=`<section class="blockcard" style="--k:var(--c1)"><div class="bc-h">Überblick</div>
-      <div class="stat"><div><b class="num">${tm.length}</b><span>${tm.length===1?'Termin':'Termine'}</span></div><div><b class="num">${ut.length}</b><span>${ut.length===1?'Aufgabe':'Aufgaben'}</span></div><div><b class="num">${first?first.start:'–'}</b><span>erster Start</span></div></div>
-      ${first?`<span>Dein Tag startet um <b>${first.start}</b> mit <b>${esc(first.title)}</b>${last&&last!==first?` und endet gegen <b>${fromMin(endMin(last))}</b>`:''}.${toMin(first.start)<10*60?' Stell dir am besten schon heute einen Wecker.':''}</span>`:''}</section>`;
-    if(S.meta.focusOf[d]) h+=`<div class="focuschip"><div class="grow"><span class="label">Wichtigste Sache</span><b>${esc(S.meta.focusOf[d])}</b></div></div>`;
-    if(tm.length) h+=`<section class="blockcard" style="--k:var(--c2)"><div class="bc-h">Zeitplan</div><div class="tasks">${tm.map(row).join('')}</div></section>`;
-    if(ut.length) h+=`<section class="blockcard b1"><div class="bc-h">Aufgaben</div><div class="tasks">${ut.map(row).join('')}</div></section>`;
-    const openToday=untimed(evOn(todayS())).filter(e=>!e.done).length; if(openToday) h+=`<span class="hint">${openToday} offene ${openToday===1?'Aufgabe':'Aufgaben'} von heute wandern automatisch mit, wenn du sie nicht erledigst.</span>`;
-    const prep=list.filter(e=>e.steps&&e.steps.some(x=>!x.done));
-    if(prep.length) h+=`<span class="hint">Mini-Schritte vorbereitet bei: ${prep.map(e=>esc(e.title)).join(', ')}</span>`;
+    h+=`<div class="ocard"><p class="oprop">${first?`Dein Schicksal beginnt um <b>${first.start}</b> mit <b>${esc(first.title)}</b>${last&&last!==first?` und der Tag neigt sich gegen <b>${fromMin(endMin(last))}</b> dem Ende`:''}.`:'Kein Termin bindet dich an eine Stunde.'} Ich sehe <b>${tm.length}</b> ${tm.length===1?'Prüfung':'Prüfungen'} zu fester Stunde${ut.length?` und <b>${ut.length}</b> ${ut.length===1?'Aufgabe':'Aufgaben'}, die auf dich warten`:''}.</p>
+      ${first&&toMin(first.start)<10*60?'<p class="omen">Ein früher Ruf. Stell dir heute schon einen Wecker.</p>':''}</div>`;
+    if(S.meta.focusOf[d]) h+=`<div class="ocard ofocus"><span>Das Zeichen des Tages</span><b>${esc(S.meta.focusOf[d])}</b></div>`;
+    if(tm.length) h+=`<div class="ocard"><span class="olab">Zu fester Stunde</span><div class="olist">${tm.map(row).join('')}</div></div>`;
+    if(ut.length) h+=`<div class="ocard"><span class="olab">Was dich erwartet</span><div class="olist">${ut.map(row).join('')}</div></div>`;
+    const openToday=untimed(evOn(todayS())).filter(e=>!e.done).length; if(openToday) h+=`<p class="ohint">${openToday} ${openToday===1?'offene Aufgabe folgt':'offene Aufgaben folgen'} dir von heute, wenn du ${openToday===1?'sie':'sie'} nicht erledigst.</p>`;
   }
-  h+=`<div class="row"><button class="btn ghost grow" data-act="planAdd" data-v="${d}">Etwas eintragen</button>${S.meta.planned[d]?'':`<button class="btn ghost grow" data-act="plan" data-v="${d}">Morgen planen</button>`}</div>
-  <div class="savebar"><button class="btn savebtn" data-act="tomorrowDone">${late?'Alles klar, gute Nacht':'Alles klar'}</button></div>`;
+  h+=`<div class="row"><button class="btn ghost grow obtn" data-act="planAdd" data-v="${d}">In die Zukunft schreiben</button>${S.meta.planned[d]?'':`<button class="btn ghost grow obtn" data-act="plan" data-v="${d}">Den Morgen planen</button>`}</div>
+  <div class="savebar"><button class="btn savebtn" data-act="tomorrowDone">${late?'Die Vision schließen. Gute Nacht':'Die Vision schließen'}</button></div>`;
   return h;
 }
 function sheetSleep(a){
@@ -1652,6 +1781,10 @@ const A = {
   sfxDemo(){ const L=[['bells','Glocken: Erinnerung'],['sword','Schwertklirren: abgehakt'],['harp','Harfe: Mini-Schritt'],['lute','Laute: eingetragen'],['drum','Trommel: Tag neu sortiert'],['call','Hornruf: Leona hat einen Vorschlag'],['chime','Klangspiel: Fürsorge'],['gong','Gong: Fokus-Timer vorbei'],['fanfareBig','Fanfare: alles geschafft!']];
     if(S.meta.sound===false){ toast('Töne sind ausgeschaltet'); return; } L.forEach(([k,l],i)=>setTimeout(()=>{ sfx(k); toast(l); },i*2300)); },
   showTomorrow(){ openSheet('tomorrow',{}); },
+  dungeonOpen(){ dungeonOpen(); },
+  dungeonClose(){ dungeonClose(); },
+  dgDone(el){ const r=phaseRef(el.dataset.id); if(r){ if(!r.ph.done) phaseDone(r,true); } else { const e=S.events.find(x=>x.id===el.dataset.id); if(e && !e.done){ e.done=true; save('events'); hype('done'); } } dgPaint(); },
+  dgStart(el){ A.sugDo(el); dgPaint(); },
   tomorrowDone(){ closeSheet(); if(new Date().getHours()>=17 && evOn(addDays(todayS(),1)).length) hype('night'); },
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
   fOpen(el){ readEventForm(); const o=ui.sheets[ui.sheets.length-1].args.open; o[el.dataset.v]=!o[el.dataset.v]; renderSheet(); },
