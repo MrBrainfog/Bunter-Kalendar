@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Bunter Kalender</title>
+<title>Leona</title>
 <meta name="theme-color" content="#F3F4F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#11131B" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Kalender">
+<meta name="apple-mobile-web-app-title" content="Leona">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1374,11 +1374,11 @@ const A = {
   pDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } const gone=S.projects.find(x=>x.id===pdraft.id); S.projects=S.projects.filter(x=>x.id!==pdraft.id); save('projects'); closeSheet(); toast('Gelöscht', gone?()=>{ S.projects.push(gone); save('projects'); render(); }:null); },
   async exportData(){
     const data={app:'bunter-kalender',version:1,exported:new Date().toISOString(),data:{events:S.events,migraine:S.migraine,projects:S.projects,mood:S.mood,sleep:S.sleep,meta:S.meta}};
-    const name=`bunter-kalender-sicherung-${todayS()}.json`;
+    const name=`leona-sicherung-${todayS()}.json`;
     const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
     let ok=false;
     try{ const file=new File([blob],name,{type:'application/json'});
-      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Bunter Kalender Sicherung'}); ok=true; } }
+      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Leona Sicherung'}); ok=true; } }
     catch(e){ if(e && e.name==='AbortError') return; }
     if(!ok){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
     ls.set('lastBackup',todayS()); toast('Sicherung erstellt'); render();
@@ -1417,7 +1417,7 @@ document.addEventListener('change',ev=>{
     r.onload=()=>{ const msg=$('#importMsg'); try{ const j=JSON.parse(r.result); if(j.app!=='bunter-kalender'||!j.data) throw 0;
         pendingImport=j; const n=(j.data.events||[]).length, m=(j.data.migraine||[]).length, p=(j.data.projects||[]).length;
         msg.innerHTML=`Gefunden: Sicherung vom ${esc(new Date(j.exported).toLocaleDateString('de-DE'))} mit ${n} Einträgen, ${m} Migräne-Einträgen, ${p} Projekten.<br><button class="btn" style="margin-top:8px" data-act="importConfirm">Diese Sicherung laden</button>`; }
-      catch(e){ msg.textContent='Diese Datei ist keine Sicherung vom Bunten Kalender.'; } };
+      catch(e){ msg.textContent='Diese Datei ist keine Sicherung von Leona.'; } };
     r.readAsText(f); ev.target.value=''; }
   if(ev.target.id==='tTask'){ T.taskId=ev.target.value||null; ls.set('timer',T); render(); }
   if(ev.target.id==='moodNote'){ const d=todayS(); (S.mood[d]||(S.mood[d]={})).note=ev.target.value; save('mood'); }
