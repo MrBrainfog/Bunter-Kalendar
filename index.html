@@ -436,7 +436,7 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-x svg{width:20px;height:20px}
 .dg-main{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:34px;max-width:420px;width:100%;margin:0 auto;padding-inline:52px;text-align:center}
 .dg-lab{font-family:var(--f-display);font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.dg-now b{display:block;font-family:var(--f-display);font-size:34px;line-height:1.15;margin-top:8px;overflow-wrap:anywhere;text-shadow:0 0 22px rgba(255,150,60,.35)}
+.dg-now b{display:block;font-family:var(--f-display);font-size:34px;line-height:1.15;margin-top:8px;overflow-wrap:anywhere;}
 .dg-now .dg-sub{display:block;margin-top:8px;color:rgba(255,255,255,.75);font-size:17px}
 .dg-count{font-size:56px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
 .dg-count small{display:block;font-size:15px;font-weight:400;color:rgba(255,255,255,.65);margin-top:8px;font-family:var(--f-body)}
@@ -444,7 +444,7 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-next .dg-sub{display:block;margin-top:4px;color:rgba(255,255,255,.65)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
-.dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,170,90,.6),transparent)}
+.dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
 /* Quests */
 svg.coin{width:22px;height:22px;flex:none}
 .qcoinbig svg.coin{width:46px;height:46px;filter:drop-shadow(0 2px 3px rgba(90,60,10,.3))}
@@ -481,7 +481,6 @@ svg.coin{width:22px;height:22px;flex:none}
 .tmrcard b{display:block}.tmrcard span{font-size:14px;color:#E3CDAE}
 /* Focus: battle plan scroll */
 .dg.plan{background:#1A110A;padding:0}
-.dgstage{position:absolute;left:50%;top:50%;width:max(100vw,66.67vh);height:max(100vh,150vw);transform:translate(-50%,-50%);background:url(focus-plan.webp) center/100% 100% no-repeat}
 .dgglow{display:none;position:absolute;inset:0;pointer-events:none;background:radial-gradient(22% 16% at 6% 92%,rgba(255,190,90,.45),transparent 70%),radial-gradient(18% 12% at 94% 6%,rgba(255,190,90,.4),transparent 70%);mix-blend-mode:screen;opacity:.7}
 .dgshade{position:absolute;inset:0;pointer-events:none;background:rgba(26,16,8,.5)}
 .dg.plan .dgbox{background:#EADBBD;border-radius:24px;box-shadow:0 0 24px 18px #EADBBD;padding:8px 4px}
@@ -1564,8 +1563,7 @@ function dgCrackle(){ if(S.meta.sound===false || S.meta.sfx===false || S.meta.ca
     for(let i=0;i<Math.round(R(2,6));i++) noiseB(c,{t:t+R(0,.9),dur:R(.01,.035),vol:R(.03,.09),filter:'bandpass',freq:R(1500,4500),q:1.5}); };
   tick(); DG.snd=setInterval(tick,900); }
 function dungeonOpen(){
-  $('#dgRoot').innerHTML=`<div class="dg plan" role="dialog" aria-modal="true" aria-label="Fokus"><div class="dgstage"><div class="dgglow"></div><div class="dgshade"></div><div class="dgbox" id="dgMain"></div></div>
-    <div class="dg-top"><button class="dg-x" data-act="dungeonClose" aria-label="Fokus beenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>`;
+  $('#dgRoot').innerHTML=`<div class="dg" role="dialog" aria-modal="true" aria-label="Fokus"><div class="dg-top"><button class="dg-x" data-act="dungeonClose" aria-label="Fokus beenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="dg-main" id="dgMain"></div></div>`;
   document.body.style.overflow='hidden'; dgPaint(); DG.iv=setInterval(dgPaint,1000);
   try{ navigator.wakeLock?.request('screen').then(w=>DG.wake=w).catch(()=>{}); }catch(e){}
 }
