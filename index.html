@@ -208,25 +208,40 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .toast{position:fixed;z-index:31;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;max-width:calc(100% - 32px)}
 .durrow{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
 .durrow .inp{min-width:0}
-/* Valka */
-.hype{position:fixed;z-index:25;left:max(10px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(66px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:4px;max-width:470px}
-.hype-av{width:104px;flex:none;filter:drop-shadow(0 8px 12px rgba(0,0,0,.28))}
-.hype-av svg{width:100%;height:auto;display:block}
-.hype-bubble{position:relative;background:var(--surface);color:var(--ink);border:2.5px solid var(--ink);border-radius:18px 18px 18px 4px;padding:10px 14px;margin-bottom:34px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;min-width:0}
+/* Leona */
+.hype{position:fixed;z-index:25;left:max(6px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(62px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:2px;max-width:480px}
+.hype-av{width:128px;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
+.hype-bubble{position:relative;background:var(--surface);color:var(--ink);border:2.5px solid var(--ink);border-radius:18px 18px 18px 4px;padding:10px 14px;margin-bottom:46px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;min-width:0}
 .hype-bubble small{font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
 .hype-bubble span{font-weight:700;font-size:16px;line-height:1.3}
-.valka .m-shout{display:none}
-.valka.shout .m-shout{display:inline}
-.valka.shout .m-grin{display:none}
-.valka .spark{opacity:0}
-.valka-hero{width:min(60vw,220px);margin:0 auto}
+.leona svg{width:100%;height:auto;display:block;overflow:visible}
+.leona .eyes-happy,.leona .eyes-wink,.leona .mouth-shout,.leona .blush,.leona .burst,.leona .sparks{display:none}
+.leona.ex-shout .eyes-normal,.leona.ex-shout .mouth-smirk,.leona.ex-wink .eyes-normal{display:none}
+.leona.ex-shout .eyes-happy,.leona.ex-shout .mouth-shout,.leona.ex-shout .blush,.leona.ex-shout .burst,.leona.ex-shout .sparks{display:inline}
+.leona.ex-wink .eyes-wink,.leona.ex-wink .blush,.leona.ex-wink .sparks{display:inline}
+.leona .pony,.leona .scarf,.leona .body,.leona .whole,.leona .burst,.leona .eye-open{transform-box:view-box}
+.leona-hero{width:min(64vw,250px);margin:0 auto;border:0;background:none;padding:0}
 @media (prefers-reduced-motion:no-preference){
-  .hype .hype-av{animation:vjump .5s cubic-bezier(.3,1.6,.5,1)}
-  .hype .hype-bubble{animation:vpop .35s .12s ease-out both}
-  .hype .spark{animation:vspark .9s .15s ease-out}
-  @keyframes vjump{0%{transform:translateY(60px) scale(.8)}100%{transform:none}}
+  .leona .pony{animation:lsway 2.8s ease-in-out infinite alternate}
+  .leona .scarf{animation:lscarf 1.9s ease-in-out infinite alternate}
+  .leona .body{animation:lbreathe 3.2s ease-in-out infinite}
+  .leona .eye-open{animation:lblink 4.6s infinite}
+  .leona .burst{animation:lspin 10s linear infinite}
+  .leona .sparks path{transform-box:fill-box;transform-origin:center;animation:ltwinkle 1.3s ease-in-out infinite alternate}
+  .leona .sparks path:nth-child(2){animation-delay:.45s}
+  .leona .sparks path:nth-child(3){animation-delay:.9s}
+  .leona.pop .whole{animation:lhop .7s cubic-bezier(.3,1.7,.5,1)}
+  .leona.pop.ex-shout .whole{animation:lhop .7s cubic-bezier(.3,1.7,.5,1),lshake .35s .7s 2}
+  .hype .hype-bubble{animation:vpop .35s .15s ease-out both}
+  @keyframes lsway{from{transform:rotate(-4deg)}to{transform:rotate(5deg)}}
+  @keyframes lscarf{from{transform:rotate(-3deg)}to{transform:rotate(7deg)}}
+  @keyframes lbreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(1.8px)}}
+  @keyframes lblink{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
+  @keyframes lspin{to{transform:rotate(360deg)}}
+  @keyframes ltwinkle{from{transform:scale(.6);opacity:.55}to{transform:scale(1.15);opacity:1}}
+  @keyframes lhop{0%{transform:translateY(80px) scale(.85)}60%{transform:translateY(-8px)}100%{transform:none}}
+  @keyframes lshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
   @keyframes vpop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
-  @keyframes vspark{0%{opacity:0;transform:scale(.4)}30%{opacity:1}100%{opacity:0;transform:scale(1.3)}}
 }
 .empty{text-align:center;padding:22px 12px;display:flex;flex-direction:column;gap:10px;align-items:center}
 .empty h3{font-size:20px}
@@ -535,7 +550,7 @@ function stopTick(){ clearInterval(tInt); tInt=null; try{ wake?.release(); }catc
 const TOOLS = [
   {id:'migraine', name:'Migränetagebuch', cat:'gesund', summary(){ const n=S.migraine.filter(x=>x.date>=addDays(todayS(),-29)).length; return n?`${n} Tage in den letzten 30`:'Attacken festhalten, Auslöser erkennen'; }, view:viewMigraine},
   {id:'projects', name:'Projekte', cat:'arbeit', summary(){ return S.projects.length?`${S.projects.length} Projekte · Ø ${Math.round(S.projects.reduce((a,p)=>a+p.progress,0)/S.projects.length)} %`:'Fortschritt und Notizen'; }, view:viewProjects},
-  {id:'valka', name:'Valka', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
+  {id:'valka', name:'Leona', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
   {id:'backup', name:'Sichern & Übertragen', cat:'termin', summary(){ const b=ls.get('lastBackup',null); return b?`Letzte Sicherung: ${fmtDay(b,{day:'numeric',month:'short'})}`:'Für ein neues Handy oder als Absicherung'; }, view:viewBackup},
   {id:'mood', name:'Stimmung & Energie', cat:'freizeit', summary(){ const m=S.mood[todayS()]; return m?`Heute: ${MOOD[(m.mood||3)-1]}, Energie ${ENERGY[(m.energy||3)-1]}`:'Täglicher Kurz-Check-in'; }, view:viewMood},
 ];
@@ -609,72 +624,128 @@ function sysNotify(title,body){
     navigator.serviceWorker?.ready.then(r=>r.showNotification(title,{body,icon:'icon-192.png',badge:'icon-192.png',tag:title,vibrate:[200,100,200]})).catch(()=>{}); }catch(e){}
 }
 
-/* ---------- Valka: original warrior avatar ---------- */
-const VALKA = `<svg viewBox="0 0 120 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <g class="spark" style="transform-origin:60px 60px">
-    <path d="M10 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#FFC53D"/>
-    <path d="M106 18 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z" fill="#F2542D"/>
-    <path d="M104 62 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2z" fill="#22BFAA"/>
+/* ---------- Leona: original anime-style warrior avatar ---------- */
+let leonaN=0;
+function leonaSVG(){
+  const u='l'+(++leonaN);
+  const eye=(cx,side,tag)=>{ // side: 1 = left eye, -1 = right eye (mirrored)
+    const X=v=>cx+side*v;
+    return `<g class="eye-open" style="transform-origin:${cx}px 93px">
+      <clipPath id="${u}c${tag}"><path d="M${X(-10)} 88 Q${X(-1)} 84 ${X(9)} 89.5 Q${X(8)} 97 ${X(0)} 98.5 Q${X(-8)} 97 ${X(-10)} 88Z"/></clipPath>
+      <path d="M${X(-10)} 88 Q${X(-1)} 84 ${X(9)} 89.5 Q${X(8)} 97 ${X(0)} 98.5 Q${X(-8)} 97 ${X(-10)} 88Z" fill="#FFFDF8"/>
+      <g clip-path="url(#${u}c${tag})">
+        <ellipse cx="${X(0.5)}" cy="93" rx="5.6" ry="6.3" fill="url(#${u}iris)"/>
+        <ellipse cx="${X(0.5)}" cy="93.6" rx="2.3" ry="3.4" fill="#2A0D04"/>
+        <path d="M${X(-10)} 86 Q${X(0)} 82 ${X(10)} 86 L${X(10)} 90.5 Q${X(0)} 87.5 ${X(-10)} 91Z" fill="#2A1A14" opacity=".35"/>
+        <circle cx="${X(-1.6)}" cy="90.4" r="2" fill="#fff"/>
+        <circle cx="${X(2.8)}" cy="96.6" r="1" fill="#fff"/>
+      </g>
+      <path d="M${X(-11)} 88 Q${X(-1)} 82.6 ${X(9.6)} 89.4" fill="none" stroke="#14111A" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M${X(-11)} 88 L${X(-14.2)} 85" stroke="#14111A" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M${X(-7)} 97.8 Q${X(0)} 100.6 ${X(7.5)} 97" fill="none" stroke="#5A3A30" stroke-width="1.1" stroke-linecap="round"/>
+    </g>`;
+  };
+  const happy=(cx,side)=>{ const X=v=>cx+side*v;
+    return `<path d="M${X(-9)} 94 Q${X(0)} 85 ${X(9)} 93" fill="none" stroke="#14111A" stroke-width="3.2" stroke-linecap="round"/>`; };
+  return `<svg class="leona-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="${u}iris" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A2E0C"/><stop offset=".55" stop-color="#D9731E"/><stop offset="1" stop-color="#FFD36B"/></linearGradient>
+    <linearGradient id="${u}steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7D8BA6"/><stop offset="1" stop-color="#3E4659"/></linearGradient>
+    <radialGradient id="${u}glow" cx=".5" cy=".42" r=".55"><stop offset="0" stop-color="#FFE08A" stop-opacity=".95"/><stop offset="1" stop-color="#FFE08A" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g class="burst" style="transform-origin:100px 92px">
+    <circle cx="100" cy="92" r="96" fill="url(#${u}glow)"/>
+    ${Array.from({length:18},(_,i)=>{ const a=i*20*Math.PI/180, b=a+0.09, R=110; return `<path d="M100 92 L${(100+R*Math.cos(a-0.09)).toFixed(1)} ${(92+R*Math.sin(a-0.09)).toFixed(1)} L${(100+R*Math.cos(b)).toFixed(1)} ${(92+R*Math.sin(b)).toFixed(1)}Z" fill="${i%2?'#F2542D':'#FFC53D'}" opacity=".55"/>`; }).join('')}
   </g>
-  <path d="M12 132 C14 100 32 86 60 86 C88 86 106 100 108 132Z" fill="#0F6E68"/>
-  <path d="M30 76 C24 84 22 96 25 108 C27 116 23 122 19 126 C29 124 34 116 33 106 C32 96 34 86 38 80Z" fill="#2A1B16"/>
-  <circle cx="24" cy="118" r="3.4" fill="#C8D0DA"/>
-  <rect x="51" y="70" width="18" height="22" rx="6" fill="#B97A50"/>
-  <path d="M28 132 C30 106 42 94 60 94 C78 94 90 106 92 132Z" fill="#C99230"/>
-  <path d="M42 132 C44 112 50 102 60 100 C70 102 76 112 78 132Z" fill="#A87420"/>
-  <path d="M60 104 l7 9 -7 9 -7 -9z" fill="#22BFAA" stroke="#0F6E68" stroke-width="1.5"/>
-  <ellipse cx="29" cy="100" rx="19" ry="12" fill="#E3B341" stroke="#8A6418" stroke-width="2"/>
-  <ellipse cx="91" cy="100" rx="19" ry="12" fill="#E3B341" stroke="#8A6418" stroke-width="2"/>
-  <path d="M14 101 Q29 94 44 101" fill="none" stroke="#8A6418" stroke-width="1.6"/>
-  <path d="M76 101 Q91 94 106 101" fill="none" stroke="#8A6418" stroke-width="1.6"/>
-  <circle cx="22" cy="98" r="1.8" fill="#8A6418"/><circle cx="36" cy="98" r="1.8" fill="#8A6418"/>
-  <circle cx="84" cy="98" r="1.8" fill="#8A6418"/><circle cx="98" cy="98" r="1.8" fill="#8A6418"/>
-  <ellipse cx="38" cy="54" rx="4" ry="6" fill="#B97A50"/><ellipse cx="82" cy="54" rx="4" ry="6" fill="#B97A50"/>
-  <ellipse cx="60" cy="52" rx="22" ry="25" fill="#C98A5E"/>
-  <path d="M37 52 C33 26 48 17 62 18 C80 19 90 31 84 54 C82 44 77 37 70 34 C64 41 50 44 41 45 C39 47 38 50 37 52Z" fill="#2A1B16"/>
-  <path d="M41 41 Q60 31 81 40" fill="none" stroke="#C8D0DA" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M61 31.5 l3.5 4 -3.5 4 -3.5 -4z" fill="#22BFAA"/>
-  <path d="M44 47.5 L56 51" stroke="#2A1B16" stroke-width="3.4" stroke-linecap="round"/>
-  <path d="M76 47.5 L64 51" stroke="#2A1B16" stroke-width="3.4" stroke-linecap="round"/>
-  <ellipse cx="51" cy="55.5" rx="3.2" ry="3.6" fill="#1A1D2B"/><ellipse cx="69" cy="55.5" rx="3.2" ry="3.6" fill="#1A1D2B"/>
-  <circle cx="52.2" cy="54.2" r="1.1" fill="#fff"/><circle cx="70.2" cy="54.2" r="1.1" fill="#fff"/>
-  <path d="M64 62 L76 59.5" stroke="#22BFAA" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M65 66 L76 63.5" stroke="#22BFAA" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M44 58 L46.5 64" stroke="#9E6440" stroke-width="1.6" stroke-linecap="round"/>
-  <path d="M59 57 Q57 63 60.5 63.5" fill="none" stroke="#9E6440" stroke-width="1.6" stroke-linecap="round"/>
-  <g class="m-grin"><path d="M50.5 68 Q60 77.5 70 67.5 Q60 71.5 50.5 68Z" fill="#fff" stroke="#7A3A28" stroke-width="1.8" stroke-linejoin="round"/></g>
-  <g class="m-shout"><path d="M51 67 Q60 82 69 67 Q60 69.5 51 67Z" fill="#5A1E18" stroke="#7A3A28" stroke-width="1.8" stroke-linejoin="round"/><path d="M53.5 68.2 Q60 70 66.5 68.2 L66 70 Q60 71.6 54 70Z" fill="#fff"/><ellipse cx="60" cy="75.5" rx="4.2" ry="2.4" fill="#E06A5A"/></g>
+  <g class="whole">
+    <g class="pony" style="transform-origin:128px 40px">
+      <path d="M124 36 C148 16 178 26 182 56 C185 80 172 96 176 118 C162 104 158 88 160 70 C160 56 150 44 132 44Z" fill="#1B1E2E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M150 30 C166 34 174 48 174 64" fill="none" stroke="#4E6FAE" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M168 76 C166 88 168 98 172 108" fill="none" stroke="#4E6FAE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path d="M62 80 C56 48 74 26 100 24 C128 24 146 46 140 82 C138 98 134 110 129 118 L124 86 L76 86 L71 118 C65 108 62 94 62 80Z" fill="#1B1E2E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+    <g class="body">
+      <path d="M88 116 L88 142 Q100 150 112 142 L112 116Z" fill="#F1CDB2" stroke="#0B0C14" stroke-width="1.6"/>
+      <path d="M88 121 Q100 134 112 121 L112 131 Q100 141 88 131Z" fill="#D9A68C"/>
+      <path d="M36 220 C40 178 62 152 100 150 C138 152 160 178 164 220Z" fill="#232838" stroke="#0B0C14" stroke-width="2"/>
+      <path d="M64 170 Q100 158 136 170 L131 220 L69 220Z" fill="url(#${u}steel)" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M74 174 Q100 165 126 174 L124 181 Q100 173 76 181Z" fill="#B7C3D9"/>
+      <path d="M100 186 L110 198 L100 212 L90 198Z" fill="#22BFAA" stroke="#0B0C14" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M100 190 L105 198 L100 205" fill="none" stroke="#B9FFF2" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M30 182 C30 160 50 146 74 150 C82 162 80 178 70 190 C54 194 40 191 30 182Z" fill="url(#${u}steel)" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M36 176 C40 162 54 155 70 157" fill="none" stroke="#B7C3D9" stroke-width="3" stroke-linecap="round"/>
+      <path d="M33 186 C44 192 58 193 70 190" fill="none" stroke="#22BFAA" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M170 182 C170 160 150 146 126 150 C118 162 120 178 130 190 C146 194 160 191 170 182Z" fill="url(#${u}steel)" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M164 176 C160 162 146 155 130 157" fill="none" stroke="#B7C3D9" stroke-width="3" stroke-linecap="round"/>
+      <path d="M167 186 C156 192 142 193 130 190" fill="none" stroke="#22BFAA" stroke-width="2.6" stroke-linecap="round"/>
+      <g class="scarf" style="transform-origin:122px 164px">
+        <path d="M122 158 Q146 164 166 186 Q152 184 142 178 Q150 194 146 208 Q134 188 116 170Z" fill="#C8323E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M130 166 Q144 172 156 184" fill="none" stroke="#8E1E28" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <path d="M72 148 Q100 166 128 148 Q134 158 128 166 Q100 180 72 166 Q66 158 72 148Z" fill="#C8323E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M78 160 Q100 172 122 160" fill="none" stroke="#8E1E28" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <path d="M70 70 C70 92 74 106 86 118 Q94 126 100 128 Q106 126 114 118 C126 106 130 92 130 70 C130 52 116 44 100 44 C84 44 70 52 70 70Z" fill="#F7DCC6" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M71 74 Q100 90 129 74 L129 80 Q100 96 71 80Z" fill="#EDC4AD"/>
+    <path d="M73 98 Q76 110 86 118 Q80 106 78 96Z" fill="#E7B79E"/>
+    <g class="eyes-normal">${eye(86,1,"a")}${eye(114,-1,"b")}</g>
+    <g class="eyes-happy">${happy(86,1)}${happy(114,-1)}</g>
+    <g class="eyes-wink">${eye(86,1,"c")}${happy(114,-1)}</g>
+    <path d="M101 100 L99 106.5 L102.5 106.8" fill="none" stroke="#C48E76" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g class="blush"><path d="M77 105 l3 -3.4 M81.5 105 l3 -3.4 M86 105 l3 -3.4 M111 105 l3 -3.4 M115.5 105 l3 -3.4 M120 105 l3 -3.4" stroke="#EE8E98" stroke-width="1.5" stroke-linecap="round"/></g>
+    <g class="mouth-smirk"><path d="M93 114 Q100 117 108 112" fill="none" stroke="#3A1E1A" stroke-width="1.9" stroke-linecap="round"/><path d="M108 112 L110.5 110" stroke="#3A1E1A" stroke-width="1.6" stroke-linecap="round"/></g>
+    <g class="mouth-shout"><path d="M89 110 Q100 107 111 110 Q109 125 100 126 Q91 125 89 110Z" fill="#5A1418" stroke="#0B0C14" stroke-width="1.6" stroke-linejoin="round"/><path d="M93.5 120 Q100 115.5 106.5 120 Q100 125 93.5 120Z" fill="#E66A6E"/><path d="M90 110.4 Q100 108.5 110 110.4 L109 113 Q100 111.6 91 113Z" fill="#fff"/><path d="M94.5 112 L96.2 116 L97.8 112Z" fill="#fff"/></g>
+    <path d="M118 104 L125 101.5" stroke="#22BFAA" stroke-width="2" stroke-linecap="round"/>
+    <path d="M66 70 C66 92 66 106 72 120 C73 104 75 92 78 80Z" fill="#1B1E2E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M134 70 C134 92 134 106 128 120 C127 104 125 92 122 80Z" fill="#1B1E2E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+    <g class="bangs">
+      <path d="M64 80 C60 56 76 36 100 35 C126 35 142 54 136 80 L130 66 L126 76 L118 58 L112 72 L103 54 L96 73 L88 57 L81 75 L76 64 L70 80Z" fill="#1B1E2E" stroke="#0B0C14" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M80 44 Q96 37 114 41" fill="none" stroke="#4E6FAE" stroke-width="3" stroke-linecap="round"/>
+      <path d="M88 50 L86 58 M103 46 L103 54 M118 50 L119 58" stroke="#4E6FAE" stroke-width="2" stroke-linecap="round"/>
+      <path d="M126 36 C130 32 135 33 136 38 C134 42 129 42 126 40Z" fill="#22BFAA" stroke="#0B0C14" stroke-width="1.6"/>
+    </g>
+<g class="brows">      <path d="M74 81.5 Q84 76 95 83" fill="none" stroke="#14111A" stroke-width="3.4" stroke-linecap="round"/>
+      <path d="M126 81.5 Q116 76 105 83" fill="none" stroke="#14111A" stroke-width="2.8" stroke-linecap="round"/>
+    </g>
+    <g class="sparks">
+      <path d="M26 46 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5z" fill="#FFC53D" stroke="#0B0C14" stroke-width="1.2"/>
+      <path d="M168 132 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6z" fill="#22BFAA" stroke="#0B0C14" stroke-width="1.2"/>
+      <path d="M40 120 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2z" fill="#F2542D" stroke="#0B0C14" stroke-width="1.1"/>
+    </g>
+  </g>
 </svg>`;
-const VALKA_LINES = {
-  add:['Eingetragen! Ein Plan ist schon der halbe Sieg.','Notiert. Jetzt weiß der Tag, wer hier das Sagen hat!','Gut so! Wer plant, schlägt das Chaos.','Steht im Plan. Dein Kopf darf jetzt loslassen.','Ha! Noch ein Feldzug auf der Karte!'],
-  done:['HA! Erledigt! So wird gekämpft!','Abgehakt! Nicht nachlassen, weiter!','Treffer! Nächstes Ziel anvisieren!','Siehst du? Du schaffst mehr, als du denkst!','Sieg! Gönn dir einen Moment Stolz.','Das war stark. Ich hab nichts anderes erwartet!'],
-  alldone:['ALLES erledigt! Heute hast du das Schlachtfeld beherrscht!','Kein Punkt mehr offen. Legendär! Jetzt wird ausgeruht.'],
-  step:['Ein Schritt! Genau so wird ein Berg flach.','Weiter so, Schritt für Schritt!','Kleiner Schritt, echter Fortschritt!','Vorwärts! Der nächste Schritt wartet schon.'],
-  focus:['Fokuszeit überstanden! Respekt!','Das war Disziplin. Jetzt kurz durchatmen!','Durchgehalten! So trainiert man den Fokus.'],
-  plan:['Schlachtplan steht! Jetzt holen wir uns den Tag.','Ein Tag mit Plan ist ein gewonnener Tag. Los!'],
-  shift:['Plan angepasst. Flexibel bleiben ist auch Stärke!','Neu aufgestellt! Ein Rückschlag ist kein Rückzug.','Kein Drama. Wir kämpfen einfach von hier aus weiter!'],
-  mig:['Gut, dass du es festhältst. Ruh dich aus, ich halte Wache.','Notiert. Heute darfst du langsam machen, das ist auch Kampfgeist.'],
-  proj:['Fortschritt! Das Projekt zittert schon vor dir.','Weiter vorgerückt! So erobert man ein Projekt.'],
-  test:['Bereit, wenn du es bist! Ich feuere dich bei jedem Sieg an.']
+}
+
+const LEONA_LINES = {
+  add:['Eingetragen? Gut. Jetzt zieh es auch durch!','Ein Plan! Endlich denkst du wie eine Kämpfernatur.','Notiert. Und wehe, du drückst dich davor!','Hah! Der Tag weiß noch nicht, was auf ihn zukommt.','Gut so. Wer vorbereitet ist, wird nicht überrannt.'],
+  done:['HAHAHA! Erledigt! Genau so will ich dich sehen!','Abgehakt! Nicht ausruhen, das Nächste wartet schon!','Nicht schlecht. Aber ich weiß, dass du noch mehr draufhast!','Siehst du? Grenzen sind da, um sie zu sprengen!','Ha! Sauberer Treffer. Weiter, weiter!','So ist es richtig! Zögern kannst du später.'],
+  alldone:['ALLES erledigt?! HAHAHA! Heute hast du dich selbst übertroffen!','Kein einziger Punkt mehr offen. So sieht Stärke aus! Jetzt iss was und ruh dich aus. Morgen wird weitergekämpft.'],
+  step:['Ein Schritt! Und der nächste kommt sofort!','Nicht stehen bleiben, nicht grübeln. Machen!','Gut. Schritt für Schritt wird der Berg zum Hügel.','Weiter! Schwung verliert man nur, wenn man anhält.'],
+  focus:['Fokuszeit überstanden! Hah, du wirst ja richtig zäh!','Das war Training für den Kopf. Kurz durchatmen, dann die nächste Runde!','Durchgehalten! Genau so wächst man über sich hinaus.'],
+  plan:['Der Schlachtplan steht! Jetzt holen wir uns diesen Tag!','Gut geplant. Jetzt zeig dem Tag, wer hier das Kommando hat!'],
+  shift:['Was verpasst? Egal! Wer fällt, steht wieder auf. Und zwar sofort!','Plan geändert, Kampf geht weiter. Zurückweichen gibt es nicht!','Hah! Ein Rückschlag ist nur ein Grund, härter zurückzuschlagen!'],
+  mig:['Selbst die Stärksten müssen sich mal hinlegen. Ruh dich aus, das ist ein Befehl!','Notiert. Heute kämpfst du gegen den Schmerz, nicht gegen deine Liste. Leg dich hin.'],
+  proj:['Fortschritt! Dieses Projekt hat keine Chance gegen dich!','Vorwärts! Aufgeben ist was für andere.'],
+  test:['Du brauchst Antrieb? HAHA! Den kriegst du. Bei jedem Sieg!','Was stehst du hier rum? Da draußen wartet dein Tag!']
 };
 let hypeT=null, lastLine='';
 function hype(kind){
   if(S.meta.hype===false) return;
-  const pool=VALKA_LINES[kind]||VALKA_LINES.done; let line=pool[Math.floor(Math.random()*pool.length)];
+  const pool=LEONA_LINES[kind]||LEONA_LINES.done; let line=pool[Math.floor(Math.random()*pool.length)];
   if(line===lastLine && pool.length>1) line=pool[(pool.indexOf(line)+1)%pool.length]; lastLine=line;
-  const shout=['done','alldone','focus','plan','proj'].includes(kind);
-  $('#hypeRoot').innerHTML=`<div class="hype" role="status" data-act="hypeClose"><div class="hype-av valka ${shout?'shout':''}">${VALKA}</div><div class="hype-bubble"><small>Valka</small><span>${esc(line)}</span></div></div>`;
+  const ex=['done','alldone','focus','plan','proj','test'].includes(kind)?'ex-shout':['add','shift','step'].includes(kind)?'ex-wink':'';
+  $('#hypeRoot').innerHTML=`<div class="hype" role="status" data-act="hypeClose"><div class="hype-av leona pop ${ex}">${leonaSVG()}</div><div class="hype-bubble"><small>Leona</small><span>${esc(line)}</span></div></div>`;
   vibe(kind==='alldone'?[80,60,80,60,160]:40);
   clearTimeout(hypeT); hypeT=setTimeout(()=>{ $('#hypeRoot').innerHTML=''; }, kind==='alldone'?6000:4200);
 }
 function viewValka(){
   const on=S.meta.hype!==false;
-  return `<header class="top">${back()}<h1>Valka<span class="sub">Deine Kriegerin für mehr Antrieb</span></h1></header><div class="stack">
-  <div class="card stack" style="align-items:center;text-align:center"><div class="valka-hero valka shout">${VALKA}</div>
-  <p style="margin:0;font-weight:700;font-size:17px">„Ich bin Valka. Jedes Mal, wenn du etwas einträgst oder abhakst, bin ich da. Und ich werde laut.“</p></div>
-  <div class="field"><span>Valka anzeigen</span><div class="chips"><button class="chip ${on?'on':''}" data-act="hypeSet" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="hypeSet" data-v="0">Aus</button></div></div>
+  return `<header class="top">${back()}<h1>Leona<span class="sub">Deine Kriegerin für mehr Antrieb</span></h1></header><div class="stack">
+  <div class="card stack" style="align-items:center;text-align:center"><button class="leona-hero leona ex-shout" id="leonaHero" data-act="heroPoke" aria-label="Leona anstupsen">${leonaSVG()}</button>
+  <p style="margin:0;font-weight:700;font-size:17px">„Ich bin Leona. Jammern bringt dich nicht weiter, Handeln schon. Ich bin da, wenn du etwas einträgst oder abhakst. Und ich werde laut.“</p></div>
+  <div class="field"><span>Leona anzeigen</span><div class="chips"><button class="chip ${on?'on':''}" data-act="hypeSet" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="hypeSet" data-v="0">Aus</button></div></div>
   <button class="btn" data-act="hypeTest">Feuer mich an!</button>
-  <p class="hint">Valka meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Tagesplan und wenn du deinen Tag neu sortierst. Tipp auf sie, um sie wegzuschicken.</p></div>`;
+  <p class="hint">Leona meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Tagesplan und wenn du deinen Tag neu sortierst. Tipp auf sie, um sie wegzuschicken.</p></div>`;
 }
 
 /* ---------- rescheduling ---------- */
@@ -916,7 +987,8 @@ const A = {
   closeSheet(){ closeSheet(); },
   hypeClose(){ clearTimeout(hypeT); $('#hypeRoot').innerHTML=''; },
   hypeSet(el){ S.meta.hype=el.dataset.v==='1'; save('meta'); render(); if(S.meta.hype) hype('test'); },
-  hypeTest(){ hype(['done','add','step','plan','focus'][Math.floor(Math.random()*5)]); },
+  heroPoke(el){ const ex=['ex-shout','ex-wink',''][Math.floor(Math.random()*3)]; el.className='leona-hero leona pop '+ex; void el.offsetWidth; hype('test'); },
+  hypeTest(){ hype(['done','add','step','plan','focus','test'][Math.floor(Math.random()*6)]); },
   shBuf(el){ ui.sheets[ui.sheets.length-1].args.buf=+el.dataset.v; renderSheet(); },
   shApply(){ const a=ui.sheets[ui.sheets.length-1].args; const p=planShift(a.id,a.buf);
     p.changes.forEach(c=>{ c.x.start=c.to; if(c.toDate) c.x.date=c.toDate; delete c.x.missAck; }); save('events'); closeSheet(); hype('shift'); },
