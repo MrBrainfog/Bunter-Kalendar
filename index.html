@@ -1349,7 +1349,11 @@ if(T.endAt){ if(tLeft()>0) startTick(); else tickTimer(); }
 setInterval(checkReminders,15000); setTimeout(checkReminders,1500);
 setInterval(()=>{ if(ui.tab==='day' && ui.date===todayS() && !ui.sheets.length) softRender(); },30000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkReminders(); if(T.endAt) tickTimer(); if(!ui.sheets.length) softRender(); } });
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  const hadCtrl=!!navigator.serviceWorker.controller; let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(hadCtrl && !reloaded){ reloaded=true; location.reload(); } });
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{ r.update().catch(()=>{}); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) r.update().catch(()=>{}); }); }).catch(()=>{});
+}
 try{ navigator.storage?.persist?.(); }catch(e){}
 })();
 </script>
