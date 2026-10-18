@@ -1,5 +1,5 @@
 // Offline-Unterstützung: App-Dateien werden zwischengespeichert.
-const CACHE = 'bunter-kalender-v20';
+const CACHE = 'bunter-kalender-v21';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'leona-smirk.webp', 'leona-cheer.webp', 'leona-wink.webp', 'leona-calm.webp'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

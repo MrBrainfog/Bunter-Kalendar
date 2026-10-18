@@ -798,7 +798,7 @@ function paintTimer(){
 function tickTimer(){
   if(T.endAt && tLeft()<=0){
     T.endAt=null; T.remaining=0; ls.set('timer',T); stopTick();
-    beep(3); vibe([300,150,300]); setTimeout(()=>hype('focus'),400);
+    sfx('gong'); vibe([300,150,300]); setTimeout(()=>hype('focus'),900);
     showAlert({cat:'pause', title:'Fokuszeit vorbei!', text:'Gut gemacht. Steh kurz auf, trink etwas.', actions:[['Pause 5 Min','tBreak'],['OK','closeAlert']]});
   }
   if(ui.tab==='focus') paintTimer();
@@ -937,6 +937,7 @@ let hypeT=null, lastLine='';
 const LEONA_EXPR = {period:'calm',done:'cheer',alldone:'cheer',focus:'cheer',plan:'cheer',proj:'cheer',test:'cheer',sleepgood:'cheer',add:'wink',step:'wink',shift:'smirk',mig:'calm',sleepbad:'calm',night:'calm'};
 ['smirk','cheer','wink','calm'].forEach(n=>{ const i=new Image(); i.src=`leona-${n}.webp`; });
 function hype(kind, expr){
+  if(S.meta.sfx!==false) sfx(HYPE_SFX[kind]);
   if(S.meta.hype===false) return;
   expr = expr || LEONA_EXPR[kind] || 'smirk';
   const av = S.meta.hypeAv!==false;
@@ -1078,7 +1079,9 @@ function viewSettings(){
   return `<header class="top">${back()}<h1>Einstellungen<span class="sub">So, wie es dir guttut</span></h1></header><div class="stack">
   ${tg('calm',!!S.meta.calm,'Ruhiger Modus','Schaltet alle Bewegungen und Animationen ab. Gut für Tage mit Reizüberflutung oder Migräne.')}
   ${tg('cycleOn',cycOn(),'Zyklus-Funktion','Periode eintragen, Prognosen und Markierungen im Kalender. Schalte sie ein, wenn du einen Zyklus hast. Beim Ausschalten bleiben deine Einträge gespeichert, sie werden nur nicht mehr angezeigt.')}
-  ${tg('sound',S.meta.sound!==false,'Töne bei Erinnerungen','Ein kurzer Ton, wenn ein Termin ansteht oder der Fokus-Timer abläuft.')}
+  ${tg('sound',S.meta.sound!==false,'Töne bei Erinnerungen','Glockenschläge bei Erinnerungen und ein Hornruf, wenn Leona dir in freier Zeit etwas vorschlägt. Schaltet alle Töne der App an oder aus.')}
+  ${tg('sfx',S.meta.sfx!==false,'Klänge bei Erfolgen','Mittelalterliche Klänge: Schwertklirren beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Fokus-Timer.')}
+  <button class="btn ghost" data-act="sfxDemo">Klänge anhören</button>
   ${tg('vibe',S.meta.vibe!==false,'Vibration','Das Handy vibriert bei Erinnerungen und wenn Leona dich anfeuert.')}
   <button class="btn ghost" data-act="openTool" data-v="valka">Leona ein- oder ausschalten</button></div>`;
 }
@@ -1128,7 +1131,7 @@ function proactiveNudge(){
   const e=suggestions(free)[0]; if(!e) return;
   ls.set('lastNudge',Date.now());
   showAlert({cat:e.cat,label:'Leona',title:`${dur(Math.min(free,600))} frei`,text:`Wie wär's mit „${e.title}“? Dauert etwa ${dur(e.dur||30)}.`,actions:[['Später','closeAlert'],['Mach ich jetzt','sugDo:'+e.id]]});
-  sysNotify(`Leona: ${dur(Math.min(free,600))} frei`,`Wie wär's mit „${e.title}“?`); beep(1);
+  sysNotify(`Leona: ${dur(Math.min(free,600))} frei`,`Wie wär's mit „${e.title}“?`); sfx('call');
 }
 
 /* ---------- no overlaps ---------- */
@@ -1498,9 +1501,35 @@ function paintAlert(){
 }
 let actx=null;
 document.addEventListener('pointerdown',()=>{ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } else if(actx.state==='suspended') actx.resume().catch(()=>{}); },{passive:true});
-function beep(n=1){ if(!actx || S.meta.sound===false) return; try{ for(let i=0;i<n;i++){ const o=actx.createOscillator(), g=actx.createGain(); o.frequency.value=880; o.type='sine';
-  const t=actx.currentTime+i*0.35; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.25,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
-  o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.3); } }catch(e){} }
+/* ---------- Medieval sound world (synthesized, no files) ---------- */
+let masterGain=null;
+function ac(){ if(!actx) return null; if(actx.state==='suspended') actx.resume().catch(()=>{}); return actx; }
+function outN(c){ if(!masterGain){ masterGain=c.createGain(); const comp=c.createDynamicsCompressor(); masterGain.connect(comp); comp.connect(c.destination); } masterGain.gain.value=S.meta.calm?0.35:0.7; return masterGain; }
+function tone(c,{f,t,dur,type='sine',vol=.3,attack=.005}){ const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(outN(c)); o.start(t); o.stop(t+dur+.05); return o; }
+function noiseB(c,{t,dur,vol=.2,filter='bandpass',freq=3000,q=1,attack=.002}){ const len=Math.max(1,Math.ceil(c.sampleRate*dur)), bf=c.createBuffer(1,len,c.sampleRate), d=bf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+  const src=c.createBufferSource(); src.buffer=bf; const fl=c.createBiquadFilter(); fl.type=filter; fl.frequency.setValueAtTime(freq,t); fl.Q.value=q; const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  src.connect(fl); fl.connect(g); g.connect(outN(c)); src.start(t); src.stop(t+dur+.02); return fl; }
+const SFX={
+  bell(c,t){ [[1,.32,2.4],[2.0,.16,1.8],[2.76,.11,1.4],[5.4,.05,.9],[8.9,.025,.5]].forEach(([r,v,d])=>tone(c,{f:660*r,t,dur:d,vol:v,attack:.003})); },
+  bells(c,t){ SFX.bell(c,t); SFX.bell(c,t+.6); },
+  gong(c,t){ [[1,.4,4.2],[1.48,.2,3.4],[2.1,.13,2.6],[2.9,.07,2]].forEach(([r,v,d])=>tone(c,{f:98*r,t,dur:d,vol:v,attack:.025})); noiseB(c,{t,dur:.9,vol:.07,filter:'lowpass',freq:600}); },
+  sword(c,t){ const fl=noiseB(c,{t,dur:.38,vol:.32,filter:'highpass',freq:2500}); fl.frequency.exponentialRampToValueAtTime(7500,t+.32);
+    [[2100,.22,.7],[3170,.15,.55],[4730,.09,.45],[6400,.05,.3]].forEach(([f,v,d])=>tone(c,{f,t:t+.015,dur:d,vol:v,attack:.002})); },
+  harp(c,t){ [523.25,659.25,783.99].forEach((f,i)=>{ tone(c,{f,t:t+i*.09,dur:.95,type:'triangle',vol:.2,attack:.003}); tone(c,{f:f*2,t:t+i*.09,dur:.4,vol:.045}); }); },
+  lute(c,t){ [392,587.33].forEach((f,i)=>{ tone(c,{f,t:t+i*.13,dur:.75,type:'triangle',vol:.24,attack:.002}); tone(c,{f:f*3,t:t+i*.13,dur:.22,vol:.035}); }); },
+  drum(c,t){ const o=c.createOscillator(), g=c.createGain(); o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(52,t+.28); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.75,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+    o.connect(g); g.connect(outN(c)); o.start(t); o.stop(t+.55); noiseB(c,{t,dur:.12,vol:.1,filter:'lowpass',freq:1200}); },
+  horn(c,t,notes){ notes.forEach(([f,st,d])=>{ const T=t+st, o=c.createOscillator(), o2=c.createOscillator(), fl=c.createBiquadFilter(), g=c.createGain(); o.type='sawtooth'; o2.type='square'; o.frequency.value=f; o2.frequency.value=f*1.004;
+    fl.type='lowpass'; fl.frequency.setValueAtTime(700,T); fl.frequency.linearRampToValueAtTime(2300,T+.08); g.gain.setValueAtTime(.0001,T); g.gain.exponentialRampToValueAtTime(.13,T+.04); g.gain.setValueAtTime(.13,T+Math.max(.05,d-.06)); g.gain.exponentialRampToValueAtTime(.0001,T+d+.14);
+    o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(outN(c)); o.start(T); o2.start(T); o.stop(T+d+.2); o2.stop(T+d+.2); }); },
+  call(c,t){ SFX.horn(c,t,[[392,0,.2],[523.25,.24,.45]]); },
+  fanfare(c,t){ SFX.horn(c,t,[[392,0,.13],[392,.15,.13],[392,.3,.13],[523.25,.47,.55],[659.25,.47,.55]]); SFX.drum(c,t+.47); },
+  fanfareBig(c,t){ SFX.horn(c,t,[[392,0,.15],[523.25,.19,.15],[659.25,.38,.15],[783.99,.57,.8],[1046.5,.57,.8]]); SFX.drum(c,t); SFX.drum(c,t+.57); SFX.bell(c,t+.6); },
+  chime(c,t){ [523.25,392].forEach((f,i)=>tone(c,{f,t:t+i*.28,dur:1.7,vol:.16,attack:.012})); }
+};
+function sfx(name){ if(S.meta.sound===false || !name) return; const c=ac(); if(!c || !SFX[name]) return; try{ SFX[name](c,c.currentTime+.03); }catch(e){} }
+const HYPE_SFX={done:'sword',alldone:'fanfareBig',step:'harp',add:'lute',plan:'fanfare',proj:'fanfare',shift:'drum',sleepgood:'lute',test:'fanfare',mig:'chime',sleepbad:'chime',night:'chime',period:'chime'};
+function beep(n=1){ sfx(n>=2?'bells':'bell'); }
 function vibe(p){ if(S.meta.vibe===false) return; try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
 function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remove()); const el=document.createElement('div'); el.className='toast'; el.setAttribute('role','status');
   el.innerHTML=`<span>${esc(msg)}</span>${undo?'<button class="undo">Rückgängig</button>':''}`;
@@ -1573,6 +1602,8 @@ const A = {
   wrapPick(el){ openSheet('event',{id:el.dataset.id}); },
   wrapDrop(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; S.events=S.events.filter(x=>x!==e); save('events'); render(); toast('Gestrichen',()=>{ S.events.push(e); save('events'); render(); }); },
   fDue(el){ readEventForm(); draft.due=el.dataset.v||null; renderSheet(); },
+  sfxDemo(){ const L=[['bells','Glocken: Erinnerung'],['sword','Schwertklirren: abgehakt'],['harp','Harfe: Mini-Schritt'],['lute','Laute: eingetragen'],['drum','Trommel: Tag neu sortiert'],['call','Hornruf: Leona hat einen Vorschlag'],['chime','Klangspiel: Fürsorge'],['gong','Gong: Fokus-Timer vorbei'],['fanfareBig','Fanfare: alles geschafft!']];
+    if(S.meta.sound===false){ toast('Töne sind ausgeschaltet'); return; } L.forEach(([k,l],i)=>setTimeout(()=>{ sfx(k); toast(l); },i*2300)); },
   showTomorrow(){ openSheet('tomorrow',{}); },
   tomorrowDone(){ closeSheet(); if(new Date().getHours()>=17 && evOn(addDays(todayS(),1)).length) hype('night'); },
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
