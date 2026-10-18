@@ -267,9 +267,33 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .crest svg{width:16px;height:16px}
 .hb-top{display:flex;align-items:center;gap:8px}
 /* Leona */
-.hype{position:fixed;z-index:25;left:max(6px,env(safe-area-inset-left,0px));right:max(90px,calc(env(safe-area-inset-right,0px) + 90px));bottom:calc(62px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:2px;max-width:480px}
-.hype{right:max(90px,calc(env(safe-area-inset-right,0px) + 90px))}
-.hype-av{width:128px;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
+.hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
+.hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
+.hype-av{position:relative;width:min(40vw,160px);flex:none}
+.hype-av img{position:relative;display:block;width:100%;height:auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));transform-origin:50% 100%}
+.hype-av .hglow{position:absolute;left:50%;top:45%;width:140%;aspect-ratio:1;max-width:none;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 55%,transparent) 0%,transparent 65%)}
+.hype-av .rays{position:absolute;left:50%;top:40%;width:190%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:repeating-conic-gradient(color-mix(in srgb,var(--c3) 70%,transparent) 0 7deg,transparent 7deg 20deg);-webkit-mask:radial-gradient(circle,transparent 18%,#000 30%,transparent 68%);mask:radial-gradient(circle,transparent 18%,#000 30%,transparent 68%);display:none}
+.hype-av.ex-cheer .rays{display:block}
+.hype.with-av .hype-bubble{margin-bottom:46px;margin-left:-14px}
+.lgal{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lcard{position:relative;border:0;padding:8px 8px 0;border-radius:18px;overflow:hidden;display:block;background:linear-gradient(160deg,var(--accent),var(--c3));color:#1A1D2B;font-weight:800;font-size:14px}
+.lcard img{width:100%;height:auto;display:block}
+.lcard span{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);white-space:nowrap;background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 10px;font-size:13px}
+@media (prefers-reduced-motion:no-preference){
+  .hype-av img{animation:lrise .55s cubic-bezier(.25,1.6,.5,1) both, lbreath 3s .6s ease-in-out infinite}
+  .hype-av.ex-cheer img{animation:lrise .5s cubic-bezier(.25,1.8,.5,1) both, ljolt .32s .5s ease-in-out 2, lbreath 3s 1.2s ease-in-out infinite}
+  .hype-av.ex-wink img{animation:lrise .55s cubic-bezier(.25,1.6,.5,1) both, ltilt .6s .5s ease-in-out, lbreath 3s 1.2s ease-in-out infinite}
+  .hype-av.ex-calm img{animation:lfade .7s ease-out both, lbreath 4s .7s ease-in-out infinite}
+  .hype-av .hglow{animation:lglow 2.4s ease-in-out infinite alternate}
+  .hype-av .rays{animation:lspin 8s linear infinite}
+  @keyframes lrise{0%{transform:translateY(70%) scale(.9);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+  @keyframes lfade{0%{transform:translateY(20%);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes lbreath{0%,100%{transform:none}50%{transform:translateY(-2px) scale(1.012)}}
+  @keyframes ljolt{0%,100%{transform:none}30%{transform:rotate(-3deg) translateY(-6px)}70%{transform:rotate(2deg) translateY(-3px)}}
+  @keyframes ltilt{0%,100%{transform:none}50%{transform:rotate(-4deg)}}
+  @keyframes lglow{from{opacity:.55;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+  @keyframes lspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+}
 .hype-bubble{position:relative;background:var(--surface);color:var(--ink);border:2.5px solid var(--ink);border-radius:18px;padding:12px 14px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;min-width:0}
 .hype-bubble small{font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
 .hype-bubble span{font-weight:700;font-size:16px;line-height:1.3}
@@ -731,11 +755,15 @@ const LEONA_LINES = {
   test:['Du brauchst Antrieb? HAHA! Den kriegst du. Bei jedem Sieg!','Was stehst du hier rum? Da draußen wartet dein Tag!']
 };
 let hypeT=null, lastLine='';
-function hype(kind){
+const LEONA_EXPR = {done:'cheer',alldone:'cheer',focus:'cheer',plan:'cheer',proj:'cheer',test:'cheer',sleepgood:'cheer',add:'wink',step:'wink',shift:'smirk',mig:'calm',sleepbad:'calm',night:'calm'};
+['smirk','cheer','wink','calm'].forEach(n=>{ const i=new Image(); i.src=`leona-${n}.webp`; });
+function hype(kind, expr){
   if(S.meta.hype===false) return;
+  expr = expr || LEONA_EXPR[kind] || 'smirk';
+  const av = S.meta.hypeAv!==false;
   const pool=LEONA_LINES[kind]||LEONA_LINES.done; let line=pool[Math.floor(Math.random()*pool.length)];
   if(line===lastLine && pool.length>1) line=pool[(pool.indexOf(line)+1)%pool.length]; lastLine=line;
-  $('#hypeRoot').innerHTML=`<div class="hype" role="status" data-act="hypeClose"><div class="hype-bubble"><div class="hb-top"><span class="crest">${ICON.sword}</span><small>Leona</small></div><span>${esc(line)}</span></div></div>`;
+  $('#hypeRoot').innerHTML=`<div class="hype ${av?'with-av':''}" role="status" data-act="hypeClose">${av?`<div class="hype-av ex-${expr}"><span class="rays"></span><span class="hglow"></span><img src="leona-${expr}.webp" alt=""></div>`:''}<div class="hype-bubble"><div class="hb-top">${av?'':`<span class="crest">${ICON.sword}</span>`}<small>Leona</small></div><span>${esc(line)}</span></div></div>`;
   vibe(kind==='alldone'?[80,60,80,60,160]:40);
   clearTimeout(hypeT); hypeT=setTimeout(()=>{ $('#hypeRoot').innerHTML=''; }, kind==='alldone'?6000:4200);
 }
@@ -748,13 +776,15 @@ function viewSettings(){
   <button class="btn ghost" data-act="openTool" data-v="valka">Leona ein- oder ausschalten</button></div>`;
 }
 function viewValka(){
-  const on=S.meta.hype!==false;
+  const on=S.meta.hype!==false, av=S.meta.hypeAv!==false;
+  const g=[['cheer','Jubelt','done'],['wink','Zwinkert','add'],['smirk','Selbstbewusst','shift'],['calm','Fürsorglich','mig']];
   return `<header class="top">${back()}<h1>Leona<span class="sub">Deine Kriegerin für mehr Antrieb</span></h1></header><div class="stack">
-  <div class="card stack"><div class="hb-top"><span class="crest">${ICON.sword}</span><b style="font-family:var(--f-display);font-size:19px">Leona</b></div>
-  <p style="margin:0;font-weight:700;font-size:17px">„Jammern bringt dich nicht weiter, Handeln schon. Ich melde mich, wenn du etwas einträgst oder abhakst. Und ich werde laut.“</p></div>
+  <p style="margin:0;font-weight:700;font-size:17px">„Jammern bringt dich nicht weiter, Handeln schon. Ich melde mich, wenn du etwas einträgst oder abhakst. Und ich werde laut.“</p>
+  <div class="lgal">${g.map(([e,l,k])=>`<button class="lcard" data-act="hypeExpr" data-v="${e}" data-k="${k}" aria-label="Leona ${l}"><img src="leona-${e}.webp" alt="" loading="lazy"><span>${l}</span></button>`).join('')}</div>
+  <span class="hint">Tipp auf ein Bild, um Leona in Aktion zu sehen.</span>
   <div class="field"><span>Sprüche anzeigen</span><div class="chips"><button class="chip ${on?'on':''}" data-act="hypeSet" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="hypeSet" data-v="0">Aus</button></div></div>
-  <button class="btn" data-act="hypeTest">Feuer mich an!</button>
-  <p class="hint">Leona meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Planen, beim Schlaf-Check und abends nach dem Blick auf morgen. Tipp auf die Sprechblase, um sie wegzuschicken.</p></div>`;
+  <div class="field"><span>Leona mit Bild zeigen</span><div class="chips"><button class="chip ${av?'on':''}" data-act="setPref" data-k="hypeAv" data-v="1">An</button><button class="chip ${av?'':'on'}" data-act="setPref" data-k="hypeAv" data-v="0">Nur Sprechblase</button></div></div>
+  <p class="hint">Leona meldet sich beim Eintragen, Abhaken, bei Mini-Schritten, nach dem Fokus-Timer, beim Planen, beim Schlaf-Check und abends nach dem Blick auf morgen. Tipp auf sie, um sie wegzuschicken.</p></div>`;
 }
 
 /* ---------- rescheduling ---------- */
@@ -1084,6 +1114,7 @@ const A = {
   closeSheet(){ closeSheet(); },
   hypeClose(){ clearTimeout(hypeT); $('#hypeRoot').innerHTML=''; },
   hypeSet(el){ S.meta.hype=el.dataset.v==='1'; save('meta'); render(); if(S.meta.hype) hype('test'); },
+  hypeExpr(el){ hype(el.dataset.k, el.dataset.v); },
   hypeTest(){ hype(['done','add','step','plan','focus','test'][Math.floor(Math.random()*6)]); },
   shBuf(el){ ui.sheets[ui.sheets.length-1].args.buf=+el.dataset.v; renderSheet(); },
   shApply(){ const a=ui.sheets[ui.sheets.length-1].args; const p=planShift(a.id,a.buf);
