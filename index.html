@@ -111,6 +111,7 @@ header.top .sub{display:block;font-family:var(--f-body);font-size:14px;font-weig
 .tl .nowline::before{content:"";position:absolute;left:-5px;top:-7px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
 .blk{position:absolute;border:0;text-align:left;border-radius:12px;padding:6px 10px;background:var(--c);color:var(--on);overflow:hidden;display:flex;flex-direction:column;gap:2px;z-index:2;box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,#000)}
 .blk b{font-size:15px;line-height:1.2;overflow-wrap:anywhere}
+.blk.tiny b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
 .blk small{font-size:12px;opacity:.9}
 .blk.done{opacity:.4}
 .blk.done b{text-decoration:line-through}
@@ -268,6 +269,20 @@ nav.tabs button.on svg{stroke:var(--accent)}
 .hb-top{display:flex;align-items:center;gap:8px}
 .blk.ghost{background:color-mix(in srgb,var(--c) 14%,var(--bg));color:var(--ink);border:2.5px dashed var(--c);box-shadow:none;z-index:1}
 .blk.ghost small{opacity:1;color:var(--ink-2)}
+.phlist{display:flex;flex-direction:column;gap:4px}
+.phrow{display:flex;gap:6px;align-items:center}
+.phrow .inp{min-height:42px;padding:8px 10px;min-width:0}
+.phdur{width:72px;flex:none}
+.phkind{border:0;border-radius:10px;padding:0 6px;min-height:42px;font-weight:800;font-size:12px;flex:none;width:62px}
+.phrow.do .phkind{background:var(--c2);color:var(--c2-on)}
+.phrow.wait .phkind{background:var(--surface-2);color:var(--ink-2);border:2px dashed var(--ink-2)}
+.phtime{margin:0 0 6px 68px;font-size:12px}
+.pchip.act{background:var(--accent);color:var(--accent-on);border:0;cursor:pointer}
+.waitbar{position:absolute;right:0;width:26px;border:0;background:none;padding:0;display:flex;justify-content:center;z-index:2}
+.waitbar::before{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:3px dotted var(--c);transform:translateX(-50%)}
+.waitbar span,.hglass{position:relative;width:24px;height:24px;border-radius:50%;background:var(--c);color:var(--on);display:grid;place-items:center;flex:none}
+.hglass{width:30px;height:30px}
+.waitbar svg,.hglass svg{width:14px;height:14px}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -372,6 +387,7 @@ const ICON = {
   tools:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><path d="M17.25 14v6.5M14 17.25h6.5"/></svg>',
   left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
   right:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>',
+  hourglass:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9"/></svg>',
   tomorrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><path d="M17 3v3M15.5 4.5h3"/></svg>',
   sword:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3H21v6.5L10 20.5 3.5 14z"/><path d="M5 16l-2 5 5-2M7.5 13.5l3 3"/></svg>',
   tick:'<svg viewBox="0 0 24 24" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
@@ -441,7 +457,38 @@ async function connect(){
 const ui = { tab: ls.get('tab','day'), date: todayS(), month: todayS().slice(0,7), tool:null, sheets:[] };
 
 /* ---------- event queries ---------- */
-const evOn = d => S.events.filter(e=>e.date===d);
+const hasPh = e => !!(e && e.phases && e.phases.length);
+const phTotal = e => e.phases.reduce((a,p)=>a+(+p.dur||0),0);
+function phaseSegs(e){ let m=toMin(e.start); return e.phases.map((p,i)=>{ const s0=m; m+=(+p.dur||0); return {i,p,abs:s0,end:m}; }); }
+function phEndLabel(e){ const abs=toMin(e.start||'00:00')+phTotal(e), off=Math.floor(abs/1440); return fromMin(abs%1440)+(off===0?'':off===1?' (+1 Tag)':` (+${off} Tage)`); }
+const evOn = d => { const out=[];
+  for(const e of S.events){
+    if(hasPh(e) && e.start){
+      for(const g of phaseSegs(e)){ if(g.p.kind!=='do') continue; const day=addDays(e.date,Math.floor(g.abs/1440)); if(day!==d) continue;
+        out.push({id:`${e.id}#${g.i}`, ph:{pid:e.id,i:g.i}, title:`${e.title}: ${g.p.t}`, short:g.p.t, cat:e.cat, date:day, start:fromMin(g.abs%1440), dur:Math.max(5,+g.p.dur||5), remind:e.remind==null?null:0, fixed:true, steps:[], done:!!g.p.done, missAck:!!g.p.ack}); }
+    } else if(e.date===d) out.push(e);
+  }
+  return out; };
+function waitsOn(d){ const out=[], D=parseYmd(d);
+  for(const e of S.events){ if(!hasPh(e) || !e.start || e.done) continue;
+    const off=Math.round((D-parseYmd(e.date))/864e5)*1440, segs=phaseSegs(e);
+    segs.forEach((g,k)=>{ if(g.p.kind!=='wait') return; const nxt=segs.slice(k+1).find(z=>z.p.kind==='do'); if(nxt && nxt.p.done) return;
+      const s0=g.abs-off, en=g.end-off; if(en<=0 || s0>=1440) return;
+      const endDay=addDays(e.date,Math.floor(g.end/1440));
+      out.push({pid:e.id, cat:e.cat, t:g.p.t, ptitle:e.title, s:Math.max(0,s0), e:Math.min(1440,en), endAt:parseYmd(e.date).getTime()+g.end*60000,
+        endTxt:fromMin(g.end%1440)+(endDay===todayS()?'':endDay===addDays(todayS(),1)?' morgen':' '+fmtDay(endDay,{weekday:'short'}))}); });
+  }
+  return out; }
+function phaseRef(id){ if(!id || !id.includes('#')) return null; const [pid,i]=id.split('#'); const p=S.events.find(x=>x.id===pid); return p&&p.phases&&p.phases[+i]?{p,ph:p.phases[+i]}:null; }
+function phaseDone(r,val){ r.ph.done=val; r.p.done=r.p.phases.filter(x=>x.kind==='do').every(x=>x.done); save('events'); render(); if(val) hype(r.p.done?'done':'step'); }
+const TPL_BUILTIN = {
+  'Wäsche waschen':[['do','Wäsche rein & starten',10],['wait','Maschine läuft',90],['do','Raus & aufhängen',15],['wait','Trocknet',720],['do','Abhängen & wegräumen',15]],
+  'Wäsche + Trockner':[['do','Wäsche rein & starten',10],['wait','Maschine läuft',90],['do','Ab in den Trockner',10],['wait','Trockner läuft',120],['do','Rausnehmen & falten',15]],
+  'Spülmaschine':[['do','Einräumen & starten',10],['wait','Spülmaschine läuft',150],['do','Ausräumen',10]],
+  'Brot backen':[['do','Teig kneten',15],['wait','Teig geht',60],['do','Formen & in den Ofen',10],['wait','Backt',45],['do','Rausholen',5]]
+};
+function templates(){ const all={}; Object.entries(TPL_BUILTIN).forEach(([k,v])=>all[k]=v.map(([kind,t,dur])=>({kind,t,dur}))); Object.entries(S.meta.tpl||{}).forEach(([k,v])=>all[k]=v); return all; }
+function tplGuess(t){ t=(t||'').toLowerCase(); return /trockner/.test(t)?'Wäsche + Trockner':/wäsche|waschmaschine|waschen/.test(t)?'Wäsche waschen':/spülmaschine|geschirrspüler/.test(t)?'Spülmaschine':/brot/.test(t)?'Brot backen':null; }
 const timed = list => list.filter(e=>e.start).sort((a,b)=>toMin(a.start)-toMin(b.start));
 const untimed = list => list.filter(e=>!e.start);
 const endMin = e => toMin(e.start)+(e.dur||30);
@@ -493,10 +540,10 @@ function viewDay(){
   if(isToday && !S.meta.planned[d]) h += nudge(d,'Plane deinen Tag','Zwei Minuten: Was steht fest, was ist am wichtigsten?','Jetzt planen');
   else if(isToday && hr>=17 && !S.meta.planned[addDays(d,1)]) h += nudge(addDays(d,1),'Morgen schon geplant?','Kurz vorplanen macht den Morgen leichter.','Morgen planen');
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
-  if(isToday) h += nowCard(list);
+  if(isToday) h += nowCard(list, waitsOn(d));
   if(isToday){ const n=nowMin(); const miss=timed(list).find(e=>!e.done && !e.missAck && endMin(e)<=n);
     if(miss) h += `<div class="card stack cat-${miss.cat}" style="gap:12px;border:2.5px solid var(--c)"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="swatch" style="width:14px;height:14px;margin-top:4px"></span><div class="grow"><span class="label">Verpasst oder vergessen?</span><br><b style="font-size:18px">${esc(miss.title)}</b> <span class="hint num">${miss.start}–${fromMin(endMin(miss))}</span></div></div>
-      <div class="row"><button class="btn small" data-act="missNow" data-id="${miss.id}">Jetzt nachholen</button><button class="btn small ghost" data-act="missDone" data-id="${miss.id}">War erledigt</button><button class="btn small ghost" data-act="missTomorrow" data-id="${miss.id}">Morgen</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button></div></div>`; }
+      <div class="row">${miss.ph?`<button class="btn small" data-act="missDone" data-id="${miss.id}">Erledigt</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button>`:`<button class="btn small" data-act="missNow" data-id="${miss.id}">Jetzt nachholen</button><button class="btn small ghost" data-act="missDone" data-id="${miss.id}">War erledigt</button><button class="btn small ghost" data-act="missTomorrow" data-id="${miss.id}">Morgen</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button>`}</div></div>`; }
   if(S.meta.focusOf[d]) h += `<div class="focuschip"><div class="grow"><span class="label">Wichtigste Sache</span><b>${esc(S.meta.focusOf[d])}</b></div><button class="pillbtn" data-act="plan" data-v="${d}">Ändern</button></div>`;
   if(list.length){ const sorted=[...timed(list),...untimed(list)], dn=list.filter(e=>e.done).length;
     h += `<div class="card dayprog"><div class="row" style="flex-wrap:nowrap"><b class="grow">${dn===list.length?'Alles erledigt!':'Erledigt'}</b><b class="num">${dn} von ${list.length}</b></div><div class="segs">${sorted.map(e=>`<i class="cat-${e.cat} ${e.done?'on':''}"></i>`).join('')}</div></div>`; }
@@ -508,8 +555,8 @@ function viewDay(){
   } else {
     const ut=untimed(list);
     if(ut.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Aufgaben ohne Uhrzeit</span><span class="cnt num">${ut.length}</span></div><div class="tasks">${ut.map(taskRow).join('')}</div></div>`;
-    const tm=timed(list), gh=ghostSlots(d,list);
-    if(tm.length||gh.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${gh.length?`<span class="hint">Gestrichelt: Vorschläge für deine Aufgaben ohne Uhrzeit. Tipp drauf, um sie dort einzuplanen.</span>`:''}${timeline(tm,isToday,gh)}</div>`;
+    const tm=timed(list), gh=ghostSlots(d,list), wt=waitsOn(d);
+    if(tm.length||gh.length||wt.length) h += `<div class="stack" style="gap:8px"><div class="secthead"><span class="label">Zeitplan</span><span class="cnt num">${tm.length}</span></div>${gh.length?`<span class="hint">Gestrichelt: Vorschläge für deine Aufgaben ohne Uhrzeit. Tipp drauf, um sie dort einzuplanen.</span>`:''}${wt.length?`<span class="hint">Gepunktete Linie rechts: Wartezeit. Da musst du nichts tun und kannst anderes planen.</span>`:''}${timeline(tm,isToday,gh,wt)}</div>`;
   }
   if(isToday && needsBackup()) h += `<div class="card row" style="flex-wrap:nowrap"><div class="grow"><b>Zeit für eine Sicherung</b><br><span class="hint">Damit nichts verloren geht, wenn das Handy kaputtgeht oder du wechselst.</span></div><button class="btn small" data-act="exportData">Sichern</button></div>`;
   if(hasExamples()) h += `<button class="pillbtn" style="align-self:center" data-act="clearExamples">Beispiele entfernen</button>`;
@@ -518,7 +565,7 @@ function viewDay(){
 }
 function nudge(d,t,p,b){ return `<div class="nudge"><div class="grow"><b>${t}</b><span style="font-size:14px">${p}</span></div><button class="btn small" data-act="plan" data-v="${d}">${b}</button></div>`; }
 
-function nowCard(list){
+function nowCard(list, wts=[]){
   const n=nowMin(), tm=timed(list).filter(e=>!e.done);
   const cur=tm.find(e=>toMin(e.start)<=n && endMin(e)>n);
   const next=tm.find(e=>toMin(e.start)>n);
@@ -532,6 +579,8 @@ function nowCard(list){
   } else {
     h+=`<div><span class="label">Jetzt</span><div class="now-title">${next?'Freie Zeit':'Nichts mehr geplant'}</div></div>`;
   }
+  wts.filter(w=>w.s<=n && n<w.e).forEach(w=>{ const left=Math.max(1,Math.round((w.endAt-Date.now())/60000));
+    h+=`<button class="next cat-${w.cat}" style="border:0;color:inherit;text-align:left" data-act="openEvent" data-id="${w.pid}"><span class="hglass">${ICON.hourglass}</span><span class="grow"><span class="label" style="display:block">Läuft gerade · fertig ${esc(w.endTxt)}</span><b>${esc(w.ptitle)}: ${esc(w.t)}</b></span><span class="countdown num" style="font-size:16px">noch ${dur(left)}</span></button>`; });
   if(next) h+=`<button class="next cat-${next.cat}" style="border:0;color:inherit;text-align:left" data-act="openEvent" data-id="${next.id}"><span class="dot"></span><span class="grow"><span class="label" style="display:block">Als Nächstes · ${next.start}</span><b>${esc(next.title)}</b></span><span class="countdown num" style="font-size:16px">${rel(toMin(next.start)-n)}</span></button>`;
   return h+'</div>';
 }
@@ -558,7 +607,8 @@ function ghostSlots(d,list){
   }
   return out;
 }
-function timeline(tm,isToday,gh=[]){
+function timeline(tm,isToday,gh=[],wt=[]){
+  const RAIL=wt.length?30:0;
   const PX=1.1;
   let sh=7, eh=22;
   tm.forEach(e=>{ sh=Math.min(sh,Math.floor(toMin(e.start)/60)); eh=Math.max(eh,Math.ceil(endMin(e)/60)); });
@@ -582,12 +632,14 @@ function timeline(tm,isToday,gh=[]){
   tm.forEach(e=>{
     const p=pos[e.id], w=100/p.n;
     const ht=Math.max((e.dur||30)*PX,30);
-    h+=`<button class="blk cat-${e.cat} ${e.done?'done':''}" style="top:${top(toMin(e.start))+1}px;height:${ht-2}px;left:calc(${p.col*w}% + 6px);width:calc(${w}% - 8px)" data-act="openEvent" data-id="${e.id}">
-      <b>${esc(e.title)}</b>${ht>44?`<small class="num">${e.start}–${fromMin(endMin(e))}${stepsInfo(e)?' · '+stepsInfo(e):''}</small>`:''}</button>`;
+    h+=`<button class="blk cat-${e.cat} ${e.done?'done':''} ${ht<=44?'tiny':''}" style="top:${top(toMin(e.start))+1}px;height:${ht-2}px;left:calc((100% - ${RAIL}px) * ${p.col/p.n} + 6px);width:calc((100% - ${RAIL}px) / ${p.n} - 8px)" data-act="openEvent" data-id="${e.id}">
+      <b>${esc(e.short||e.title)}</b>${ht>44?`<small class="num">${e.start}–${fromMin(endMin(e))}${stepsInfo(e)?' · '+stepsInfo(e):''}</small>`:''}</button>`;
   });
   gh.forEach(g=>{ const e=g.e, ht=Math.max((e.dur||30)*PX,30);
-    h+=`<button class="blk ghost cat-${e.cat}" style="top:${top(g.start)+1}px;height:${ht-2}px;left:6px;width:calc(100% - 8px)" data-act="ghostPlace" data-id="${e.id}" data-v="${fromMin(g.start)}" aria-label="${esc(e.title)} um ${fromMin(g.start)} einplanen">
+    h+=`<button class="blk ghost cat-${e.cat}" style="top:${top(g.start)+1}px;height:${ht-2}px;left:6px;width:calc(100% - 8px - ${RAIL}px)" data-act="ghostPlace" data-id="${e.id}" data-v="${fromMin(g.start)}" aria-label="${esc(e.title)} um ${fromMin(g.start)} einplanen">
       <b>${esc(e.title)}</b>${ht>44?`<small class="num">Vorschlag ${fromMin(g.start)}–${fromMin(g.start+(e.dur||30))} · tippen zum Einplanen</small>`:`<small class="num">${fromMin(g.start)} · tippen</small>`}</button>`; });
+  wt.forEach(w=>{ const a=Math.max(w.s,sh*60), b=Math.min(w.e,eh*60); if(b<=a) return;
+    h+=`<button class="waitbar cat-${w.cat}" style="top:${top(a)}px;height:${Math.max((b-a)*PX,26)}px" data-act="openEvent" data-id="${w.pid}" aria-label="${esc(w.ptitle)}: ${esc(w.t)} bis ${esc(w.endTxt)}"><span>${ICON.hourglass}</span></button>`; });
   if(isToday) h+=`<div class="nowline" style="top:${top(nowMin())}px"></div>`;
   return h+'</div>';
 }
@@ -871,18 +923,20 @@ const XI = {
   note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   rem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
   fix:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>',
+  phases:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9"/></svg>',
   steps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7l2 2 3-3M4 15l2 2 3-3M12 8h8M12 16h8"/></svg>',
   chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>'
 };
 function evPreview(e){
   const c=CATS.find(x=>x.id===e.cat)?.name||'';
   const d=e.date===todayS()?'Heute':e.date===addDays(todayS(),1)?'Morgen':fmtDay(e.date,{weekday:'short',day:'numeric',month:'short'});
+  if(hasPh(e)) return `${d} · ${e.start||'Start offen'} · ${e.phases.length} Etappen${e.start?', fertig '+phEndLabel(e):''}`;
   return `${d} · ${e.start?`${e.start}–${fromMin((toMin(e.start)+(e.dur||30))%1440)}`:'ohne Uhrzeit'} · ${c}`;
 }
 function sheetEvent(a){
   if(!a._init){ const e=a.id?S.events.find(x=>x.id===a.id):null;
-    draft = e ? structuredClone(e) : {id:uid(),title:'',cat:'termin',date:a.date||ui.date,start:a.start||'',dur:30,remind:15,steps:[],done:false};
-    a._init=true; a.isNew=!e; a.open={steps:!!(e&&e.steps&&e.steps.length)}; }
+    draft = e ? structuredClone(e) : {id:uid(),title:'',cat:'termin',date:a.date||todayS(),start:a.start||'',dur:30,remind:15,steps:[],done:false};
+    a._init=true; a.isNew=!e; a.open={steps:!!(e&&e.steps&&e.steps.length), phases:hasPh(e)}; }
   const e=draft, o=a.open;
   const remTxt=e.remind==null?'Keine':e.remind===0?'Zum Start':(e.remind>=60?`${e.remind/60} Std`:`${e.remind} Min`)+' vorher';
   const sd=e.steps.filter(x=>x.done).length;
@@ -897,12 +951,13 @@ function sheetEvent(a){
 
   <section class="blockcard b2"><div class="bc-h"><span class="bc-n">2</span>Wann?</div>
     <div class="row" style="flex-wrap:nowrap"><label class="field grow"><span>Tag</span><input class="inp" type="date" id="fDate" value="${e.date}"></label><label class="field grow"><span>Uhrzeit</span><input class="inp" type="time" id="fStart" value="${e.start||''}"></label></div>
-    <div class="field"><span>Wie lange?</span><div class="chips">${[15,30,60,90].map(m=>`<button class="chip ${e.dur===m&&!o.dur?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}<button class="chip ${o.dur||durExact?'on':''}" data-act="fOpen" data-v="dur">${durExact&&!o.dur?dur(e.dur):'Genau …'}</button></div></div>
-    <div class="durrow" ${o.dur?'':'hidden'}><label class="field"><span class="hint">Stunden</span><input class="inp num" type="number" inputmode="numeric" min="0" max="23" id="fDurH" value="${Math.floor(e.dur/60)}"></label>
+    ${hasPh(e)?`<div class="field"><span>Ablauf</span><b>${e.phases.length} Etappen · ${dur(phTotal(e))} insgesamt · fertig ${phEndLabel(e)}</b></div>`:''}
+    <div class="field" ${hasPh(e)?'hidden':''}><span>Wie lange?</span><div class="chips">${[15,30,60,90].map(m=>`<button class="chip ${e.dur===m&&!o.dur?'on':''}" data-act="fDur" data-v="${m}">${dur(m)}</button>`).join('')}<button class="chip ${o.dur||durExact?'on':''}" data-act="fOpen" data-v="dur">${durExact&&!o.dur?dur(e.dur):'Genau …'}</button></div></div>
+    <div class="durrow" ${o.dur&&!hasPh(e)?'':'hidden'}><label class="field"><span class="hint">Stunden</span><input class="inp num" type="number" inputmode="numeric" min="0" max="23" id="fDurH" value="${Math.floor(e.dur/60)}"></label>
       <label class="field"><span class="hint">Minuten</span><input class="inp num" type="number" inputmode="numeric" min="0" max="59" step="5" id="fDurM" value="${e.dur%60}"></label>
       <label class="field"><span class="hint">Endet um</span><input class="inp" type="time" id="fEnd" value="${e.start?fromMin((toMin(e.start)+e.dur)%1440):''}"></label></div>
     ${e.start&&!a.isNew?`<div class="field"><span>Verschieben</span><div class="chips">${[[-15,'−15 Min'],[15,'+15 Min'],[30,'+30 Min'],[60,'+1 Std']].map(([v,l])=>`<button class="chip" data-act="fShift" data-v="${v}">${l}</button>`).join('')}</div></div>`:''}
-    <span class="hint">Ohne Uhrzeit wird es eine Aufgabe für den Tag.</span>
+    <span class="hint">${hasPh(e)?'Die Uhrzeit ist der Start der ersten Etappe. Alles Weitere rechnet die App aus.':'Ohne Uhrzeit wird es eine Aufgabe für den Tag.'}</span>
   </section>
 
   <section class="blockcard b3"><div class="bc-h"><span class="bc-n">3</span>Welcher Bereich?</div>
@@ -910,6 +965,15 @@ function sheetEvent(a){
   </section>
 
   <div class="extras"><span class="label">Extras · optional</span>
+  ${(()=>{ const ph=e.phases||[], tn=a.tpl||e.title; let m=e.start?toMin(e.start):0;
+    const rows=ph.map((p,i)=>{ const s0=m; m+=(+p.dur||0); const off=Math.floor(s0/1440);
+      return `<div class="phrow ${p.kind}"><button class="phkind" data-act="fPhKind" data-i="${i}" aria-label="Art wechseln">${p.kind==='do'?'Tun':'Warten'}</button><input class="inp grow" data-ph-t="${i}" value="${esc(p.t)}" aria-label="Name der Etappe"><input class="inp num phdur" type="number" inputmode="numeric" min="1" step="5" data-ph-d="${i}" value="${p.dur}" aria-label="Dauer in Minuten"><button class="x" data-act="fPhDel" data-i="${i}" aria-label="Etappe löschen">×</button></div>
+      <span class="hint phtime num">${e.start?`${fromMin(s0%1440)}${off?(off===1?' morgen':` +${off} Tage`):''} · `:''}${dur(+p.dur||0)}</span>`; }).join('');
+    return x('phases','--c2','Etappen',ph.length?`${ph.length} Etappen · fertig ${e.start?phEndLabel(e):'nach '+dur(phTotal(e))}`:'Für Wäsche, Spülmaschine & Co.: Tun und Warten im Wechsel',
+      `<div class="field"><span>Vorlage</span><div class="chips">${Object.keys(templates()).map(k=>`<button class="chip ${a.tpl===k?'on':''}" data-act="fTpl" data-v="${esc(k)}">${esc(k)}</button>`).join('')}</div></div>
+      ${ph.length?`<div class="phlist"><span class="hint">Dauer in Minuten. „Tun“ wird ein Block mit Erinnerung, „Warten“ blockiert nichts.</span>${rows}</div>`:''}
+      <div class="row"><button class="btn small ghost" data-act="fPhAdd" data-v="do">+ Tun</button><button class="btn small ghost" data-act="fPhAdd" data-v="wait">+ Warten</button>${ph.length?'<button class="btn small ghost" data-act="fPhClear">Etappen entfernen</button>':''}</div>
+      ${ph.length&&tn?`<button class="btn small" data-act="fTplSave">Als Standard für „${esc(tn)}“ speichern</button><span class="hint">Dann nimmt die App beim nächsten Mal genau diese Zeiten, zum Beispiel für deine Waschmaschine.</span>`:''}`); })()}
   ${x('rem','--c3','Erinnerung',remTxt,`<div class="chips">${[[null,'Keine'],[0,'Zum Start'],[5,'5 Min'],[15,'15 Min'],[30,'30 Min'],[60,'1 Std'],[120,'2 Std']].map(([v,l])=>`<button class="chip ${e.remind===v?'on':''}" data-act="fRem" data-v="${v}">${l}</button>`).join('')}</div><span class="hint">Die Erinnerung kommt, solange die App geöffnet ist oder im Hintergrund läuft.</span>`)}
   ${x('fix','--c2','Verschieben',isFixed(e)?'Fest, bleibt immer stehen':'Flexibel, darf mitrutschen',`<div class="chips"><button class="chip ${isFixed(e)?'on':''}" data-act="fFix" data-v="1">Fest (z. B. Arzt)</button><button class="chip ${isFixed(e)?'':'on'}" data-act="fFix" data-v="0">Flexibel</button></div><span class="hint">Flexible Einträge schiebe ich automatisch mit, wenn sich dein Tag verändert.</span>`)}
   ${x('steps','--c6','Mini-Schritte',e.steps.length?`${sd} von ${e.steps.length} erledigt`:'Große Aufgabe in kleine Schritte teilen',`<div class="steps">${e.steps.map((st,i)=>`<div class="step"><button class="check ${st.done?'on':''} cat-${e.cat}" data-act="fStepDone" data-i="${i}" aria-label="Schritt erledigt">${st.done?ICON.tick:''}</button><input class="inp grow" data-step="${i}" value="${esc(st.t)}"><button class="x" data-act="fStepDel" data-i="${i}" aria-label="Schritt löschen">×</button></div>`).join('')}
@@ -928,6 +992,9 @@ function readEventForm(){
   const dh=v('fDurH'), dm=v('fDurM'); if(dh!==null && dm!==null){ const t=Math.min(1439,Math.max(0,(+dh||0)*60+(+dm||0))); if(t>=5) draft.dur=t; }
   document.querySelectorAll('[data-step]').forEach(el=>{ const s=draft.steps[+el.dataset.step]; if(s) s.t=el.value; });
   const ns=v('fNewStep'); if(ns && ns.trim()){ draft.steps.push({t:ns.trim(),done:false}); }
+  document.querySelectorAll('[data-ph-t]').forEach(el=>{ const p=draft.phases&&draft.phases[+el.dataset.phT]; if(p) p.t=el.value; });
+  document.querySelectorAll('[data-ph-d]').forEach(el=>{ const p=draft.phases&&draft.phases[+el.dataset.phD]; if(p){ const n=Math.round(+el.value); if(n>0) p.dur=n; } });
+  if(hasPh(draft)) draft.dur=phTotal(draft);
 }
 
 function parseQuick(txt){
@@ -1069,12 +1136,17 @@ function bindSheet(top){
         if(r.start){ draft.start=r.start; $('#fStart').value=r.start; chips.push(r.start+' Uhr'); }
         if(r.dur){ draft.dur=r.dur; $('#fDurH').value=Math.floor(r.dur/60); $('#fDurM').value=r.dur%60; chips.push(dur(r.dur)); }
         if(r.cat && !A0.catTouched && r.cat!==draft.cat){ draft.cat=r.cat; document.querySelectorAll('.catbtn').forEach(b=>b.classList.toggle('on',b.dataset.v===r.cat)); $('#fPreview').className='preview cat-'+r.cat; }
-        $('#fParsed').innerHTML = chips.length ? `<span class="hint">Erkannt:</span>${chips.map(c=>`<span class="pchip">${esc(c)}</span>`).join('')}` : '<span class="hint">Tipp: Tag, Uhrzeit und Dauer einfach mitschreiben, der Rest füllt sich selbst.</span>';
+        const tg=hasPh(draft)?null:tplGuess(ti.value);
+        $('#fParsed').innerHTML = (chips.length ? `<span class="hint">Erkannt:</span>${chips.map(c=>`<span class="pchip">${esc(c)}</span>`).join('')}` : (tg?'':'<span class="hint">Tipp: Tag, Uhrzeit und Dauer einfach mitschreiben, der Rest füllt sich selbst.</span>'))
+          + (tg?`<button class="pchip act" data-act="fTpl" data-v="${esc(tg)}">In Etappen planen: ${esc(tg)}</button>`:'');
         syncEnd(); });
       if(!A0._focused){ A0._focused=true; setTimeout(()=>ti.focus(),60); }
     }
     ti.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); ti.blur(); } });
     const ns=$('#fNewStep'); ns&&ns.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); act('fStepAdd'); setTimeout(()=>$('#fNewStep')?.focus(),20); } });
+    const later=el=>()=>setTimeout(()=>{ if(document.body.contains(el)){ readEventForm(); renderSheet(); } },0);
+    document.querySelectorAll('[data-ph-d]').forEach(el=>el.addEventListener('change',later(el)));
+    if(hasPh(draft)){ const st=$('#fStart'); st.addEventListener('change',later(st)); }
   }
   if(top.type==='mig'){ const r=$('#mInt'); r.addEventListener('input',()=>{ const v=+r.value; const el=$('#mIntV'); el.textContent=v; el.style.background=sevCol(v); mdraft.intensity=v; const pv=$('#mPrev'); pv.textContent=migPrev(mdraft); pv.style.setProperty('--c',sevCol(v)); }); }
   if(top.type==='proj'){ const r=$('#pProg'); r.addEventListener('input',()=>{ $('#pProgV').textContent=r.value+' %'; }); }
@@ -1126,9 +1198,9 @@ const A = {
   dayToday(){ ui.date=todayS(); ui.scrolled=false; render(); },
   monthShift(el){ const [y,m]=ui.month.split('-').map(Number); const d=new Date(y,m-1+(+el.dataset.v),1); ui.month=`${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(); },
   openDay(el){ ui.date=el.dataset.v; ui.tab='day'; ls.set('tab','day'); render(); window.scrollTo(0,0); },
-  newEvent(){ openSheet('event',{date:ui.tab==='day'?ui.date:todayS()}); },
-  openEvent(el){ openSheet('event',{id:el.dataset.id}); },
-  toggleDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=!e.done; save('events'); render(); if(e.done){ const td=evOn(e.date); hype(e.date===todayS() && td.length>1 && td.every(x=>x.done)?'alldone':'done'); } },
+  newEvent(){ openSheet('event',{date:todayS()}); },
+  openEvent(el){ openSheet('event',{id:el.dataset.id.split('#')[0]}); },
+  toggleDone(el){ const r=phaseRef(el.dataset.id); if(r){ phaseDone(r,!r.ph.done); return; } const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=!e.done; save('events'); render(); if(e.done){ const td=evOn(e.date); hype(e.date===todayS() && td.length>1 && td.every(x=>x.done)?'alldone':'done'); } },
   setMood(el){ const d=el.dataset.d||todayS(); const m=S.mood[d]||(S.mood[d]={}); m[el.dataset.k]=+el.dataset.v; save('mood'); if(ui.sheets.length) renderSheet(); render(); },
   plan(el){ openSheet('plan',{date:el.dataset.v}); },
   planAdd(el){ openSheet('event',{date:el.dataset.v}); },
@@ -1144,9 +1216,9 @@ const A = {
     p.changes.forEach(c=>{ c.x.start=c.to; if(c.toDate) c.x.date=c.toDate; delete c.x.missAck; }); save('events'); closeSheet(); hype('shift'); },
   missNow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.start=fromMin(Math.min(1435,Math.ceil((nowMin()+1)/5)*5)); delete e.missAck; save('events'); render();
     if(!offerShift(e.id)) hype('shift'); },
-  missDone(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=true; save('events'); render(); hype('done'); },
+  missDone(el){ const r=phaseRef(el.dataset.id); if(r){ phaseDone(r,true); return; } const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.done=true; save('events'); render(); hype('done'); },
   missTomorrow(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.date=addDays(e.date,1); save('events'); render(); toast('Auf morgen verschoben'); },
-  missAck(el){ const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.missAck=true; save('events'); render(); },
+  missAck(el){ const r=phaseRef(el.dataset.id); if(r){ r.ph.ack=true; save('events'); render(); return; } const e=S.events.find(x=>x.id===el.dataset.id); if(!e) return; e.missAck=true; save('events'); render(); },
   scrim(el,ev){ if(ev.target===el) closeSheet(); },
   fCat(el){ readEventForm(); draft.cat=el.dataset.v; ui.sheets[ui.sheets.length-1].args.catTouched=true; renderSheet(); },
   xOpen(el){ const top=ui.sheets[ui.sheets.length-1]; ({mig:readMig,proj:readProj}[top.type]||(()=>{}))(); top.args.open=top.args.open||{}; top.args.open[el.dataset.v]=!top.args.open[el.dataset.v]; renderSheet(); },
@@ -1160,18 +1232,30 @@ const A = {
   setPref(el){ S.meta[el.dataset.k]=el.dataset.v==='1'; save('meta'); render(); },
   fOpen(el){ readEventForm(); const o=ui.sheets[ui.sheets.length-1].args.open; o[el.dataset.v]=!o[el.dataset.v]; renderSheet(); },
   fDur(el){ readEventForm(); draft.dur=+el.dataset.v; renderSheet(); },
+  fTpl(el){ readEventForm(); const A0=ui.sheets[ui.sheets.length-1].args, name=el.dataset.v, t=templates()[name]; if(!t) return;
+    draft.phases=t.map(p=>({kind:p.kind,t:p.t,dur:+p.dur,done:false})); A0.tpl=name; A0.open.phases=true;
+    if(!draft.title || (A0.isNew && tplGuess(draft.title)===name && !/\d/.test(draft.title))) draft.title=draft.title||name;
+    if(!draft.start) draft.start=fromMin(Math.min(1435,Math.ceil((nowMin()+5)/5)*5));
+    if(!A0.catTouched && draft.cat==='termin'){ draft.cat='haushalt'; }
+    draft.fixed=false; if(draft.remind==null||draft.remind>0) draft.remind=0; draft.dur=phTotal(draft); renderSheet(); },
+  fTplSave(){ readEventForm(); const A0=ui.sheets[ui.sheets.length-1].args, name=A0.tpl||draft.title; if(!name||!hasPh(draft)) return;
+    S.meta.tpl=S.meta.tpl||{}; S.meta.tpl[name]=draft.phases.map(({kind,t,dur})=>({kind,t,dur:+dur})); save('meta'); A0.tpl=name; toast(`Standard für „${name}“ gespeichert`); renderSheet(); },
+  fPhKind(el){ readEventForm(); const p=draft.phases[+el.dataset.i]; p.kind=p.kind==='do'?'wait':'do'; draft.dur=phTotal(draft); renderSheet(); },
+  fPhAdd(el){ readEventForm(); draft.phases=draft.phases||[]; const k=el.dataset.v; draft.phases.push({kind:k,t:k==='do'?'Neue Etappe':'Warten',dur:k==='do'?10:60,done:false}); if(!draft.start) draft.start=fromMin(Math.min(1435,Math.ceil((nowMin()+5)/5)*5)); draft.dur=phTotal(draft); renderSheet(); },
+  fPhDel(el){ readEventForm(); draft.phases.splice(+el.dataset.i,1); if(!draft.phases.length){ delete draft.phases; draft.dur=30; } else draft.dur=phTotal(draft); renderSheet(); },
+  fPhClear(){ readEventForm(); delete draft.phases; draft.dur=30; ui.sheets[ui.sheets.length-1].args.tpl=null; renderSheet(); },
   fShift(el){ readEventForm(); if(!draft.start) return; draft.start=fromMin(Math.min(1435,Math.max(0,toMin(draft.start)+(+el.dataset.v)))); renderSheet(); },
   fFix(el){ readEventForm(); draft.fixed=el.dataset.v==='1'; renderSheet(); },
   fRem(el){ readEventForm(); draft.remind=el.dataset.v==='null'?null:+el.dataset.v; renderSheet(); },
   fStepAdd(){ readEventForm(); renderSheet(); },
   fStepDel(el){ readEventForm(); draft.steps.splice(+el.dataset.i,1); renderSheet(); },
   fStepDone(el){ readEventForm(); const s=draft.steps[+el.dataset.i]; s.done=!s.done; renderSheet(); if(s.done) hype('step'); },
-  fSave(){ readEventForm(); { const A0=ui.sheets[ui.sheets.length-1].args; if(A0.isNew){ const r=parseQuick(draft.title); if(r.title && (r.date||r.start||r.dur)) draft.title=r.title; } } if(!draft.title){ $('#fTitle').focus(); $('#fTitle').placeholder='Bitte einen Titel eingeben'; return; }
+  fSave(){ readEventForm(); if(hasPh(draft)){ if(!draft.start) draft.start=fromMin(Math.min(1435,Math.ceil((nowMin()+5)/5)*5)); draft.dur=phTotal(draft); if(!draft.title) draft.title=ui.sheets[ui.sheets.length-1].args.tpl||'Aufgabe'; } { const A0=ui.sheets[ui.sheets.length-1].args; if(A0.isNew){ const r=parseQuick(draft.title); if(r.title && (r.date||r.start||r.dur)) draft.title=r.title; } } if(!draft.title){ $('#fTitle').focus(); $('#fTitle').placeholder='Bitte einen Titel eingeben'; return; }
     const i=S.events.findIndex(x=>x.id===draft.id), isNew=i<0, old=isNew?null:S.events[i];
     if(isNew) S.events.push(draft); else S.events[i]=draft;
     save('events'); const sv=draft; closeSheet();
     if(ui.tab==='day' && ui.date!==sv.date && !ui.sheets.length){ ui.date=sv.date; render(); }
-    const moved = sv.start && (isNew || old.start!==sv.start || old.date!==sv.date || old.dur!==sv.dur);
+    const moved = sv.start && !hasPh(sv) && (isNew || old.start!==sv.start || old.date!==sv.date || old.dur!==sv.dur);
     if(moved && offerShift(sv.id)) return;
     if(isNew) hype('add'); else toast('Gespeichert'); },
   fDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; }
