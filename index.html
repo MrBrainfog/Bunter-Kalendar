@@ -290,6 +290,9 @@ nav.tabs button.tmr .knob{width:54px;height:54px;margin-top:-36px;border-radius:
 nav.tabs button.tmr .knob svg{width:28px;height:28px;stroke:#fff}
 nav.tabs button.tmr .knob.orb{background:radial-gradient(circle at 40% 30%,#F6EBD3 0,#E3CBA0 35%,#B07A45 75%,#6B4226 100%);box-shadow:0 6px 18px rgba(179,18,46,.4),inset 0 0 0 2px #C99A4A,inset 0 -4px 8px rgba(60,30,10,.4)}
 nav.tabs button.tmr .knob.orb svg{stroke:#7A0C1E}
+nav.tabs button.tmr .knob.coink{background:radial-gradient(circle at 40% 30%,#FFE9A8 0,#E2B64A 45%,#A97B28 100%);box-shadow:0 6px 18px rgba(169,123,40,.5),inset 0 -4px 8px rgba(90,60,10,.35)}
+nav.tabs button.tmr .knob.coink svg.coin{width:34px;height:34px}
+nav.tabs button.tmr.on{color:var(--accent);font-weight:700}
 nav.tabs button.tmr .knob.torchk{background:radial-gradient(circle at 50% 30%,#FFB347 0,#C2410C 35%,#2A1408 80%);box-shadow:0 6px 18px rgba(194,65,12,.5),inset 0 -4px 8px rgba(0,0,0,.4)}
 nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
 /* Onboarding */
@@ -442,6 +445,40 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,170,90,.6),transparent)}
+/* Quests */
+svg.coin{width:22px;height:22px;flex:none}
+.qcoinbig svg.coin{width:46px;height:46px;filter:drop-shadow(0 2px 3px rgba(90,60,10,.3))}
+.qpurse{position:relative;display:flex;flex-direction:column;gap:10px}
+.qcoins{font-size:34px;line-height:1;display:block;font-family:var(--f-display)}
+.qrank{text-align:right}.qrank b{display:block;font-family:var(--f-display);font-size:17px}
+.qbar{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}.qbar i{display:block;height:100%;background:linear-gradient(90deg,#C99A4A,#E2B64A);border-radius:99px}
+.qburst{position:absolute;right:18px;top:-6px;font-family:var(--f-display);font-weight:800;font-size:26px;color:#A97B28;pointer-events:none;opacity:0}
+@media (prefers-reduced-motion:no-preference){ .qburst{animation:qb 1.6s ease-out both} @keyframes qb{0%{opacity:0;transform:translateY(16px)}20%{opacity:1}100%{opacity:0;transform:translateY(-30px)}} }
+.calm .qburst{display:none}
+.qcard{display:flex;flex-direction:column;gap:10px;border-left:6px solid var(--k)}
+.qcard .qt{font-size:21px;line-height:1.25}
+.qcard p{margin:0}
+.qmeta{display:flex;gap:8px;flex-wrap:wrap}.qmeta span{font-size:13px;padding:4px 10px;border-radius:99px;background:var(--surface-2)}
+.qloot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.qloot b{font-size:19px}
+.qtag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:color-mix(in srgb,#E2B64A 30%,transparent);color:var(--ink)}
+.qtag.lucky{background:var(--accent);color:var(--accent-on)}
+.qtime{font-size:46px;font-weight:700;text-align:center;font-family:var(--f-display)}
+.qenergy{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qenergy .btn{flex-direction:column;display:flex;align-items:center;justify-content:center;gap:2px;padding:10px 6px;min-height:64px}
+.qenergy small{font-size:11.5px;font-weight:400;opacity:.8}
+.qdrawcard .sugav,.qpurse .sugav{width:52px;height:52px;object-fit:cover;object-position:50% 12%;border-radius:50%;background:linear-gradient(160deg,var(--accent),var(--c3));flex:none}
+.qplus{color:#A97B28}
+.qrew{display:flex;align-items:center;gap:10px}.qrew b{display:block}
+.qbrow .qbt{border:0;background:none;color:inherit;text-align:left;display:flex;align-items:center;gap:10px;padding:8px 2px;min-height:44px;font:inherit}
+.qchk{width:22px;height:22px;border-radius:6px;border:2px solid var(--k);background:var(--k);display:grid;place-items:center;flex:none}.qchk svg{width:14px;height:14px;stroke:#fff}
+.qbrow.off .qchk{background:transparent}.qbrow.off .qbt>.grow{opacity:.5;text-decoration:line-through}
+.qbook{border-left:6px solid var(--k)}
+.qteaser .qcoinbig svg.coin{width:44px;height:44px}
+.qteaser .hint{color:inherit;opacity:.78}
+.tmrcard{display:flex;gap:12px;align-items:center;background:linear-gradient(#4A2E1B,#33200F);color:#FBF3E4;border-radius:var(--r);padding:12px 14px}
+.tmrcard .knob{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;background:radial-gradient(circle at 40% 30%,#F6EBD3 0,#E3CBA0 35%,#B07A45 75%,#6B4226 100%)}
+.tmrcard .knob svg{width:22px;height:22px;stroke:#7A0C1E}
+.tmrcard b{display:block}.tmrcard span{font-size:14px;color:#E3CDAE}
 /* Focus: battle plan scroll */
 .dg.plan{background:#1A110A;padding:0}
 .dgstage{position:absolute;left:50%;top:50%;width:max(100vw,66.67vh);height:max(100vh,150vw);transform:translate(-50%,-50%);background:url(focus-plan.webp) center/100% 100% no-repeat}
@@ -593,8 +630,8 @@ const TRIGGERS = ['Wenig Schlaf','Stress','Wetter','Bildschirm','Mahlzeit ausgel
 const SYMPTOMS = ['Aura','Übelkeit','Lichtempfindlich','Geräuschempfindlich','Schwindel','Nackenschmerz'];
 
 /* ---------- state & storage ---------- */
-const KEYS = ['events','migraine','projects','mood','sleep','cycle','meta'];
-const DEF = { events:[], migraine:[], projects:[], mood:{}, sleep:{}, cycle:{days:{},set:{len:28,plen:5}}, meta:{planned:{}, focusOf:{}} };
+const KEYS = ['events','migraine','projects','mood','sleep','cycle','meta','quest'];
+const DEF = { events:[], migraine:[], projects:[], mood:{}, sleep:{}, cycle:{days:{},set:{len:28,plen:5}}, meta:{planned:{}, focusOf:{}}, quest:{coins:0,earned:0} };
 const S = {};
 KEYS.forEach(k => S[k] = ls.get(k, structuredClone(DEF[k])));
 S.meta.planned ||= {}; S.meta.focusOf ||= {};
@@ -731,6 +768,7 @@ function render(){
   if(ui.tab==='day') app.innerHTML = viewDay();
   else if(ui.tab==='month') app.innerHTML = viewMonth();
   else if(ui.tab==='focus') app.innerHTML = viewFocus();
+  else if(ui.tab==='quest') app.innerHTML = viewQuest();
   else app.innerHTML = viewTools();
   $('#fab').hidden = !(ui.tab==='day'||ui.tab==='month');
   if(ui.tab==='focus') paintTimer();
@@ -746,8 +784,8 @@ function softRender(){
   render();
 }
 function renderTabs(){
-  const t=[['day','Tag'],['month','Monat'],['tomorrow','Hellsehen'],['dungeon','Fokus'],['focus','Timer'],['tools','Tools']];
-  $('#tabs').innerHTML = t.map(([id,n])=>id==='tomorrow'?`<button class="tmr" data-act="showTomorrow" aria-label="Hellsehen: Was bringt der morgige Tag?"><span class="knob orb">${ICON.orb}</span>${n}</button>`
+  const t=[['day','Tag'],['month','Monat'],['quest','Quest'],['dungeon','Fokus'],['focus','Timer'],['tools','Tools']];
+  $('#tabs').innerHTML = t.map(([id,n])=>id==='quest'?`<button class="tmr ${ui.tab==='quest'?'on':''}" data-act="tab" data-v="quest" aria-label="Quest ziehen und Gold verdienen"><span class="knob coink">${COIN}</span>${n}</button>`
     : id==='dungeon'?`<button class="tmr" data-act="dungeonOpen" aria-label="Fokus: nur der nächste Schritt"><span class="knob torchk">${ICON.torch}</span>${n}</button>`
     : `<button class="${ui.tab===id?'on':''}" data-act="tab" data-v="${id}" aria-label="${n}">${ICON[id]}${n}</button>`).join('');
 }
@@ -771,6 +809,7 @@ function viewDay(){
   else if(isToday && hr>=17 && !S.meta.planned[addDays(d,1)]) h += nudge(addDays(d,1),'Morgen schon geplant?','Kurz vorplanen macht den Morgen leichter.','Morgen planen');
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
   if(isToday) h += nowCard(list, waitsOn(d));
+  if(isToday && hr>=18) h += `<div class="tmrcard"><span class="knob orb">${ICON.orb}</span><div class="grow"><b>Ein Blick auf morgen</b><span>Die Seherin hat die Knochen schon geworfen.</span></div><button class="btn small" data-act="showTomorrow">Hellsehen</button></div>`;
   if(isToday){ const n=nowMin(); const miss=timed(list).find(e=>!e.done && !e.missAck && endMin(e)<=n);
     if(miss) h += `<div class="card stack cat-${miss.cat}" style="gap:12px;border:2.5px solid var(--c)"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="swatch" style="width:14px;height:14px;margin-top:4px"></span><div class="grow"><span class="label">Verpasst oder vergessen?</span><br><b style="font-size:18px">${esc(miss.title)}</b> <span class="hint num">${miss.start}–${fromMin(endMin(miss))}</span></div></div>
       <div class="row">${miss.ph?`<button class="btn small" data-act="missDone" data-id="${miss.id}">Erledigt</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button>`:`<button class="btn small" data-act="missNow" data-id="${miss.id}">Jetzt nachholen</button><button class="btn small ghost" data-act="missDone" data-id="${miss.id}">War erledigt</button><button class="btn small ghost" data-act="missTomorrow" data-id="${miss.id}">Morgen</button><button class="btn small ghost" data-act="missAck" data-id="${miss.id}">Lassen</button>`}</div></div>`; }
@@ -965,6 +1004,189 @@ function sleepPicker(d){
   <div class="field"><span>Wie viele Stunden ungefähr?</span><div class="chips hourchips">${[4,5,6,7,8,9].map(h=>`<button class="chip ${z.h===h?'on':''}" data-act="setSleep" data-k="h" data-v="${h}" data-d="${d}">${h===4?'≤4':h===9?'9+':h}</button>`).join('')}</div></div>`;
 }
 
+/* ---------- Quests & gold ---------- */
+// [title, category, minutes, effort 0-2, cooldown hours, tip]
+const QCATS = {sozial:['Sozial','--c5'], haushalt:['Haushalt','--c2'], papier:['Papierkram','--c4'], koerper:['Körper','--c6'], digital:['Digital','--c1'], morgen:['Für dein Morgen-Ich','--c3']};
+const QBASE = [
+  ['Auf eine Nachricht antworten, die schon wartet','sozial',5,1,20,'Kurz reicht. „Hab dich nicht vergessen“ zählt auch.'],
+  ['Jemandem schreiben, von dem du lange nichts gehört hast','sozial',5,1,72,'Ein Satz genügt. Die meisten freuen sich einfach.'],
+  ['Dich bei jemandem bedanken','sozial',2,0,48,''],
+  ['Geburtstage der nächsten zwei Wochen checken','sozial',5,0,168,'Gleich als Termin eintragen, dann vergisst du ihn nicht.'],
+  ['Eine Sprachnachricht abhören und beantworten','sozial',5,1,24,''],
+  ['Jemanden anrufen, den du anrufen wolltest','sozial',15,2,72,'Vorher drei Stichpunkte notieren. Dann ist es halb so wild.'],
+  ['Ein Treffen vorschlagen','sozial',5,1,168,'Zwei konkrete Termine anbieten statt „mal schauen“.'],
+  ['Eine offene Zu- oder Absage geben','sozial',2,2,24,'Eine Absage ist auch eine Antwort. Und eine faire.'],
+  ['Eine Geschenkidee für den nächsten Anlass notieren','sozial',5,0,168,''],
+  ['5 Dinge wegräumen','haushalt',2,0,6,'Nur fünf. Danach darfst du aufhören.'],
+  ['Spülmaschine ausräumen','haushalt',5,1,12,''],
+  ['Spülbecken leer machen','haushalt',5,1,12,''],
+  ['Müll rausbringen','haushalt',5,0,24,''],
+  ['Pfand sammeln und wegbringen','haushalt',15,1,168,''],
+  ['Wäsche zusammenlegen und wegräumen','haushalt',15,1,24,'Musik an. Ein Lied, ein Stapel.'],
+  ['Bettwäsche wechseln','haushalt',15,2,336,'Frische Bettwäsche heute Abend. Dein Zukunfts-Ich dankt dir.'],
+  ['Kühlschrank aussortieren','haushalt',15,2,168,'Müllbeutel daneben, Tür auf, los.'],
+  ['Abfluss reinigen','haushalt',15,2,336,''],
+  ['Eine Fläche freiräumen (Tisch, Kommode)','haushalt',5,1,24,''],
+  ['Waschbecken und Spiegel putzen','haushalt',5,1,72,''],
+  ['Toilette putzen','haushalt',5,2,72,'Fünf Minuten. Dann ist es für Tage erledigt.'],
+  ['Einen Raum staubsaugen','haushalt',15,1,72,''],
+  ['Handtücher wechseln','haushalt',2,0,168,''],
+  ['Pflanzen gießen','haushalt',5,0,72,''],
+  ['Eingangsbereich ordnen und Schuhe wegräumen','haushalt',5,0,72,''],
+  ['Ein Fach oder eine Schublade ausmisten','haushalt',15,1,168,''],
+  ['Post öffnen und sortieren','papier',5,2,48,'Drei Stapel: erledigen, ablegen, weg.'],
+  ['Eine Rechnung bezahlen','papier',5,1,48,''],
+  ['Einen fälligen Arzttermin vereinbaren','papier',5,2,168,'Online buchen zählt genauso.'],
+  ['Ein Abo prüfen oder kündigen','papier',15,2,336,''],
+  ['Ein Formular ausfüllen, das herumliegt','papier',15,2,72,'Erst nur die einfachen Felder. Der Rest kommt danach.'],
+  ['Kontoauszüge kurz durchsehen','papier',5,1,168,''],
+  ['Einen Beleg ablegen oder abfotografieren','papier',2,0,24,''],
+  ['Eine E-Mail schreiben, die du vor dir herschiebst','papier',15,2,24,'Erst schlecht schreiben, dann besser machen.'],
+  ['Einen Rückruf erledigen','papier',5,2,48,''],
+  ['10 Blatt vom Ablagestapel sortieren','papier',15,2,72,''],
+  ['Ein Glas Wasser trinken','koerper',2,0,2,''],
+  ['Etwas Richtiges essen','koerper',15,0,4,''],
+  ['Medikamente nachbestellen','koerper',5,1,168,''],
+  ['10 Minuten an die frische Luft','koerper',15,1,12,''],
+  ['Zahnseide','koerper',2,1,20,''],
+  ['2 Minuten dehnen','koerper',2,0,6,''],
+  ['Duschen','koerper',15,1,20,''],
+  ['Nägel schneiden','koerper',5,0,168,''],
+  ['Fenster auf und lüften','koerper',2,0,4,''],
+  ['20 alte Mails löschen oder archivieren','digital',5,0,48,''],
+  ['Fotos sichern','digital',5,0,336,''],
+  ['Downloads aufräumen','digital',5,0,336,''],
+  ['Ungelesene Benachrichtigungen durchgehen','digital',5,1,24,''],
+  ['3 Apps löschen, die du nicht mehr nutzt','digital',5,0,336,''],
+  ['Ein schwaches Passwort ändern','digital',5,1,336,''],
+  ['3 Newsletter abbestellen','digital',5,0,168,''],
+  ['Eine Leona-Sicherung machen','digital',2,0,168,'Tools → Sichern & Übertragen.'],
+  ['Tasche für morgen packen','morgen',5,0,20,''],
+  ['Kleidung für morgen rauslegen','morgen',2,0,20,''],
+  ['Einkaufsliste schreiben','morgen',5,0,48,''],
+  ['Morgen in Leona vorplanen','morgen',5,0,20,''],
+  ['Schlüssel, Geldbeutel und Handy an ihren festen Platz','morgen',2,0,20,''],
+  ['Handy und Kopfhörer laden','morgen',2,0,20,''],
+  ['Ein Essen für morgen vorbereiten','morgen',15,1,24,'']
+].map(([t,c,d,u,cd,tip],i)=>({id:'q'+i,t,c,d,u,cd,tip}));
+const QRANKS = [[0,'Holzschwert'],[100,'Eisenschwert'],[300,'Stahlschwert'],[700,'Silberschwert'],[1500,'Goldschwert'],[3000,'Löwenschwert']];
+const QREW_SUG = [['Lieblingssnack',25],['Eine Folge Serie ohne schlechtes Gewissen',30],['Ein langes Bad',40],['Essen bestellen',100],['Ein neues Buch oder Spiel',120],['Ein Ausflug',400]];
+const QD = () => { const q=S.quest; q.day||={}; if(q.day.d!==todayS()) q.day={d:todayS(),n:0,rej:{}}; q.last||={}; q.bounty||={}; q.custom||=[]; q.hidden||=[]; q.rewards||=[]; q.log||=[]; q.bought||=[]; return q; };
+const qAll = () => [...QBASE, ...QD().custom];
+const qGet = id => qAll().find(x=>x.id===id);
+const qBase = d => d<=2?2 : d<=5?3 : d<=15?6 : 10;
+const qRank = earned => { let r=0; QRANKS.forEach(([g],i)=>{ if(earned>=g) r=i; }); return r; };
+function qValue(x, lucky){ const q=QD(); const b=Math.min(5,q.bounty[x.id]||0);
+  let v=qBase(x.d)+[0,2,4][x.u]+b; if(lucky) v*=2; const half=q.day.n>=3; if(half) v=Math.ceil(v/2);
+  return {v,b,half,lucky}; }
+function qFree(){ const f=freeNow(); return f; }
+function qPool(energy){ const q=QD(), now=Date.now(), free=qFree();
+  return qAll().filter(x=>!q.hidden.includes(x.id) && (q.day.rej[x.id]||0)<2 && !(q.last[x.id] && now-q.last[x.id]<x.cd*3600e3)
+    && (energy==='low'? x.d<=5 && x.u<=1 : energy==='mid'? x.d<=15 : true) && (free<=0 || x.d<=free)); }
+function qDraw(energy, not){ const pool=qPool(energy).filter(x=>x.id!==not); if(!pool.length) return null;
+  const q=QD(), w=pool.map(x=>1+x.u+Math.min(5,q.bounty[x.id]||0)*.6); let r=Math.random()*w.reduce((a,b)=>a+b,0);
+  for(let i=0;i<pool.length;i++){ r-=w[i]; if(r<=0) return pool[i].id; } return pool[pool.length-1].id; }
+const QX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+const COIN = '<svg class="coin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E2B64A" stroke="#8A6420" stroke-width="1.5"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#A97B28" stroke-width="1.1"/><path d="M12 8.2l1.2 2.5 2.7.3-2 1.8.6 2.7-2.5-1.4-2.5 1.4.6-2.7-2-1.8 2.7-.3z" fill="#A97B28"/></svg>';
+function questTeaser(free){
+  return `<div class="sug qteaser"><div class="row" style="flex-wrap:nowrap;align-items:center"><span class="qcoinbig">${COIN}</span><div class="grow"><span class="label" style="display:block">Leerlauf · ${dur(Math.min(free,600))} frei</span><b class="st">Lust auf eine Quest?</b><span class="hint">Eine kleine Aufgabe, und ich zahle dich in Gold aus.</span></div></div>
+    <div class="row"><button class="btn small" data-act="tab" data-v="quest">Quest ziehen</button></div></div>`;
+}
+function viewQuest(){
+  const q=QD(), r=qRank(q.earned||0), nx=QRANKS[r+1], prev=QRANKS[r][0];
+  const pct=nx?Math.round(((q.earned||0)-prev)/(nx[0]-prev)*100):100;
+  if(ui.qv==='shop') return viewQuestShop();
+  if(ui.qv==='book') return viewQuestBook();
+  let h=header('Quests','Gold für deine Leerlaufzeit')+'<div class="stack">';
+  h+=`<div class="card qpurse">${ui.qburst?`<span class="qburst">+${ui.qburst}</span>`:''}<div class="row" style="flex-wrap:nowrap;align-items:center"><span class="qcoinbig">${COIN}</span><div class="grow"><b class="qcoins num">${q.coins||0}</b><span class="hint">Goldmünzen</span></div>
+    <div class="qrank"><span class="label">Rang</span><b>${QRANKS[r][1]}</b></div></div>
+    <div class="qbar"><i style="width:${pct}%"></i></div><span class="hint">${nx?`Noch ${nx[0]-(q.earned||0)} Gold bis zum ${nx[1]}`:'Höchster Rang. Leona verneigt sich. Fast.'} · Heute ${q.day.n} ${q.day.n===1?'Quest':'Quests'}${q.day.n>=3?' · ab jetzt halbe Beute':''}</span></div>`;
+  if(q.active){ const x=qGet(q.active.id);
+    if(!x){ q.active=null; save('quest'); }
+    else { const el=Math.floor((Date.now()-q.active.start)/1000);
+      h+=`<div class="card qcard on" style="--k:var(${QCATS[x.c][1]})"><span class="label">Quest läuft · ${QCATS[x.c][0]}</span><b class="qt">${esc(x.t)}</b>${x.tip?`<p class="hint">${esc(x.tip)}</p>`:''}
+        <div class="qtime num" id="qElapsed">${pad(Math.floor(el/60))}:${pad(el%60)}</div><span class="hint" style="text-align:center">Etwa ${x.d} Min · Beute: ${q.active.v} Gold${q.active.lucky?' (Glückstreffer!)':''}</span>
+        <div class="row"><button class="btn grow" data-act="qDone">Geschafft!</button><button class="btn ghost" data-act="qAbort">Abbrechen</button></div></div>`; }
+  }
+  if(!q.active && ui.qdraw){ const x=qGet(ui.qdraw.id);
+    if(x){ const val=qValue(x, ui.qdraw.lucky);
+      h+=`<div class="card qcard" style="--k:var(${QCATS[x.c][1]})"><span class="label">Deine Quest · ${QCATS[x.c][0]}</span><b class="qt">${esc(x.t)}</b>${x.tip?`<p class="hint">${esc(x.tip)}</p>`:''}
+        <div class="qmeta"><span>${x.d} Min</span><span>${['leicht','braucht Überwindung','richtig unangenehm'][x.u]}</span></div>
+        <div class="qloot">${COIN}<b>${val.v} Gold</b>${val.b?`<span class="qtag">Kopfgeld +${val.b}</span>`:''}${val.lucky?'<span class="qtag lucky">Glückstreffer ×2</span>':''}${val.half?'<span class="qtag">halbe Beute</span>':''}</div>
+        <div class="row"><button class="btn grow" data-act="qAccept">Annehmen</button><button class="btn ghost" data-act="qReject">Andere ziehen</button></div></div>`; }
+  }
+  if(!q.active && !ui.qdraw){ const free=qFree(), nxEv=timed(evOn(todayS())).find(e=>!e.done && toMin(e.start)>nowMin());
+    h+=`<div class="card stack qdrawcard"><div class="row" style="flex-wrap:nowrap;align-items:center">${S.meta.hypeAv!==false?'<img class="sugav" src="leona-smirk.webp" alt="">':''}<div class="grow"><span class="label" style="display:block">Leona</span><b style="font-size:17px">${free<=0?'Gerade läuft ein Termin. Den machst du zuerst, danach gibt es Quests.':'Wie viel Kraft hast du gerade?'}</b>${free>0?`<span class="hint" style="display:block">${nxEv?`Bis ${esc(nxEv.title)} um ${nxEv.start} hast du ${dur(free)}.`:'Heute steht nichts mehr an.'}</span>`:''}</div></div>
+      ${free>0?`<div class="qenergy"><button class="btn ghost" data-act="qDraw" data-v="low">Wenig<small>kurz und leicht</small></button><button class="btn ghost" data-act="qDraw" data-v="mid">Mittel<small>bis 15 Min</small></button><button class="btn" data-act="qDraw" data-v="high">Viel<small>alles ist drin</small></button></div>`:''}</div>`;
+  }
+  h+=`<div class="row"><button class="btn ghost grow" data-act="qView" data-v="shop">Schatzkammer</button><button class="btn ghost grow" data-act="qView" data-v="book">Questbuch</button></div>`;
+  const recent=q.log.slice(-5).reverse();
+  if(recent.length) h+=`<div class="card stack" style="gap:6px"><span class="label">Zuletzt erbeutet</span>${recent.map(l=>`<div class="row" style="flex-wrap:nowrap"><span class="grow">${esc(l.t)}</span><b class="num qplus">+${l.v}</b></div>`).join('')}</div>`;
+  ui.qburst=null;
+  return h+'</div>';
+}
+function viewQuestShop(){
+  const q=QD();
+  let h=`<header class="top"><button class="iconbtn" data-act="qView" data-v="" aria-label="Zurück">${ICON.left}</button><h1>Schatzkammer<span class="sub">${q.coins||0} Gold in der Truhe</span></h1></header><div class="stack">`;
+  h+=`<p class="hint">Lege selbst fest, womit du dich belohnst. Als Richtwert: An einem guten Tag verdienst du 15 bis 20 Gold, in einer Woche etwa 100.</p>`;
+  if(q.rewards.length) h+=q.rewards.map(w=>`<div class="card qrew"><div class="grow"><b>${esc(w.n)}</b><span class="hint">${w.p} Gold${(q.coins||0)<w.p?` · noch ${w.p-(q.coins||0)}`:''}</span></div>
+      <button class="btn small ${(q.coins||0)>=w.p?'':'ghost'}" data-act="qBuy" data-id="${w.id}" ${(q.coins||0)>=w.p?'':'disabled'}>Einlösen</button><button class="iconbtn" data-act="qRewDel" data-id="${w.id}" aria-label="Belohnung löschen">${QX}</button></div>`).join('');
+  else h+=`<div class="card"><p>Noch keine Belohnungen. Tipp einen Vorschlag an oder leg eine eigene an.</p></div>`;
+  h+=`<div class="card stack"><span class="label">Neue Belohnung</span><input class="inp" id="qRewN" placeholder="z. B. Kinoabend" maxlength="60"><div class="row" style="flex-wrap:nowrap"><input class="inp" id="qRewP" type="number" inputmode="numeric" min="1" max="9999" placeholder="Preis in Gold" style="flex:1"><button class="btn" data-act="qRewAdd">Hinzufügen</button></div>
+    <div class="chips">${[['klein',25],['mittel',100],['groß',400]].map(([n,p])=>`<button class="chip" data-act="qRewPrice" data-v="${p}">${n} · ${p}</button>`).join('')}</div></div>`;
+  const sug=QREW_SUG.filter(([n])=>!q.rewards.some(w=>w.n===n));
+  if(sug.length) h+=`<div class="card stack"><span class="label">Vorschläge</span><div class="chips">${sug.map(([n,p])=>`<button class="chip" data-act="qRewSug" data-n="${esc(n)}" data-p="${p}">${esc(n)} · ${p}</button>`).join('')}</div></div>`;
+  if(q.bought.length) h+=`<div class="card stack" style="gap:6px"><span class="label">Eingelöst</span>${q.bought.slice(-8).reverse().map(b=>`<div class="row" style="flex-wrap:nowrap"><span class="grow">${esc(b.n)}</span><span class="hint">${fmtDay(b.d,{day:'numeric',month:'short'})}</span></div>`).join('')}</div>`;
+  return h+'</div>';
+}
+function viewQuestBook(){
+  const q=QD(); const o=ui.qbook||(ui.qbook={});
+  let h=`<header class="top"><button class="iconbtn" data-act="qView" data-v="" aria-label="Zurück">${ICON.left}</button><h1>Questbuch<span class="sub">Was Leona dir vorschlagen darf</span></h1></header><div class="stack">`;
+  h+=`<p class="hint">Tipp auf eine Quest, um sie an- oder auszuschalten. Ausgeschaltete zieht Leona nie.</p>`;
+  Object.entries(QCATS).forEach(([c,[n,k]])=>{ const list=qAll().filter(x=>x.c===c);
+    h+=`<div class="card stack qbook" style="--k:var(${k});gap:6px"><span class="label">${n}</span>${list.map(x=>{ const off=q.hidden.includes(x.id);
+      return `<div class="row qbrow ${off?'off':''}" style="flex-wrap:nowrap"><button class="grow qbt" data-act="qToggle" data-id="${x.id}" aria-pressed="${!off}"><span class="qchk">${off?'':ICON.tick}</span><span class="grow">${esc(x.t)}</span><span class="hint num">${qBase(x.d)+[0,2,4][x.u]}</span></button>${x.id.startsWith('c')?`<button class="iconbtn" data-act="qDel" data-id="${x.id}" aria-label="Quest löschen">${QX}</button>`:''}</div>`; }).join('')}</div>`; });
+  const nd=ui.qnew||(ui.qnew={c:'haushalt',d:5,u:1,cd:24});
+  const ch=(k,v,l)=>`<button class="chip ${nd[k]===v?'on':''}" data-act="qNewSet" data-k="${k}" data-v="${v}">${l}</button>`;
+  h+=`<div class="card stack"><span class="label">Eigene Quest</span><input class="inp" id="qNewT" placeholder="z. B. Katzenklo sauber machen" maxlength="80">
+    <div class="chips">${Object.entries(QCATS).map(([c,[n]])=>ch('c',c,n)).join('')}</div>
+    <span class="hint">Dauer</span><div class="chips">${[2,5,15,30].map(d=>ch('d',d,d+' Min')).join('')}</div>
+    <span class="hint">Überwindung</span><div class="chips">${['leicht','mittel','unangenehm'].map((l,i)=>ch('u',i,l)).join('')}</div>
+    <span class="hint">Wie oft darf sie Gold bringen?</span><div class="chips">${[[4,'mehrmals täglich'],[20,'täglich'],[72,'alle 3 Tage'],[168,'wöchentlich'],[336,'alle 2 Wochen']].map(([v,l])=>ch('cd',v,l)).join('')}</div>
+    <button class="btn" data-act="qNewAdd">Ins Questbuch</button></div>`;
+  return h+'</div>';
+}
+const QA = {
+  qView(el){ ui.qv=el.dataset.v||null; render(); window.scrollTo(0,0); },
+  qDraw(el){ const e=el.dataset.v; ui.qenergy=e; const id=qDraw(e); if(!id){ toast(e==='high'?'Gerade passt keine Quest in deine freie Zeit.':'Keine passende Quest. Versuch es mit mehr Kraft.'); return; }
+    ui.qdraw={id,lucky:Math.random()<.1}; if(S.meta.sfx!==false) sfx('coins'); render(); },
+  qReject(){ const q=QD(), id=ui.qdraw&&ui.qdraw.id; if(!id) return; q.day.rej[id]=(q.day.rej[id]||0)+1; q.bounty[id]=Math.min(5,(q.bounty[id]||0)+1); save('quest');
+    const nid=qDraw(ui.qenergy||'high',id); if(!nid){ ui.qdraw=null; toast('Mehr Quests habe ich gerade nicht für dich.'); } else ui.qdraw={id:nid,lucky:Math.random()<.1}; render(); },
+  qAccept(){ const q=QD(), x=qGet(ui.qdraw&&ui.qdraw.id); if(!x) return; const val=qValue(x,ui.qdraw.lucky);
+    q.active={id:x.id,start:Date.now(),v:val.v,lucky:val.lucky}; ui.qdraw=null; save('quest'); if(S.meta.sfx!==false) sfx('call'); render(); },
+  qAbort(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich? Nochmal tippen'; return; } const q=QD(); q.active=null; save('quest'); toast('Abgebrochen. Kostet nichts, versprochen.'); render(); },
+  qDone(el){ const q=QD(), a=q.active; if(!a) return; const x=qGet(a.id);
+    if(Date.now()-a.start<45000 && x && x.d>=5 && !el.dataset.sure){ el.dataset.sure=1; el.textContent='Schon fertig? Ehrlich? Nochmal tippen'; return; }
+    const before=qRank(q.earned||0); q.coins=(q.coins||0)+a.v; q.earned=(q.earned||0)+a.v; q.day.n++; q.last[a.id]=Date.now(); q.bounty[a.id]=0;
+    q.log.push({id:a.id,t:x?x.t:'Quest',v:a.v,ts:Date.now()}); q.log=q.log.slice(-60); q.active=null; save('quest');
+    const after=qRank(q.earned); ui.qburst=a.v; render();
+    if(after>before){ hype('rank','cheer'); setTimeout(()=>toast(`Neuer Rang: ${QRANKS[after][1]}!`),400); } else hype(a.lucky?'questlucky':'quest'); },
+  qBuy(el){ const q=QD(), w=q.rewards.find(x=>x.id===el.dataset.id); if(!w || (q.coins||0)<w.p) return;
+    if(!el.dataset.sure){ el.dataset.sure=1; el.textContent=`${w.p} Gold ausgeben?`; return; }
+    q.coins-=w.p; q.bought.push({n:w.n,p:w.p,d:todayS()}); q.bought=q.bought.slice(-50); save('quest'); render(); hype('treasure'); },
+  qRewDel(el){ const q=QD(); const w=q.rewards.find(x=>x.id===el.dataset.id); q.rewards=q.rewards.filter(x=>x.id!==el.dataset.id); save('quest'); render(); toast('Belohnung gelöscht', w?()=>{ q.rewards.push(w); save('quest'); render(); }:null); },
+  qRewPrice(el){ const p=$('#qRewP'); if(p) p.value=el.dataset.v; },
+  qRewAdd(){ const n=($('#qRewN').value||'').trim(), p=Math.round(+$('#qRewP').value); if(!n){ $('#qRewN').focus(); return; } if(!(p>0)){ $('#qRewP').focus(); return; }
+    QD().rewards.push({id:uid(),n,p}); save('quest'); render(); toast('In der Schatzkammer'); },
+  qRewSug(el){ QD().rewards.push({id:uid(),n:el.dataset.n,p:+el.dataset.p}); save('quest'); render(); },
+  qToggle(el){ const q=QD(), id=el.dataset.id; q.hidden=q.hidden.includes(id)?q.hidden.filter(x=>x!==id):[...q.hidden,id]; save('quest'); render(); },
+  qDel(el){ const q=QD(); const x=q.custom.find(c=>c.id===el.dataset.id); q.custom=q.custom.filter(c=>c.id!==el.dataset.id); save('quest'); render(); toast('Quest gelöscht', x?()=>{ q.custom.push(x); save('quest'); render(); }:null); },
+  qNewSet(el){ const k=el.dataset.k; ui.qnew[k]=k==='c'?el.dataset.v:+el.dataset.v; const t=$('#qNewT')?.value; render(); if(t && $('#qNewT')) $('#qNewT').value=t; },
+  qNewAdd(){ const t=($('#qNewT').value||'').trim(); if(!t){ $('#qNewT').focus(); return; } const nd=ui.qnew;
+    QD().custom.push({id:'c'+uid(),t,c:nd.c,d:nd.d,u:nd.u,cd:nd.cd,tip:''}); save('quest'); ui.qnew=null; render(); toast('Neue Quest im Buch'); }
+};
+setInterval(()=>{ const el=document.getElementById('qElapsed'); const a=S.quest&&S.quest.active; if(el && a){ const s=Math.floor((Date.now()-a.start)/1000); el.textContent=`${pad(Math.floor(s/60))}:${pad(s%60)}`; } },1000);
+
 /* ---------- tools ---------- */
 const TOOLS = [
   {id:'help', icon:'help', name:'Hilfe', cat:'termin', summary(){ return 'Leona erklärt dir alle Funktionen'; }, view:viewHelp},
@@ -1072,10 +1294,14 @@ const LEONA_LINES = {
   sleepgood:['Ausgeschlafen! Perfekt. Heute gibt es keine Ausreden!','Gut geschlafen? HA! Dann holen wir uns heute alles!'],
   night:['Du weißt, was morgen kommt. Jetzt ab ins Bett, Schlaf ist auch Training!','Plan steht, Kopf aus. Morgen wird gekämpft!'],
   period:['Periode notiert. Wärmflasche, Wasser, weniger Plan. Das ist ein Befehl!','Notiert. Heute ist Schonung erlaubt, ja sogar angeordnet.'],
+  quest:['Quest erledigt! Hier, dein Gold. Ehrlich verdient.','HA! Genau dafür gibt es Beute. Weiter so!','Siehst du? Leerlauf ist nur Zeit, die auf dich wartet.','Erledigt und bezahlt. So führt man einen Feldzug!','Das hast du dir selbst bewiesen. Das Gold ist nur der Bonus.'],
+  questlucky:['GLÜCKSTREFFER! Doppelte Beute! Heute lächelt dir das Schicksal!','Doppeltes Gold! HAHA, die Truhe wird schwer!'],
+  rank:['NEUER RANG! HAHAHA! Ich wusste doch, dass in dir mehr steckt!','Aufgestiegen! Dein Schwert wird schärfer. Und du auch.'],
+  treasure:['Belohnung eingelöst! Genieß es, das hast du dir erkämpft!','Beute ist da, um sie zu genießen. Befehl!'],
   test:['Du brauchst Antrieb? HAHA! Den kriegst du. Bei jedem Sieg!','Was stehst du hier rum? Da draußen wartet dein Tag!']
 };
 let hypeT=null, lastLine='';
-const LEONA_EXPR = {period:'calm',done:'cheer',alldone:'cheer',focus:'cheer',plan:'cheer',proj:'cheer',test:'cheer',sleepgood:'cheer',add:'wink',step:'wink',shift:'smirk',mig:'calm',sleepbad:'calm',night:'calm'};
+const LEONA_EXPR = {quest:'cheer',questlucky:'cheer',rank:'cheer',treasure:'wink',period:'calm',done:'cheer',alldone:'cheer',focus:'cheer',plan:'cheer',proj:'cheer',test:'cheer',sleepgood:'cheer',add:'wink',step:'wink',shift:'smirk',mig:'calm',sleepbad:'calm',night:'calm'};
 ['smirk','cheer','wink','calm'].forEach(n=>{ const i=new Image(); i.src=`leona-${n}.webp`; });
 function hype(kind, expr){
   if(S.meta.sfx!==false) sfx(HYPE_SFX[kind]);
@@ -1093,7 +1319,8 @@ const OB = [
   {img:'cheer', h:'Willkommen im Trupp!', p:'Ich bin Leona. Diese App wurde für <b>besondere Gehirne</b> gebaut: Gehirne, die zehn geniale Ideen gleichzeitig haben und trotzdem vergessen, dass die Wäsche seit gestern in der Maschine liegt.', tip:'Mit dieser App kannst du die Weltherrschaft an dich reißen. Oder die Wäsche nicht vergessen. Wir fangen mit der Wäsche an.'},
   {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>orange Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Kommt etwas jede Woche wieder? Unter „Wann?“ stellst du <b>Wiederholen</b> ein, und ich trag es dir ganz von allein ein.'},
   {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Hast du gerade Luft, schlage ich dir <b>eine</b> offene Aufgabe vor. Nur eine. Ich kenne dich doch.'},
-  {img:'wink', h:'Ein Blick nach vorn', p:'Unten findest du <b>Hellsehen</b>: Ich war bei der Seherin, und sie wirft die Knochen auf die Karte. Jeder <b>Knochen</b> ist ein Termin von morgen, jede rote <b>Marke</b> eine Aufgabe ohne Uhrzeit. Darunter berichte ich dir, was dich erwartet.', tip:'Daneben liegt der <b>Fokus</b>: Ich lege dir den Schlachtplan auf den Tisch. Nur was jetzt dran ist, was danach kommt und wie viel Zeit bleibt. Der Rest der Welt darf warten.'},
+  {img:'cheer', h:'Quests & Gold', p:'Leerlauf? Dann tipp unten auf die <b>Goldmünze</b> und zieh eine <b>Quest</b>: kleine Aufgaben, die man gern vergisst oder vor sich herschiebt. Erledigst du sie, zahle ich dich in <b>Gold</b> aus. Je unangenehmer, desto mehr.', tip:'Das Gold gibst du in der <b>Schatzkammer</b> für Belohnungen aus, die du selbst festlegst. Abends wartet außerdem das <b>Hellsehen</b> im Tag auf dich: ein Blick auf morgen.'},
+  {img:'wink', h:'Nur der nächste Schritt', p:'Die <b>Fackel</b> unten öffnet den <b>Fokus</b>: Ich lege dir den Schlachtplan auf den Tisch. Nur was jetzt dran ist, was danach kommt und wie viel Zeit bleibt.', tip:'Der Rest der Welt darf warten. Und der Bildschirm bleibt an, solange du kämpfst.'},
   {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Für Wäsche, Spülmaschine und Co. gibt es <b>Etappen</b>: Ich erinnere dich genau dann, wenn du wieder ran musst.'},
   {img:'calm', h:'Auch Kriegerinnen ruhen sich aus', p:'Trag morgens kurz ein, wie du geschlafen hast. Im <b>Migränetagebuch</b> zeige ich dir mit der Zeit, ob schlechte Nächte Attacken begünstigen. An harten Tagen schaltest du unter Einstellungen den <b>ruhigen Modus</b> ein.', tip:'Deine Daten bleiben nur auf deinem Handy. Mach ab und zu eine Sicherung unter Tools.'},
   {img:'cheer', h:'Bereit?', p:'Wenn du nicht weiterweißt: <b>Tools → Hilfe</b>. Da erkläre ich dir alles noch mal, ohne zu meckern. Fast ohne.', tip:'Und jetzt raus mit dir. Der Tag erobert sich nicht von allein!'}
@@ -1112,7 +1339,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 
 /* ---------- Help ---------- */
 const HELP = [
-  ['Neu bei Leona','--c5',`<ul><li><b>Hellsehen</b> sieht jetzt aus wie eine Karte auf meinem Kommandotisch, mit Kerzenlicht. Die Knochen zeigen deine Termine von morgen.</li><li><b>Fokus</b> legt dir den Schlachtplan auf den Tisch: jetzt, als Nächstes und die Zeit bis dahin.</li><li><b>Serien</b>: wöchentlich, alle 2 Wochen und eigene Abstände.</li><li><b>Klänge</b> im Mittelalter-Stil, beim Abhaken mit Schwertklirren.</li><li>Ich schlage dir in freien Lücken von selbst eine Aufgabe vor.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
+  ['Neu bei Leona','--c5',`<ul><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> erscheint jetzt abends ab 18 Uhr als Karte im Tag.</li><li><b>Fokus</b> legt dir den Schlachtplan auf den Tisch: jetzt, als Nächstes und die Zeit bis dahin.</li><li><b>Serien</b>: wöchentlich, alle 2 Wochen und eigene Abstände.</li><li><b>Klänge</b> im Mittelalter-Stil, beim Abhaken mit Schwertklirren.</li><li>Ich schlage dir in freien Lücken von selbst eine Aufgabe vor.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>orange Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die orange Linie ist „jetzt“.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
@@ -1120,7 +1347,17 @@ const HELP = [
   ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li><li>Jede Etappe hat ein <b>Häkchen</b> direkt im Zeitplan. Hakst du früher oder später ab, rechne ich die nächsten Etappen neu.</li><li>Läuft die Maschine noch, zeigt die Jetzt-Karte <b>„Schon fertig“</b> und <b>„+15 Min“</b>.</li><li>Im Eintrag: <b>„Ganze Aufgabe erledigt“</b>.</li></ul>`],
   ['Verschieben & verpasst','--c4',`<p>Termine dürfen sich nicht überschneiden. Passiert es doch, biete ich dir die nächste freie Zeit an. Jeder Eintrag ist <b>fest</b> (Arzt, Termine) oder <b>flexibel</b>. Verschiebst du etwas, schlage ich vor, wie Flexibles mitrutscht. Feste Termine bleiben stehen.</p><p>Ist etwas vorbei und nicht abgehakt, frage ich: nachholen, erledigt, morgen oder lassen.</p><p class="say">„Rückschläge sind kein Rückzug. Wir sortieren neu und weiter geht's.“</p>`],
   ['Erinnerungen','--c3',`<p>Pro Eintrag einstellbar unter Extras → Erinnerung. Sie kommen mit Ton und Banner, solange die App geöffnet ist oder im Hintergrund noch läuft.</p><p>Mitteilungen erlaubst du unter <b>Tools → Sichern & Übertragen</b>. Ist die App ganz geschlossen, kann sie dich leider nicht erinnern. Für Wichtiges stell dir zusätzlich einen Wecker.</p>`],
-  ['Hellsehen & Fokus','--c5',`<p><b>Hellsehen</b> (die gekreuzten Knochen unten): Ich war bei der Seherin, und sie wirft die Knochen auf die Karte auf meinem Tisch. Jeder <b>Knochen</b> ist ein Termin von <b>morgen</b>, mit Uhrzeit darauf. Jede rote <b>Marke</b> ist eine Aufgabe ohne Uhrzeit. Darunter berichte ich dir, wann es losgeht, wann du fertig bist und wie hart der Tag wird. Das <b>rote Banner</b> ist deine wichtigste Sache. Mit <b>Morgen planen</b> legst du sie fest.</p><p>Ideal abends vorm Schlafen. Mit <b>Gute Nacht, Leona</b> schließt du ab.</p><p><b>Fokus</b> (die Fackel daneben) legt dir den Schlachtplan auf den Tisch: nur der <b>jetzige Schritt</b>, der <b>nächste</b> und der Countdown bis dahin. Alles andere verschwindet, und der Bildschirm bleibt an. Oben rechts beendest du den Fokus.</p><p class="say">„Ein Schritt nach dem anderen. So erobert man Burgen. Und Küchen.“</p>`],
+  ['Quests & Gold','--c3',`<p>Tipp unten auf die <b>Goldmünze</b>. Sag mir, wie viel Kraft du hast (wenig, mittel, viel), und ich ziehe dir eine <b>Quest</b>, die in deine freie Zeit passt: Haushalt, Papierkram, Soziales, Körper, Digitales und Dinge für dein Morgen-Ich.</p>
+    <ul><li><b>Annehmen</b> startet die Quest mit Stoppuhr, <b>Geschafft!</b> zahlt dich aus. <b>Abbrechen</b> kostet nichts.</li>
+    <li><b>Gold</b>: 2 bis 10 je nach Dauer, plus bis zu 4 für Überwindung. Unangenehmes lohnt sich mehr.</li>
+    <li><b>Kopfgeld</b>: Lehnst du eine Quest ab, ist sie beim nächsten Mal 1 Gold mehr wert, höchstens 5 mehr. Zweimal abgelehnt, und ich lasse sie für heute in Ruhe.</li>
+    <li><b>Glückstreffer</b>: Ungefähr jede zehnte Quest bringt doppeltes Gold.</li>
+    <li>Die ersten drei Quests am Tag zahlen voll, danach die Hälfte. Jede Quest bringt erst nach ihrer Pause wieder Gold, Wasser trinken etwa nach 2 Stunden, Bettwäsche nach 2 Wochen.</li>
+    <li>Nur gezogene Quests bringen Gold. Normale Termine abhaken nicht.</li></ul>
+    <p>In der <b>Schatzkammer</b> legst du Belohnungen mit Preis an und löst sie ein. Richtwert: An einem guten Tag verdienst du 15 bis 20 Gold. Klein: 20–30, mittel: um 100, groß: 300–500.</p>
+    <p>Im <b>Questbuch</b> schaltest du Quests ab, die nicht zu dir passen, und schreibst eigene dazu.</p>
+    <p>Dein <b>Rang</b> zählt alles Gold, das du je verdient hast. Ausgeben senkt ihn nie: Holzschwert, Eisenschwert, Stahlschwert, Silberschwert, Goldschwert, Löwenschwert.</p><p class="say">„Leerlauf ist nur Zeit, die auf dich wartet.“</p>`],
+  ['Hellsehen & Fokus','--c5',`<p><b>Hellsehen</b> (abends ab 18 Uhr als Karte im Tag): Ich war bei der Seherin, und sie wirft die Knochen auf die Karte auf meinem Tisch. Jeder <b>Knochen</b> ist ein Termin von <b>morgen</b>, mit Uhrzeit darauf. Jede rote <b>Marke</b> ist eine Aufgabe ohne Uhrzeit. Darunter berichte ich dir, wann es losgeht, wann du fertig bist und wie hart der Tag wird. Das <b>rote Banner</b> ist deine wichtigste Sache. Mit <b>Morgen planen</b> legst du sie fest.</p><p>Ideal abends vorm Schlafen. Mit <b>Gute Nacht, Leona</b> schließt du ab.</p><p><b>Fokus</b> (die Fackel daneben) legt dir den Schlachtplan auf den Tisch: nur der <b>jetzige Schritt</b>, der <b>nächste</b> und der Countdown bis dahin. Alles andere verschwindet, und der Bildschirm bleibt an. Oben rechts beendest du den Fokus.</p><p class="say">„Ein Schritt nach dem anderen. So erobert man Burgen. Und Küchen.“</p>`],
   ['Tagesplanung','--c3',`<p>Morgens erscheint die gelbe Karte „Plane deinen Tag“. In zwei Minuten: Was steht fest? Was ist die <b>eine wichtigste Sache</b>? Wie hast du geschlafen?</p>`],
   ['Mini-Schritte & Timer','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Timer</b>-Tab läuft ein Zeitmesser, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
   ['Monat','--c1',`<p>Der Monatsüberblick mit farbigen Punkten pro Eintrag und einer roten Raute an Migränetagen. Tipp auf einen Tag, um ihn zu öffnen.</p>`],
@@ -1261,7 +1498,7 @@ function taskScore(e,free){ const t=todayS(); let s=(e.skips||0)*3 + Math.min(dD
   if(free!=null) s+= (e.dur||30)<=free?8:-12; return s; }
 function suggestions(free){ const t=todayS(); return untimed(evOn(t)).filter(e=>!e.done && e.sugDay!==t).sort((a,b)=>taskScore(b,free)-taskScore(a,free)); }
 function sugBox(free){
-  const list=suggestions(free); if(!list.length || free<10) return '';
+  const list=suggestions(free); if(free<10) return ''; if(!list.length) return questTeaser(free);
   const e=list[(ui.sugIdx||0)%list.length], nag=(e.skips||0)>=3, av=S.meta.hypeAv!==false;
   return `<div class="sug">
     <div class="row" style="flex-wrap:nowrap;align-items:center">${av?`<img class="sugav" src="leona-${nag?'smirk':'wink'}.webp" alt="">`:''}<div class="grow"><span class="label" style="display:block">${sleepMode()==='low'?'Kurze Nacht, also etwas Leichtes':'Leona schlägt vor'} · ${dur(Math.min(free,600))} frei</span><b class="st">${esc(e.title)}</b><span class="hint" style="color:inherit;opacity:.85">${dur(e.dur||30)}${list.length>1?` · noch ${list.length-1} weitere offen`:''}</span> ${badges(e)}</div></div>
@@ -1808,10 +2045,12 @@ const SFX={
   fanfareBig(c,t){ if(battleOn()) battleBed(c,t,3.4,.8,1.2); SFX.horn(c,t,[[392,0,.15],[523.25,.19,.15],[659.25,.38,.15],[783.99,.57,.8],[1046.5,.57,.8]]); SFX.drum(c,t); SFX.drum(c,t+.57); clash(c,t+.6,.7); SFX.bell(c,t+.62); },
   bones(c,t){ for(let i=0;i<9;i++){ const T=t+R(0,.55)+(i<3?0:.12); noiseB(c,{t:T,dur:R(.025,.05),vol:R(.12,.26),filter:'bandpass',freq:R(900,2000),q:3,wet:.25}); tone(c,{f:R(320,560),t:T,dur:R(.05,.09),type:'triangle',vol:R(.08,.16),attack:.001,wet:.2}); }
     noiseB(c,{t:t+.62,dur:.18,vol:.06,filter:'lowpass',freq:500}); },
+  coins(c,t){ for(let i=0;i<7;i++){ const T=t+i*.055+R(0,.02), f=R(2100,3400); tone(c,{f,t:T,dur:.35,vol:.07,attack:.002,wet:.35}); tone(c,{f:f*1.51,t:T,dur:.2,vol:.03,attack:.002}); } },
+  coinsBig(c,t){ SFX.coins(c,t); SFX.coins(c,t+.35); SFX.fanfare(c,t+.5); },
   chime(c,t){ [523.25,392].forEach((f,i)=>tone(c,{f,t:t+i*.28,dur:1.8,vol:.16,attack:.012,wet:.5})); }
 };
 function sfx(name){ if(S.meta.sound===false || !name) return; const c=ac(); if(!c || !SFX[name]) return; try{ SFX[name](c,c.currentTime+.08); }catch(e){} }
-const HYPE_SFX={done:'sword',alldone:'fanfareBig',step:'harp',add:'lute',plan:'fanfare',proj:'fanfare',shift:'drum',sleepgood:'lute',test:'fanfare',mig:'chime',sleepbad:'chime',night:'chime',period:'chime'};
+const HYPE_SFX={quest:'coins',questlucky:'coinsBig',rank:'fanfareBig',treasure:'fanfare',done:'sword',alldone:'fanfareBig',step:'harp',add:'lute',plan:'fanfare',proj:'fanfare',shift:'drum',sleepgood:'lute',test:'fanfare',mig:'chime',sleepbad:'chime',night:'chime',period:'chime'};
 function beep(n=1){ sfx(n>=2?'bells':'bell'); }
 function vibe(p){ if(S.meta.vibe===false) return; try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
 function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remove()); const el=document.createElement('div'); el.className='toast'; el.setAttribute('role','status');
@@ -1821,6 +2060,7 @@ function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remov
 
 /* ---------- actions ---------- */
 const A = {
+  ...QA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
   dayShift(el){ ui.date=addDays(ui.date,+el.dataset.v); render(); window.scrollTo(0,0); },
   dayToday(){ ui.date=todayS(); ui.scrolled=false; render(); },
@@ -1975,7 +2215,7 @@ const A = {
     if(!pdraft.name){ $('#pName').focus(); return; } const i=S.projects.findIndex(x=>x.id===pdraft.id); const before=i>=0?S.projects[i].progress:0; if(i>=0) S.projects[i]=pdraft; else S.projects.push(pdraft); save('projects'); closeSheet(); if(pdraft.progress>before) hype('proj'); else toast('Gespeichert'); },
   pDel(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich löschen? Nochmal tippen'; return; } const gone=S.projects.find(x=>x.id===pdraft.id); S.projects=S.projects.filter(x=>x.id!==pdraft.id); save('projects'); closeSheet(); toast('Gelöscht', gone?()=>{ S.projects.push(gone); save('projects'); render(); }:null); },
   async exportData(){
-    const data={app:'bunter-kalender',version:1,exported:new Date().toISOString(),data:{events:S.events,migraine:S.migraine,projects:S.projects,mood:S.mood,sleep:S.sleep,cycle:S.cycle,meta:S.meta}};
+    const data={app:'bunter-kalender',version:1,exported:new Date().toISOString(),data:{events:S.events,migraine:S.migraine,projects:S.projects,mood:S.mood,sleep:S.sleep,cycle:S.cycle,meta:S.meta,quest:S.quest}};
     const name=`leona-sicherung-${todayS()}.json`;
     const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
     let ok=false;
@@ -1989,7 +2229,7 @@ const A = {
   importConfirm(el){
     if(!pendingImport) return;
     if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Sicher? Ersetzt alles auf diesem Handy. Nochmal tippen'; return; }
-    const d=pendingImport.data; S.events=d.events||[]; S.migraine=d.migraine||[]; S.projects=d.projects||[]; S.mood=d.mood||{}; S.sleep=d.sleep||{}; S.cycle=d.cycle||{days:{},set:{len:28,plen:5}}; S.meta=Object.assign({planned:{},focusOf:{}},d.meta||{});
+    const d=pendingImport.data; S.events=d.events||[]; S.migraine=d.migraine||[]; S.projects=d.projects||[]; S.mood=d.mood||{}; S.sleep=d.sleep||{}; S.cycle=d.cycle||{days:{},set:{len:28,plen:5}}; S.meta=Object.assign({planned:{},focusOf:{}},d.meta||{}); S.quest=d.quest||{coins:0,earned:0};
     KEYS.forEach(save); pendingImport=null; toast('Sicherung geladen'); ui.tool=null; ui.tab='day'; ui.date=todayS(); render();
   },
   async notifOn(){ try{ await Notification.requestPermission(); }catch(e){} render(); },
