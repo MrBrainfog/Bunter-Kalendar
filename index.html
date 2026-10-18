@@ -288,6 +288,31 @@ nav.tabs button.tmr{color:var(--ink);position:relative}
 nav.tabs button.tmr .knob{width:60px;height:60px;margin-top:-36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FF9CC8,#F2559A 70%);color:#fff;border:4px solid var(--surface);box-shadow:0 6px 16px rgba(242,85,154,.45),inset 0 -3px 0 rgba(0,0,0,.12)}
 nav.tabs button.tmr .knob svg{width:28px;height:28px;stroke:#fff}
 nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
+/* Onboarding */
+.ob{position:fixed;inset:0;z-index:40;background:linear-gradient(170deg,var(--accent) 0%,var(--c3) 60%,var(--c3) 100%);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.ob-top{display:flex;justify-content:flex-end;padding-block:10px}
+.ob-skip{border:0;background:rgba(255,255,255,.35);color:#1A1D2B;border-radius:999px;padding:8px 14px;font-weight:700}
+.ob-stage{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;max-width:520px;width:100%;margin:0 auto}
+.ob-img{width:min(64vw,270px);max-height:38vh;object-fit:contain;object-position:bottom;display:block;filter:drop-shadow(0 12px 18px rgba(0,0,0,.3));margin-bottom:-6px;position:relative;z-index:1}
+.ob-card{background:var(--surface);color:var(--ink);border-radius:24px;padding:20px 18px 16px;width:100%;display:flex;flex-direction:column;gap:12px;box-shadow:0 18px 40px rgba(0,0,0,.25);max-height:52vh;overflow:auto}
+.ob-card h2{font-size:24px}
+.ob-card p{margin:0;font-size:16.5px;line-height:1.45}
+.ob-card .tip{background:var(--surface-2);border-radius:14px;padding:10px 12px;font-size:15px}
+.ob-dots{display:flex;gap:6px;justify-content:center}
+.ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.ob-dots i.on{width:22px;border-radius:5px;background:var(--accent)}
+.ob-nav{display:flex;gap:10px;padding-block:14px}
+.ob-nav .btn{flex:1}
+.ob-nav .btn.ghost{background:rgba(255,255,255,.55);color:#1A1D2B}
+@media (prefers-reduced-motion:no-preference){ .ob-img{animation:lrise .55s cubic-bezier(.25,1.6,.5,1) both} .ob-card{animation:vpop .3s ease-out both} }
+@media (max-height:720px){ .ob-img{max-height:26vh;width:min(48vw,200px)} .ob-card{max-height:62vh;gap:10px;padding:16px} .ob-card h2{font-size:21px} .ob-card p{font-size:15.5px} }
+/* Help */
+.helphead{display:flex;gap:12px;align-items:flex-end;background:linear-gradient(160deg,var(--accent),var(--c3));border-radius:22px;padding:12px 14px 0;overflow:hidden}
+.helphead img{width:120px;flex:none;display:block}
+.helphead p{margin:0 0 14px;background:var(--surface);color:var(--ink);border-radius:16px 16px 16px 4px;padding:10px 12px;font-weight:700;font-size:15px}
+.hq .xbody p{margin:0}
+.hq .xbody ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.hq .xbody .say{font-style:italic;color:var(--ink-2)}
 /* Leona */
 .hype{position:fixed;z-index:7;left:max(4px,env(safe-area-inset-left,0px));right:max(84px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:0;max-width:480px;pointer-events:auto}
 .hype:not(.with-av){bottom:calc(66px + env(safe-area-inset-bottom,0px))}
@@ -365,6 +390,7 @@ nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow
 <div id="sheetRoot"></div>
 <div id="alertRoot"></div>
 <div id="hypeRoot"></div>
+<div id="obRoot"></div>
 
 <script>
 (() => {
@@ -735,6 +761,7 @@ function sleepPicker(d){
 
 /* ---------- tools ---------- */
 const TOOLS = [
+  {id:'help', name:'Hilfe', cat:'termin', summary(){ return 'Leona erklärt dir alle Funktionen'; }, view:viewHelp},
   {id:'migraine', name:'Migränetagebuch', cat:'gesund', summary(){ const n=S.migraine.filter(x=>x.date>=addDays(todayS(),-29)).length; return n?`${n} Tage in den letzten 30`:'Attacken festhalten, Auslöser erkennen'; }, view:viewMigraine},
   {id:'projects', name:'Projekte', cat:'arbeit', summary(){ return S.projects.length?`${S.projects.length} Projekte · Ø ${Math.round(S.projects.reduce((a,p)=>a+p.progress,0)/S.projects.length)} %`:'Fortschritt und Notizen'; }, view:viewProjects},
   {id:'settings', name:'Einstellungen', cat:'pause', summary(){ return [S.meta.calm?'Ruhiger Modus':'Normale Bewegung', S.meta.sound===false?'Töne aus':'Töne an'].join(' · '); }, view:viewSettings},
@@ -847,6 +874,53 @@ function hype(kind, expr){
   vibe(kind==='alldone'?[80,60,80,60,160]:40);
   clearTimeout(hypeT); hypeT=setTimeout(()=>{ $('#hypeRoot').innerHTML=''; }, kind==='alldone'?6000:4200);
 }
+/* ---------- Onboarding with Leona ---------- */
+const OB = [
+  {img:'cheer', h:'Willkommen im Trupp!', p:'Ich bin Leona. Diese App wurde für <b>besondere Gehirne</b> gebaut: Gehirne, die zehn geniale Ideen gleichzeitig haben und trotzdem vergessen, dass die Wäsche seit gestern in der Maschine liegt.', tip:'Mit dieser App kannst du die Weltherrschaft an dich reißen. Oder die Wäsche nicht vergessen. Wir fangen mit der Wäsche an.'},
+  {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>orange Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Alles Weitere ist optional und eingeklappt. Du musst nichts ausfüllen, was du nicht brauchst.'},
+  {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Abends drückst du den <b>rosa Knopf</b> unten in der Mitte und siehst sofort, was morgen auf dich wartet.'},
+  {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Für Wäsche, Spülmaschine und Co. gibt es <b>Etappen</b>: Ich erinnere dich genau dann, wenn du wieder ran musst.'},
+  {img:'calm', h:'Auch Kriegerinnen ruhen sich aus', p:'Trag morgens kurz ein, wie du geschlafen hast. Im <b>Migränetagebuch</b> zeige ich dir mit der Zeit, ob schlechte Nächte Attacken begünstigen. An harten Tagen schaltest du unter Einstellungen den <b>ruhigen Modus</b> ein.', tip:'Deine Daten bleiben nur auf deinem Handy. Mach ab und zu eine Sicherung unter Tools.'},
+  {img:'cheer', h:'Bereit?', p:'Wenn du nicht weiterweißt: <b>Tools → Hilfe</b>. Da erkläre ich dir alles noch mal, ohne zu meckern. Fast ohne.', tip:'Und jetzt raus mit dir. Der Tag erobert sich nicht von allein!'}
+];
+function showOnboarding(i=0){
+  ui.ob=i; const o=OB[i], last=i===OB.length-1;
+  $('#obRoot').innerHTML=`<div class="ob" role="dialog" aria-modal="true" aria-label="Einführung">
+    <div class="ob-top"><button class="ob-skip" data-act="obDone">Überspringen</button></div>
+    <div class="ob-stage"><img class="ob-img" src="leona-${o.img}.webp" alt="Leona">
+      <div class="ob-card"><span class="label">Leona · ${i+1} von ${OB.length}</span><h2>${o.h}</h2><p>${o.p}</p><div class="tip">${o.tip}</div>
+      <div class="ob-dots">${OB.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div></div></div>
+    <div class="ob-nav">${i>0?'<button class="btn ghost" data-act="obPrev">Zurück</button>':''}${last?`${S.events.length?'':'<button class="btn ghost" data-act="obExamples">Beispieltag</button>'}<button class="btn" data-act="obDone">Los geht's!</button>`:'<button class="btn" data-act="obNext">Weiter</button>'}</div>
+  </div>`;
+}
+function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML=''; }
+
+/* ---------- Help ---------- */
+const HELP = [
+  ['Eintragen','--c3',`<p>Tipp auf das <b>orange Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
+  ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die orange Linie ist „jetzt“.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
+  ['Aufgaben ohne Uhrzeit','--c3',`<p>Sie stehen oben in der Liste. Zusätzlich schlage ich sie dir <b>gestrichelt</b> in freien Lücken im Zeitplan vor. Ein Tipp darauf plant sie genau dort ein.</p>`],
+  ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li></ul>`],
+  ['Verschieben & verpasst','--c4',`<p>Jeder Eintrag ist <b>fest</b> (Arzt, Termine) oder <b>flexibel</b>. Verschiebst du etwas, schlage ich vor, wie Flexibles mitrutscht. Feste Termine bleiben stehen.</p><p>Ist etwas vorbei und nicht abgehakt, frage ich: nachholen, erledigt, morgen oder lassen.</p><p class="say">„Rückschläge sind kein Rückzug. Wir sortieren neu und weiter geht's.“</p>`],
+  ['Erinnerungen','--c3',`<p>Pro Eintrag einstellbar unter Extras → Erinnerung. Sie kommen mit Ton und Banner, solange die App geöffnet ist oder im Hintergrund noch läuft.</p><p>Mitteilungen erlaubst du unter <b>Tools → Sichern & Übertragen</b>. Ist die App ganz geschlossen, kann sie dich leider nicht erinnern. Für Wichtiges stell dir zusätzlich einen Wecker.</p>`],
+  ['Der rosa Morgen-Knopf','--c5',`<p>Unten in der Mitte. Zeigt dir mit einem Tipp, was <b>morgen</b> ansteht: wie viele Termine, wann es losgeht, deine wichtigste Sache. Ideal abends vorm Schlafen.</p>`],
+  ['Tagesplanung','--c3',`<p>Morgens erscheint die gelbe Karte „Plane deinen Tag“. In zwei Minuten: Was steht fest? Was ist die <b>eine wichtigste Sache</b>? Wie hast du geschlafen?</p>`],
+  ['Mini-Schritte & Fokus','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Fokus</b>-Tab läuft ein Timer, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
+  ['Monat','--c1',`<p>Der Monatsüberblick mit farbigen Punkten pro Eintrag und einer roten Raute an Migränetagen. Tipp auf einen Tag, um ihn zu öffnen.</p>`],
+  ['Schlaf & Migräne','--c4',`<p>Morgens kurz eintragen, wie du geschlafen hast. Im <b>Migränetagebuch</b> siehst du den Schlaf der Nacht davor, eine Schlaf-Leiste und nach ein paar Wochen eine Auswertung. Bei einer schlechten Nacht schlage ich „Wenig Schlaf“ als Auslöser vor.</p><p>Die Auswertung ersetzt keinen Arzt, hilft dir aber, Muster zu erkennen.</p>`],
+  ['Projekte','--c2',`<p>Für alles, was länger dauert: Fortschritt in Prozent, der <b>nächste kleine Schritt</b> und Notizen, was du geschafft hast.</p>`],
+  ['Leona & Einstellungen','--c5',`<p>Unter <b>Tools → Leona</b> schaltest du mich aus oder auf „nur Sprechblase“. Wie kannst du nur.</p><p>Unter <b>Tools → Einstellungen</b>: ruhiger Modus ohne Animationen, Töne und Vibration.</p>`],
+  ['Sicherung & neues Handy','--c1',`<p>Deine Daten liegen <b>nur auf diesem Handy</b>. Unter <b>Tools → Sichern & Übertragen</b> erstellst du eine Sicherungsdatei. Leg sie in iCloud oder Google Drive. Auf einem neuen Handy: App öffnen, „Sicherung laden“, fertig.</p>`],
+  ['Installieren, offline & Updates','--c6',`<p><b>iPhone:</b> Link in Safari öffnen → Teilen → „Zum Home-Bildschirm“.<br><b>Android:</b> Link in Chrome öffnen → ⋮ → „App installieren“.</p><p>Danach läuft die App auch <b>ohne Internet</b>. Updates kommen automatisch, wenn du sie mit Internet öffnest. Öffne sie immer über das Symbol, nicht über den Browser.</p>`]
+];
+function viewHelp(){
+  const o=ui.helpOpen||(ui.helpOpen={});
+  return `<header class="top">${back()}<h1>Hilfe<span class="sub">Leona erklärt dir alles</span></h1></header><div class="stack">
+  <div class="helphead"><img src="leona-wink.webp" alt="Leona"><p>Frag ruhig. Wer fragt, gewinnt. Wer nicht fragt, sucht noch in drei Wochen den Knopf.</p></div>
+  <div class="extras hq">${HELP.map(([t,k,body],i)=>`<div class="xrow ${o[i]?'open':''}" style="--k:var(${k})"><button class="xhead" data-act="helpToggle" data-v="${i}" aria-expanded="${!!o[i]}"><span class="grow"><b>${t}</b></span>${XI.chev}</button><div class="xbody" ${o[i]?'':'hidden'}>${body}</div></div>`).join('')}</div>
+  <button class="btn" data-act="obReplay">Einführung noch mal ansehen</button></div>`;
+}
+
 function viewSettings(){
   const tg=(k,on,label,desc)=>`<div class="card setrow"><b style="font-family:var(--f-display);font-size:18px">${label}</b><span class="muted">${desc}</span><div class="chips"><button class="chip ${on?'on':''}" data-act="setPref" data-k="${k}" data-v="1">An</button><button class="chip ${on?'':'on'}" data-act="setPref" data-k="${k}" data-v="0">Aus</button></div></div>`;
   return `<header class="top">${back()}<h1>Einstellungen<span class="sub">So, wie es dir guttut</span></h1></header><div class="stack">
@@ -1214,6 +1288,12 @@ const A = {
   closeSheet(){ closeSheet(); },
   hypeClose(){ clearTimeout(hypeT); $('#hypeRoot').innerHTML=''; },
   hypeSet(el){ S.meta.hype=el.dataset.v==='1'; save('meta'); render(); if(S.meta.hype) hype('test'); },
+  obNext(){ showOnboarding(Math.min(OB.length-1,ui.ob+1)); },
+  obPrev(){ showOnboarding(Math.max(0,ui.ob-1)); },
+  obDone(){ closeOnboarding(); render(); },
+  obExamples(){ closeOnboarding(); A.loadExamples(); },
+  obReplay(){ showOnboarding(0); },
+  helpToggle(el){ const o=ui.helpOpen||(ui.helpOpen={}); o[el.dataset.v]=!o[el.dataset.v]; render(); },
   hypeExpr(el){ hype(el.dataset.k, el.dataset.v); },
   hypeTest(){ hype(['done','add','step','plan','focus','test'][Math.floor(Math.random()*6)]); },
   shBuf(el){ ui.sheets[ui.sheets.length-1].args.buf=+el.dataset.v; renderSheet(); },
@@ -1345,6 +1425,7 @@ document.addEventListener('change',ev=>{
 
 /* ---------- boot ---------- */
 render();
+if(!ls.get('onboarded',false)) showOnboarding(0);
 if(T.endAt){ if(tLeft()>0) startTick(); else tickTimer(); }
 setInterval(checkReminders,15000); setTimeout(checkReminders,1500);
 setInterval(()=>{ if(ui.tab==='day' && ui.date===todayS() && !ui.sheets.length) softRender(); },30000);
