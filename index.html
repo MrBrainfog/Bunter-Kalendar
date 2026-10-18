@@ -1101,6 +1101,7 @@ function viewSettings(){
   ${tg('sound',S.meta.sound!==false,'Töne bei Erinnerungen','Glockenschläge bei Erinnerungen und ein Hornruf, wenn Leona dir in freier Zeit etwas vorschlägt. Schaltet alle Töne der App an oder aus.')}
   ${tg('sfx',S.meta.sfx!==false,'Klänge bei Erfolgen','Mittelalterliche Klänge: Schwertklirren beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Fokus-Timer.')}
   <button class="btn ghost" data-act="sfxDemo">Klänge anhören</button>
+  ${tg('battle',S.meta.battle!==false,'Schlachtgetümmel','Hinter dem Schwertklirren und der großen Fanfare tobt in der Ferne eine Schlacht. Im ruhigen Modus automatisch aus.')}
   ${tg('vibe',S.meta.vibe!==false,'Vibration','Das Handy vibriert bei Erinnerungen und wenn Leona dich anfeuert.')}
   <button class="btn ghost" data-act="openTool" data-v="valka">Leona ein- oder ausschalten</button></div>`;
 }
@@ -1525,32 +1526,53 @@ function paintAlert(){
 let actx=null;
 document.addEventListener('pointerdown',()=>{ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } else if(actx.state==='suspended') actx.resume().catch(()=>{}); },{passive:true});
 /* ---------- Medieval sound world (synthesized, no files) ---------- */
-let masterGain=null;
+const R=(a,b)=>a+Math.random()*(b-a);
 function ac(){ if(!actx) return null; if(actx.state==='suspended') actx.resume().catch(()=>{}); return actx; }
-function outN(c){ if(!masterGain){ masterGain=c.createGain(); const comp=c.createDynamicsCompressor(); masterGain.connect(comp); comp.connect(c.destination); } masterGain.gain.value=S.meta.calm?0.35:0.7; return masterGain; }
-function tone(c,{f,t,dur,type='sine',vol=.3,attack=.005}){ const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(outN(c)); o.start(t); o.stop(t+dur+.05); return o; }
-function noiseB(c,{t,dur,vol=.2,filter='bandpass',freq=3000,q=1,attack=.002}){ const len=Math.max(1,Math.ceil(c.sampleRate*dur)), bf=c.createBuffer(1,len,c.sampleRate), d=bf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+function outN(c){ if(!c._mg){ c._mg=c.createGain(); const comp=c.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=6; c._mg.connect(comp); comp.connect(c.destination); } c._mg.gain.value=S.meta.calm?0.35:0.75; return c._mg; }
+function rvb(c){ if(!c._rv){ const len=Math.floor(c.sampleRate*2.6), ir=c.createBuffer(2,len,c.sampleRate);
+    for(let ch=0;ch<2;ch++){ const d=ir.getChannelData(ch); for(let i=0;i<len;i++){ const x=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-x,2.6)*(i<c.sampleRate*.012?0:1); } }
+    const cv=c.createConvolver(); cv.buffer=ir; const g=c.createGain(); g.gain.value=.55; cv.connect(g); g.connect(outN(c)); c._rv=cv; } return c._rv; }
+const battleOn=()=>S.meta.battle!==false && !S.meta.calm;
+function tone(c,{f,t,dur,type='sine',vol=.3,attack=.005,wet=0,to}){ const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(to||outN(c));
+  if(wet){ const w=c.createGain(); w.gain.value=wet; g.connect(w); w.connect(rvb(c)); } o.start(t); o.stop(t+dur+.05); return o; }
+function noiseB(c,{t,dur,vol=.2,filter='bandpass',freq=3000,q=1,attack=.002,wet=0,to}){ const len=Math.max(1,Math.ceil(c.sampleRate*dur)), bf=c.createBuffer(1,len,c.sampleRate), d=bf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
   const src=c.createBufferSource(); src.buffer=bf; const fl=c.createBiquadFilter(); fl.type=filter; fl.frequency.setValueAtTime(freq,t); fl.Q.value=q; const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  src.connect(fl); fl.connect(g); g.connect(outN(c)); src.start(t); src.stop(t+dur+.02); return fl; }
+  src.connect(fl); fl.connect(g); g.connect(to||outN(c)); if(wet){ const w=c.createGain(); w.gain.value=wet; g.connect(w); w.connect(rvb(c)); } src.start(t); src.stop(t+dur+.02); return {fl,g}; }
+// one blade striking another: sharp transient, inharmonic ringing with beating, short scrape
+function clash(c,t,vol=1,wet=.35,to){
+  noiseB(c,{t,dur:.07,vol:.45*vol,filter:'highpass',freq:2800,wet,to});
+  const f0=R(1650,2300); [[1,.20,R(.7,1)],[1.47,.13,R(.6,.9)],[2.09,.09,R(.5,.8)],[2.56,.07,.6],[3.42,.045,.45],[4.11,.03,.35]].forEach(([r,v,d])=>{
+    tone(c,{f:f0*r,t,dur:d,vol:v*vol,attack:.001,wet,to}); tone(c,{f:f0*r*1.0035,t,dur:d*.8,vol:v*vol*.6,attack:.001,wet,to}); });
+  const sc=noiseB(c,{t:t+.02,dur:.28,vol:.16*vol,filter:'bandpass',freq:2200,q:4,attack:.01,wet,to}); sc.fl.frequency.exponentialRampToValueAtTime(6500,t+.27);
+}
+// distant battle: rumble, roaring crowd, far-away blades and war drums
+function battleBed(c,t,dur,lvl=1,roar=0){
+  noiseB(c,{t,dur,vol:.22*lvl,filter:'lowpass',freq:170,attack:Math.min(.35,dur/4),wet:.2});
+  [[480,6],[1050,7],[2300,8]].forEach(([f,q],k)=>{ const n=noiseB(c,{t,dur,vol:(.11-k*.025)*lvl*(1+roar),filter:'bandpass',freq:f,q,attack:Math.min(.45,dur/3),wet:.6});
+    const lfo=c.createOscillator(), dp=c.createGain(); lfo.frequency.value=R(2.5,6); dp.gain.value=(.05-k*.012)*lvl; lfo.connect(dp); dp.connect(n.g.gain); lfo.start(t); lfo.stop(t+dur);
+    if(roar){ n.fl.frequency.setValueAtTime(f,t); n.fl.frequency.linearRampToValueAtTime(f*1.25,t+dur*.6); } });
+  const far=c.createBiquadFilter(); far.type='lowpass'; far.frequency.value=2600; const fg=c.createGain(); fg.gain.value=.5*lvl; far.connect(fg); fg.connect(rvb(c)); fg.connect(outN(c));
+  const n=Math.round(dur*3); for(let i=0;i<n;i++) clash(c,t+R(.1,dur-.35),R(.25,.5),.9,far);
+  SFX.drum(c,t+R(.05,.25),.45*lvl); if(dur>1.2) SFX.drum(c,t+dur*R(.45,.6),.4*lvl);
+}
 const SFX={
-  bell(c,t){ [[1,.32,2.4],[2.0,.16,1.8],[2.76,.11,1.4],[5.4,.05,.9],[8.9,.025,.5]].forEach(([r,v,d])=>tone(c,{f:660*r,t,dur:d,vol:v,attack:.003})); },
+  bell(c,t){ [[1,.32,2.6],[2.0,.16,2],[2.76,.11,1.5],[5.4,.05,.9],[8.9,.025,.5]].forEach(([r,v,d])=>tone(c,{f:660*r,t,dur:d,vol:v,attack:.003,wet:.4})); },
   bells(c,t){ SFX.bell(c,t); SFX.bell(c,t+.6); },
-  gong(c,t){ [[1,.4,4.2],[1.48,.2,3.4],[2.1,.13,2.6],[2.9,.07,2]].forEach(([r,v,d])=>tone(c,{f:98*r,t,dur:d,vol:v,attack:.025})); noiseB(c,{t,dur:.9,vol:.07,filter:'lowpass',freq:600}); },
-  sword(c,t){ const fl=noiseB(c,{t,dur:.38,vol:.32,filter:'highpass',freq:2500}); fl.frequency.exponentialRampToValueAtTime(7500,t+.32);
-    [[2100,.22,.7],[3170,.15,.55],[4730,.09,.45],[6400,.05,.3]].forEach(([f,v,d])=>tone(c,{f,t:t+.015,dur:d,vol:v,attack:.002})); },
-  harp(c,t){ [523.25,659.25,783.99].forEach((f,i)=>{ tone(c,{f,t:t+i*.09,dur:.95,type:'triangle',vol:.2,attack:.003}); tone(c,{f:f*2,t:t+i*.09,dur:.4,vol:.045}); }); },
-  lute(c,t){ [392,587.33].forEach((f,i)=>{ tone(c,{f,t:t+i*.13,dur:.75,type:'triangle',vol:.24,attack:.002}); tone(c,{f:f*3,t:t+i*.13,dur:.22,vol:.035}); }); },
-  drum(c,t){ const o=c.createOscillator(), g=c.createGain(); o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(52,t+.28); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.75,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+.5);
-    o.connect(g); g.connect(outN(c)); o.start(t); o.stop(t+.55); noiseB(c,{t,dur:.12,vol:.1,filter:'lowpass',freq:1200}); },
+  gong(c,t){ [[1,.4,4.6],[1.48,.2,3.6],[2.1,.13,2.8],[2.9,.07,2.2]].forEach(([r,v,d])=>tone(c,{f:98*r,t,dur:d,vol:v,attack:.025,wet:.5})); noiseB(c,{t,dur:.9,vol:.07,filter:'lowpass',freq:600,wet:.4}); },
+  sword(c,t){ if(battleOn()) battleBed(c,t-.05,1.9,.85); clash(c,t+.06,1); clash(c,t+.27,.55); },
+  harp(c,t){ [523.25,659.25,783.99].forEach((f,i)=>{ tone(c,{f,t:t+i*.09,dur:1.1,type:'triangle',vol:.2,attack:.003,wet:.35}); tone(c,{f:f*2,t:t+i*.09,dur:.4,vol:.045,wet:.3}); }); },
+  lute(c,t){ [392,587.33].forEach((f,i)=>{ tone(c,{f,t:t+i*.13,dur:.8,type:'triangle',vol:.24,attack:.002,wet:.3}); tone(c,{f:f*3,t:t+i*.13,dur:.22,vol:.035}); }); },
+  drum(c,t,v=1){ const o=c.createOscillator(), g=c.createGain(); o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(48,t+.3); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.75*v,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+.55);
+    o.connect(g); g.connect(outN(c)); const w=c.createGain(); w.gain.value=.4; g.connect(w); w.connect(rvb(c)); o.start(t); o.stop(t+.6); noiseB(c,{t,dur:.12,vol:.1*v,filter:'lowpass',freq:1200,wet:.3}); },
   horn(c,t,notes){ notes.forEach(([f,st,d])=>{ const T=t+st, o=c.createOscillator(), o2=c.createOscillator(), fl=c.createBiquadFilter(), g=c.createGain(); o.type='sawtooth'; o2.type='square'; o.frequency.value=f; o2.frequency.value=f*1.004;
     fl.type='lowpass'; fl.frequency.setValueAtTime(700,T); fl.frequency.linearRampToValueAtTime(2300,T+.08); g.gain.setValueAtTime(.0001,T); g.gain.exponentialRampToValueAtTime(.13,T+.04); g.gain.setValueAtTime(.13,T+Math.max(.05,d-.06)); g.gain.exponentialRampToValueAtTime(.0001,T+d+.14);
-    o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(outN(c)); o.start(T); o2.start(T); o.stop(T+d+.2); o2.stop(T+d+.2); }); },
+    o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(outN(c)); const w=c.createGain(); w.gain.value=.45; g.connect(w); w.connect(rvb(c)); o.start(T); o2.start(T); o.stop(T+d+.2); o2.stop(T+d+.2); }); },
   call(c,t){ SFX.horn(c,t,[[392,0,.2],[523.25,.24,.45]]); },
   fanfare(c,t){ SFX.horn(c,t,[[392,0,.13],[392,.15,.13],[392,.3,.13],[523.25,.47,.55],[659.25,.47,.55]]); SFX.drum(c,t+.47); },
-  fanfareBig(c,t){ SFX.horn(c,t,[[392,0,.15],[523.25,.19,.15],[659.25,.38,.15],[783.99,.57,.8],[1046.5,.57,.8]]); SFX.drum(c,t); SFX.drum(c,t+.57); SFX.bell(c,t+.6); },
-  chime(c,t){ [523.25,392].forEach((f,i)=>tone(c,{f,t:t+i*.28,dur:1.7,vol:.16,attack:.012})); }
+  fanfareBig(c,t){ if(battleOn()) battleBed(c,t,3.4,.8,1.2); SFX.horn(c,t,[[392,0,.15],[523.25,.19,.15],[659.25,.38,.15],[783.99,.57,.8],[1046.5,.57,.8]]); SFX.drum(c,t); SFX.drum(c,t+.57); clash(c,t+.6,.7); SFX.bell(c,t+.62); },
+  chime(c,t){ [523.25,392].forEach((f,i)=>tone(c,{f,t:t+i*.28,dur:1.8,vol:.16,attack:.012,wet:.5})); }
 };
-function sfx(name){ if(S.meta.sound===false || !name) return; const c=ac(); if(!c || !SFX[name]) return; try{ SFX[name](c,c.currentTime+.03); }catch(e){} }
+function sfx(name){ if(S.meta.sound===false || !name) return; const c=ac(); if(!c || !SFX[name]) return; try{ SFX[name](c,c.currentTime+.08); }catch(e){} }
 const HYPE_SFX={done:'sword',alldone:'fanfareBig',step:'harp',add:'lute',plan:'fanfare',proj:'fanfare',shift:'drum',sleepgood:'lute',test:'fanfare',mig:'chime',sleepbad:'chime',night:'chime',period:'chime'};
 function beep(n=1){ sfx(n>=2?'bells':'bell'); }
 function vibe(p){ if(S.meta.vibe===false) return; try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
