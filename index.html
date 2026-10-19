@@ -446,6 +446,8 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+/* swipe feedback */
+@media (prefers-reduced-motion:no-preference){ #app.swl{animation:swl .3s ease-out} #app.swr{animation:swr .3s ease-out} @keyframes swl{from{transform:translateX(40px);opacity:.4}to{transform:none;opacity:1}} @keyframes swr{from{transform:translateX(-40px);opacity:.4}to{transform:none;opacity:1}} }
 /* Import */
 .imp-n{display:flex;align-items:baseline;gap:10px}.imp-n b{font-family:var(--f-display);font-size:34px;color:var(--accent)}
 .icschk{display:flex;gap:12px;align-items:flex-start;cursor:pointer}.icschk input{width:22px;height:22px;margin-top:2px;accent-color:var(--accent);flex:none}.icschk b{display:block}
@@ -1611,7 +1613,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 const HELP = [
   ['Neu bei Leona','--c5',`<ul><li><b>Kalender importieren</b> unter Tools: Termine aus Google, Outlook, Apple übernehmen.</li><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>rote Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
-  ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die rote Linie ist „jetzt“. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
+  ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die rote Linie ist „jetzt“. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.</p><p>Mit den Pfeilen oben blätterst du durch die Tage. Lieber wischen? Unter <b>Tools → Einstellungen → Wischen zwischen Tagen</b> einschalten: nach links wischen für morgen, nach rechts für gestern.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
   ['Aufgaben ohne Uhrzeit','--c3',`<p>Sie stehen in der Liste „Aufgaben ohne Uhrzeit“. Sobald du frei hast, schlage ich dir in der Jetzt-Karte <b>eine</b> davon vor: <b>Mach ich jetzt</b> plant sie sofort ein, <b>Was anderes</b> zeigt die nächste.</p><ul><li>Bin ich nicht in der App, melde ich mich höchstens einmal pro Stunde, wenn du Zeit hast.</li><li>Was du dreimal wegklickst, spreche ich an. Dann zerlegen wir es oder geben ihm einen Termin.</li><li>Unerledigtes wandert automatisch auf den nächsten Tag, mit Hinweis „seit 2 Tagen offen“.</li><li>Ab 19 Uhr entscheidest du kurz: morgen, Tag wählen, erledigt oder streichen.</li><li>Mit <b>„Bis wann?“</b> gibst du einer Aufgabe eine Frist. Je näher sie rückt, desto eher schlage ich sie vor.</li></ul>`],
   ['Etappen (Wäsche & Co.)','--c2',`<p>Für Dinge mit Wartezeit: Wäsche, Trockner, Spülmaschine, Brot. Schreib „Wäsche“ und tipp auf <b>„In Etappen planen“</b>.</p><ul><li>„Tun“-Etappen werden kurze Blöcke mit Erinnerung.</li><li>„Warten“ ist die gepunktete Linie rechts. Sie blockiert nichts.</li><li>Dauer in Minuten anpassen, dann <b>„Als Standard speichern“</b> für deine Maschine.</li><li>Jede Etappe hat ein <b>Häkchen</b> direkt im Zeitplan. Hakst du früher oder später ab, rechne ich die nächsten Etappen neu.</li><li>Läuft die Maschine noch, zeigt die Jetzt-Karte <b>„Schon fertig“</b> und <b>„+15 Min“</b>.</li><li>Im Eintrag: <b>„Ganze Aufgabe erledigt“</b>.</li></ul>`],
@@ -1744,6 +1746,7 @@ function viewSettings(){
   ${tg('sfx',S.meta.sfx!==false,'Klänge bei Erfolgen','Mittelalterliche Klänge: Schwertklirren beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Timer, Knochenklappern beim Hellsehen.')}
   <button class="btn ghost" data-act="sfxDemo">Klänge anhören</button>
   ${tg('battle',S.meta.battle!==false,'Schlachtgetümmel','Hinter dem Schwertklirren und der großen Fanfare tobt in der Ferne eine Schlacht. Im ruhigen Modus automatisch aus.')}
+  ${tg('swipe',S.meta.swipe===true,'Wischen zwischen Tagen','In der Tagesansicht nach links wischen für den nächsten Tag, nach rechts für den Vortag. Standardmäßig aus, damit du nicht aus Versehen wegwischst.')}
   ${tg('vibe',S.meta.vibe!==false,'Vibration','Das Handy vibriert bei Erinnerungen und wenn Leona dich anfeuert.')}
   <button class="btn ghost" data-act="openTool" data-v="valka">Leona ein- oder ausschalten</button></div>`;
 }
@@ -2341,6 +2344,7 @@ const A = {
   ...DEA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
   dayShift(el){ ui.date=addDays(ui.date,+el.dataset.v); render(); window.scrollTo(0,0); },
+  dayShiftSwipe(n){ ui.date=addDays(ui.date,n); render(); window.scrollTo(0,0); const app=$('#app'); if(!S.meta.calm && matchMedia('(prefers-reduced-motion:no-preference)').matches){ app.classList.remove('swl','swr'); void app.offsetWidth; app.classList.add(n>0?'swl':'swr'); setTimeout(()=>app.classList.remove('swl','swr'),320); } },
   dayToday(){ ui.date=todayS(); ui.scrolled=false; render(); },
   monthShift(el){ const [y,m]=ui.month.split('-').map(Number); const d=new Date(y,m-1+(+el.dataset.v),1); ui.month=`${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(); },
   openDay(el){ ui.date=el.dataset.v; ui.tab='day'; ls.set('tab','day'); render(); window.scrollTo(0,0); },
@@ -2532,6 +2536,16 @@ const A = {
 };
 function act(name,el,ev){ if(A[name]) A[name](el,ev); }
 document.addEventListener('click',ev=>{ const el=ev.target.closest('[data-act]'); if(!el) return; if(el.dataset.act!=='scrim') ev.stopPropagation(); act(el.dataset.act,el,ev); });
+/* swipe between days (opt-in under Tools → Einstellungen) */
+(()=>{ let sx=0, sy=0, st=0, ok=false;
+  const blocked=t=>t.closest('input,textarea,select,[contenteditable],.chips,.scale,.hourchips,.segs,nav.tabs,.fab,.timeline .ev');
+  document.addEventListener('touchstart',e=>{ ok=false; if(S.meta.swipe!==true || ui.tab!=='day' || ui.sheets.length || $('#deRoot').innerHTML || $('#dgRoot').innerHTML || $('#obRoot').innerHTML) return;
+    if(e.touches.length!==1) return; const t=e.touches[0]; if(t.clientX<24 || t.clientX>innerWidth-24) return; // leave the system back gesture alone
+    if(blocked(e.target)) return; sx=t.clientX; sy=t.clientY; st=Date.now(); ok=true; },{passive:true});
+  document.addEventListener('touchend',e=>{ if(!ok) return; ok=false; const t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Date.now()-st>700 || Math.abs(dx)<70 || Math.abs(dy)>Math.abs(dx)*0.6) return;
+    A.dayShiftSwipe(dx<0?1:-1); vibe(10); },{passive:true});
+})();
 /* file picker that survives re-renders (the app redraws when returning from the system picker) */
 function pickFile(accept,multiple,cb){ let inp=document.getElementById('filePick');
   if(!inp){ inp=document.createElement('input'); inp.type='file'; inp.id='filePick'; inp.setAttribute('aria-hidden','true'); inp.tabIndex=-1; inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0'; document.body.appendChild(inp); }
