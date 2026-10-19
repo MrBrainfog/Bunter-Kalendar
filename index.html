@@ -446,6 +446,10 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+/* Import */
+.imp-n{display:flex;align-items:baseline;gap:10px}.imp-n b{font-family:var(--f-display);font-size:34px;color:var(--accent)}
+.icschk{display:flex;gap:12px;align-items:flex-start;cursor:pointer}.icschk input{width:22px;height:22px;margin-top:2px;accent-color:var(--accent);flex:none}.icschk b{display:block}
+.xbody ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 /* Tagesabschluss */
 .fab.defab{bottom:calc(76px + 62px + 14px + env(safe-area-inset-bottom,0px));width:62px;height:auto;min-height:62px;padding:8px 4px;border-radius:20px;background:linear-gradient(170deg,#2C2440,#16121F);color:#F3D9A0;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--brass) 65%,transparent),var(--shadow)}
 .fab.defab svg{width:26px;height:26px}
@@ -1228,7 +1232,7 @@ const ZZZ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 const deDate = () => new Date().getHours()<4 ? addDays(todayS(),-1) : todayS();
 const deShow = () => { const h=new Date().getHours(); return (h>=20||h<4) && !(S.meta.closed||{})[deDate()]; };
 function deData(d){
-  const list=evOn(d), done=list.filter(e=>e.done), open=list.filter(e=>!e.done);
+  const list=evOn(d).filter(e=>!e.allday||e.done), done=list.filter(e=>e.done), open=list.filter(e=>!e.done);
   const mig=S.migraine.some(m=>m.date===d && !m.ex);
   const q=QD(), gold=(q.log||[]).filter(l=>ymd(new Date(l.ts))===d).reduce((a,l)=>a+l.v,0);
   const wins=((S.meta.wins||{})[d]||[]);
@@ -1295,6 +1299,152 @@ const DEA = {
 };
 setInterval(()=>{ const b=$('#deBtn'); if(b){ const v=deShow() && (ui.tab==='day'||ui.tab==='month'); if(b.hidden===v) b.hidden=!v; } },30000);
 
+/* ---------- Kalender-Import (.ics / .zip) ---------- */
+const WINTZ={'W. Europe Standard Time':'Europe/Berlin','Central Europe Standard Time':'Europe/Budapest','Central European Standard Time':'Europe/Warsaw','Romance Standard Time':'Europe/Paris','GMT Standard Time':'Europe/London','UTC':'UTC','Coordinated Universal Time':'UTC','E. Europe Standard Time':'Europe/Bucharest','FLE Standard Time':'Europe/Helsinki','Eastern Standard Time':'America/New_York','Pacific Standard Time':'America/Los_Angeles','Central Standard Time':'America/Chicago'};
+function tzOffset(t,tz){ const f=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const p=Object.fromEntries(f.formatToParts(new Date(t)).map(x=>[x.type,x.value])); return Date.UTC(+p.year,+p.month-1,+p.day,+p.hour%24,+p.minute,+p.second)-t; }
+function icsTime(v,params){ // -> {date:'YYYY-MM-DD', time:'HH:MM'|null, ms}
+  const m=String(v).trim().match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?/); if(!m) return null;
+  const [_,y,mo,d,h,mi,s,z]=m;
+  if(h==null || (params&&params.VALUE==='DATE')) return {date:`${y}-${mo}-${d}`,time:null,ms:new Date(+y,+mo-1,+d).getTime()};
+  let dt;
+  if(z) dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi,+(s||0)));
+  else { let tz=params&&params.TZID; if(tz){ tz=tz.replace(/^"|"$/g,''); tz=WINTZ[tz]||tz; }
+    if(tz){ try{ const g=Date.UTC(+y,+mo-1,+d,+h,+mi,+(s||0)); let o=tzOffset(g,tz), t=g-o; const o2=tzOffset(t,tz); if(o2!==o) t=g-o2; dt=new Date(t); }catch(e){ dt=null; } }
+    if(!dt) dt=new Date(+y,+mo-1,+d,+h,+mi,+(s||0)); }
+  return {date:ymd(dt),time:`${pad(dt.getHours())}:${pad(dt.getMinutes())}`,ms:dt.getTime()};
+}
+const icsText = v => String(v||'').replace(/\\n/gi,' ').replace(/\\([,;\\])/g,'$1').replace(/\s+/g,' ').trim();
+function icsDur(v){ const m=String(v).match(/P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?)?/); if(!m) return null; return ((+m[1]||0)*7*1440)+((+m[2]||0)*1440)+((+m[3]||0)*60)+(+m[4]||0); }
+function icsParse(text){
+  const lines=text.replace(/\r\n/g,'\n').replace(/\n[ \t]/g,'').split('\n');
+  const out=[]; let cur=null, depth=0;
+  for(const raw of lines){ const line=raw.trimEnd(); if(!line) continue;
+    if(/^BEGIN:(VEVENT|VTODO)$/i.test(line)){ cur={type:line.slice(6).toUpperCase(),props:{}}; depth=0; continue; }
+    if(!cur) continue;
+    if(/^BEGIN:/i.test(line)){ depth++; continue; } // VALARM etc.
+    if(/^END:/i.test(line)){ if(depth>0){ depth--; continue; } out.push(cur); cur=null; continue; }
+    if(depth>0) continue;
+    let i=-1, q=false; for(let k=0;k<line.length;k++){ const c=line[k]; if(c==='"') q=!q; else if(c===':'&&!q){ i=k; break; } }
+    if(i<0) continue; const head=line.slice(0,i), val=line.slice(i+1); const parts=head.split(';'); const name=parts[0].toUpperCase();
+    const params={}; parts.slice(1).forEach(p=>{ const j=p.indexOf('='); if(j>0) params[p.slice(0,j).toUpperCase()]=p.slice(j+1); });
+    (cur.props[name]||(cur.props[name]=[])).push({val,params});
+  }
+  return out;
+}
+function icsCat(t){ const low=t.toLowerCase()+' ';
+  if(/arzt|zahn|physio|therap|apothek|praxis|blut|klinik|impf/.test(low)) return 'gesund';
+  if(/meeting|arbeit|büro|call|projekt|abgabe|mail|bewerb|termin mit|besprech|schicht|vorlesung|seminar|schule|uni/.test(low)) return 'arbeit';
+  if(/putz|wäsche|einkauf|müll|koch|aufräum|spül|staubsaug|bad /.test(low)) return 'haushalt';
+  if(/pause|ausruh|schlaf|meditat|urlaub/.test(low)) return 'pause';
+  if(/kino|sport|treffen|spazier|freund|party|gym|yoga|spiel|geburtstag|konzert|essen/.test(low)) return 'freizeit';
+  return 'termin'; }
+const BYDAY={SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6};
+function icsRule(rr, start){ const r=Object.fromEntries(rr.split(';').map(x=>x.split('=')).map(([k,v])=>[k.toUpperCase(),v]));
+  const n=Math.max(1,+r.INTERVAL||1); let rep=null;
+  if(r.BYSETPOS || (r.BYDAY && /\d/.test(r.BYDAY)) || r.BYMONTH && r.FREQ!=='YEARLY' || r.BYHOUR) return null; // too complex
+  if(r.FREQ==='DAILY') rep={f:'d',n};
+  else if(r.FREQ==='WEEKLY'){ rep={f:'w',n}; if(r.BYDAY) rep.days=r.BYDAY.split(',').map(x=>BYDAY[x.slice(-2)]).filter(x=>x!=null); }
+  else if(r.FREQ==='MONTHLY'){ if(r.BYMONTHDAY && +r.BYMONTHDAY!==parseYmd(start).getDate()) return null; rep={f:'m',n}; }
+  else if(r.FREQ==='YEARLY') rep={f:'m',n:12*n};
+  else return null;
+  if(r.UNTIL){ const u=icsTime(r.UNTIL,{}); if(u) rep.until=u.date; }
+  else if(r.COUNT){ const want=+r.COUNT, e={date:start,rep}; let c=0, d=start; for(let k=0;k<3660 && c<want;k++){ if(occursOn(e,d)){ c++; if(c===want) break; } d=addDays(d,1); } rep.until=d; }
+  return rep;
+}
+function icsBuild(items, opt){
+  const t=todayS(), res={add:[],upd:[],skipPast:0,skipAllday:0,skipCancel:0,complex:0,overrides:[]};
+  const evs=[]; const masters={};
+  items.forEach(it=>{ const P=k=>it.props[k]&&it.props[k][0]; const u=icsText(P('UID')?.val)||('x'+uid());
+    const title=icsText(P('SUMMARY')?.val)||'(ohne Titel)';
+    if(/CANCELLED/i.test(P('STATUS')?.val||'')){ if(P('RECURRENCE-ID')){ const ri=icsTime(P('RECURRENCE-ID').val,P('RECURRENCE-ID').params); if(ri) res.overrides.push({uid:u,date:ri.date,cancel:true}); } else res.skipCancel++; return; }
+    let st=P('DTSTART')||P('DUE'); if(!st) return; const s=icsTime(st.val,st.params); if(!s) return;
+    let durMin=null; const en=P('DTEND'); if(en){ const e2=icsTime(en.val,en.params); if(e2) durMin=Math.round((e2.ms-s.ms)/60000); } else if(P('DURATION')) durMin=icsDur(P('DURATION').val);
+    const allday=!s.time || it.type==='VTODO' && !s.time;
+    if(allday && !opt.allday){ res.skipAllday++; return; }
+    const rid=P('RECURRENCE-ID'); const key=u+(rid?'|'+rid.val:'');
+    const ev={title,cat:icsCat(title),date:s.date,start:allday?null:s.time,dur:allday?30:Math.max(5,Math.min(durMin||60,24*60)),steps:[],fixed:!allday,icsKey:key,src:'ics'};
+    if(allday){ ev.allday=true; if(durMin && durMin>1440) ev.title=`${title} (bis ${fmtDay(addDays(s.date,Math.round(durMin/1440)-1),{day:'numeric',month:'short'})})`; }
+    const rr=P('RRULE');
+    if(rr && !rid){ const rep=icsRule(rr.val,s.date); if(rep){ ev.rep=rep; ev.skip=[]; (it.props.EXDATE||[]).forEach(x=>x.val.split(',').forEach(v=>{ const d=icsTime(v,x.params); if(d) ev.skip.push(d.date); })); masters[u]=ev; }
+      else { res.complex++; ev.note='Wiederholung zu komplex, nur erster Termin übernommen'; } }
+    if(rid){ const ri=icsTime(rid.val,rid.params); if(ri) res.overrides.push({uid:u,date:ri.date}); }
+    if(!ev.rep && ev.date<t){ res.skipPast++; return; }
+    if(ev.rep && ev.rep.until && ev.rep.until<t){ res.skipPast++; return; }
+    evs.push(ev); });
+  res.overrides.forEach(o=>{ const m=masters[o.uid]; if(m && !m.skip.includes(o.date)) m.skip.push(o.date); });
+  evs.forEach(ev=>{ const ex=S.events.find(x=>x.icsKey===ev.icsKey); if(ex) res.upd.push([ex,ev]); else res.add.push(ev); });
+  return res;
+}
+async function unzipIcs(buf){ // minimal ZIP reader (stored + deflate)
+  const u8=new Uint8Array(buf), dv=new DataView(buf); const texts=[]; let eocd=-1;
+  for(let i=u8.length-22;i>=Math.max(0,u8.length-66000);i--){ if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; } }
+  if(eocd<0) throw new Error('zip');
+  const n=dv.getUint16(eocd+10,true); let p=dv.getUint32(eocd+16,true);
+  for(let k=0;k<n;k++){ if(dv.getUint32(p,true)!==0x02014b50) break;
+    const meth=dv.getUint16(p+10,true), csize=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), xl=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), lho=dv.getUint32(p+42,true);
+    const name=new TextDecoder().decode(u8.subarray(p+46,p+46+nl)); p+=46+nl+xl+cl;
+    if(!/\.ics$/i.test(name)) continue;
+    const lnl=dv.getUint16(lho+26,true), lxl=dv.getUint16(lho+28,true); const data=u8.subarray(lho+30+lnl+lxl,lho+30+lnl+lxl+csize);
+    let raw; if(meth===0) raw=data; else if(meth===8){ const ds=new DecompressionStream('deflate-raw'); raw=new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(ds)).arrayBuffer()); } else continue;
+    texts.push({name,text:new TextDecoder().decode(raw)}); }
+  return texts;
+}
+function icsNext(e){ if(!e.rep) return e.date; let d=todayS()>e.date?todayS():e.date; for(let k=0;k<800;k++){ if(occursOn(e,d)) return d; d=addDays(d,1); } return e.date; }
+function viewImport(){
+  const st=ui.ics||(ui.ics={allday:true});
+  let h=`<header class="top">${back()}<h1>Kalender importieren<span class="sub">Google, Outlook, Apple und mehr</span></h1></header><div class="stack">`;
+  h+=`<div class="helphead"><img src="leona-wink.webp" alt="Leona"><p>Gib mir deinen alten Kalender. Ich übernehme jeden Termin, damit du nichts abtippen musst.</p></div>`;
+  if(st.res){ const r=st.res, srs=r.add.filter(e=>e.rep).length+r.upd.filter(([,e])=>e.rep).length, ad=r.add.filter(e=>e.allday).length+r.upd.filter(([,e])=>e.allday).length;
+    h+=`<div class="card stack"><span class="label">Gefunden${st.files>1?` in ${st.files} Kalendern`:''}</span>
+      <div class="imp-n"><b class="num">${r.add.length}</b><span>${r.add.length===1?'neuer Termin':'neue Termine'}${srs?`, davon ${srs} ${srs===1?'Serie':'Serien'}`:''}${ad?`, ${ad} ganztägig`:''}</span></div>
+      ${r.upd.length?`<p class="hint">${r.upd.length} schon übernommene ${r.upd.length===1?'wird':'werden'} aktualisiert.</p>`:''}
+      ${r.skipPast?`<p class="hint">${r.skipPast} ${r.skipPast===1?'vergangenen Termin':'vergangene Termine'} lasse ich weg.</p>`:''}
+      ${r.skipAllday?`<p class="hint">${r.skipAllday} ganztägige Einträge lasse ich weg.</p>`:''}
+      ${r.complex?`<p class="hint">${r.complex} ${r.complex===1?'Serie ist':'Serien sind'} zu speziell (z. B. „jeden 2. Dienstag im Monat“). Davon übernehme ich nur den ersten Termin.</p>`:''}
+      ${r.add.map(e=>[icsNext(e),e]).sort((x,y)=>x[0]<y[0]?-1:1).slice(0,5).map(([nd,e])=>`<div class="row" style="flex-wrap:nowrap;gap:8px"><span class="hint num" style="min-width:88px">${fmtDay(nd,{day:'numeric',month:'short'})}${e.start?' '+e.start:''}</span><span class="grow">${esc(e.title)}${e.rep?' ↻':''}</span></div>`).join('')}
+      ${r.add.length>5?`<span class="hint">und ${r.add.length-5} weitere</span>`:''}
+      <button class="btn" data-act="icsGo" ${r.add.length+r.upd.length?'':'disabled'}>${r.add.length+r.upd.length} ${r.add.length+r.upd.length===1?'Termin':'Termine'} übernehmen</button>
+      <button class="btn ghost" data-act="icsReset">Andere Datei wählen</button></div>`; }
+  else {
+    h+=`<div class="card stack"><label class="icschk"><input type="checkbox" id="icsAllday" ${st.allday?'checked':''}><span class="grow"><b>Ganztägige Einträge übernehmen</b><span class="hint">Geburtstage, Urlaub, Feiertage. Sie werden Aufgaben ohne Uhrzeit, ohne Nachrücken.</span></span></label>
+      <input type="file" id="icsFile" accept=".ics,.zip,text/calendar,application/zip" multiple hidden>
+      <button class="btn" data-act="icsPick">Kalenderdatei wählen (.ics oder .zip)</button>
+      <p class="hint">Vergangene Termine lasse ich weg. Importierst du später noch mal, entstehen keine doppelten Einträge: Schon übernommene werden nur aktualisiert.</p></div>`;
+  }
+  const o=ui.icsHelp||(ui.icsHelp={});
+  const HOW=[['Google Kalender',`<ol><li>Am Computer <b>calendar.google.com</b> öffnen. Auf dem Handy geht es nicht in der App, aber im Browser über „Desktopversion“.</li><li>Zahnrad → <b>Einstellungen</b> → links <b>Importieren &amp; Exportieren</b>.</li><li><b>Exportieren</b> tippen. Du bekommst eine .zip-Datei mit allen Kalendern.</li><li>Die Datei in iCloud, Google Drive oder per Mail aufs Handy bringen und hier auswählen. Die .zip kann ich direkt lesen.</li></ol>`],
+    ['Outlook / Microsoft 365',`<ol><li><b>Outlook am PC</b>: Kalender öffnen → <b>Datei</b> → <b>Kalender speichern</b> → Zeitraum „Gesamter Kalender“ wählen → als .ics speichern.</li><li><b>Outlook im Browser</b>: Einstellungen → Kalender → <b>Freigegebene Kalender</b> → „Kalender veröffentlichen“ → den <b>ICS-Link</b> öffnen, dann lädt die Datei herunter.</li><li>Die .ics-Datei aufs Handy bringen und hier auswählen.</li></ol>`],
+    ['Apple Kalender (iPhone, Mac)',`<ol><li>Am <b>Mac</b>: Kalender-App → links den Kalender wählen → <b>Ablage</b> → <b>Exportieren</b> → .ics speichern.</li><li>Am iPhone selbst gibt es leider keinen Export. Nutzt du iCloud, geht es nur über den Mac. Liegen deine Termine eigentlich bei Google oder Outlook, exportiere sie dort.</li></ol>`],
+    ['Andere Kalender',`<p>Fast jeder Kalender kann eine <b>.ics</b>- oder <b>iCal</b>-Datei exportieren, zum Beispiel Proton, Thunderbird, GMX, Web.de oder Samsung über Google. Such in den Einstellungen nach „Exportieren“ oder „iCal“.</p>`]];
+  h+=`<span class="label">So bekommst du die Datei</span><div class="extras hq">${HOW.map(([t,b],i)=>`<div class="xrow ${o[i]?'open':''}" style="--k:var(--c${i+1})"><button class="xhead" data-act="icsHow" data-v="${i}" aria-expanded="${!!o[i]}"><span class="grow"><b>${t}</b></span>${XI.chev}</button><div class="xbody" ${o[i]?'':'hidden'}>${b}</div></div>`).join('')}</div>`;
+  const n=S.events.filter(e=>e.src==='ics').length;
+  if(n) h+=`<div class="card stack"><span class="label">Importierte Termine</span><p class="hint">${n} Einträge stammen aus einem Import.</p><button class="btn ghost" data-act="icsRemove">Alle importierten Termine entfernen</button></div>`;
+  return h+'</div>';
+}
+async function icsLoadFiles(files){
+  const texts=[];
+  for(const f of files){ try{
+      if(/\.zip$/i.test(f.name) || f.type==='application/zip'){ texts.push(...await unzipIcs(await f.arrayBuffer())); }
+      else texts.push({name:f.name,text:await f.text()});
+    }catch(e){ toast('Diese Datei kann ich nicht lesen'); } }
+  const items=texts.flatMap(t=>icsParse(t.text));
+  if(!items.length){ toast('Keine Termine in der Datei gefunden'); return; }
+  ui.ics.files=texts.length; ui.ics.res=icsBuild(items,{allday:ui.ics.allday}); render();
+}
+const ICSA = {
+  icsPick(){ const c=$('#icsAllday'); if(c) ui.ics.allday=c.checked; $('#icsFile').click(); },
+  icsReset(){ ui.ics={allday:ui.ics.allday}; render(); },
+  icsHow(el){ ui.icsHelp[el.dataset.v]=!ui.icsHelp[el.dataset.v]; render(); },
+  icsGo(){ const r=ui.ics.res; if(!r) return; const now=Date.now();
+    r.add.forEach(e=>S.events.push({...e,id:uid(),created:todayS()}));
+    r.upd.forEach(([ex,ev])=>{ Object.assign(ex,{title:ev.title,date:ev.date,start:ev.start,dur:ev.dur,rep:ev.rep,skip:ev.skip,allday:ev.allday}); if(!ev.rep) delete ex.rep; });
+    save('events'); const n=r.add.length+r.upd.length; ui.ics={allday:ui.ics.allday}; render(); hype('add'); setTimeout(()=>toast(`${n} ${n===1?'Termin':'Termine'} übernommen`),300); },
+  icsRemove(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich alle entfernen? Nochmal tippen'; return; }
+    const gone=S.events.filter(e=>e.src==='ics'); S.events=S.events.filter(e=>e.src!=='ics'); save('events'); render(); toast(`${gone.length} entfernt`,()=>{ S.events.push(...gone); save('events'); render(); }); }
+};
+document.addEventListener('change',ev=>{ if(ev.target.id==='icsFile' && ev.target.files.length){ const c=$('#icsAllday'); if(c) ui.ics.allday=c.checked; icsLoadFiles([...ev.target.files]); ev.target.value=''; } if(ev.target.id==='icsAllday') ui.ics.allday=ev.target.checked; });
+
 /* ---------- tools ---------- */
 const TOOLS = [
   {id:'help', icon:'help', name:'Hilfe', cat:'termin', summary(){ return 'Leona erklärt dir alle Funktionen'; }, view:viewHelp},
@@ -1303,10 +1453,11 @@ const TOOLS = [
   {id:'settings', icon:'gear', name:'Einstellungen', cat:'pause', summary(){ return [S.meta.calm?'Ruhiger Modus':'Normale Bewegung', S.meta.sound===false?'Töne aus':'Töne an'].join(' · '); }, view:viewSettings},
   {id:'valka', icon:'sword', name:'Leona', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
   {id:'backup', icon:'cloud', name:'Sichern & Übertragen', cat:'arbeit', summary(){ const b=ls.get('lastBackup',null); return b?`Letzte Sicherung: ${fmtDay(b,{day:'numeric',month:'short'})}`:'Für ein neues Handy oder als Absicherung'; }, view:viewBackup},
+  {id:'import', icon:'month', name:'Kalender importieren', cat:'termin', summary(){ const n=S.events.filter(e=>e.src==='ics').length; return n?`${n} Termine übernommen`:'Google, Outlook, Apple: Termine übernehmen'; }, view:viewImport},
   {id:'cycle', icon:'drop', name:'Zyklus', cat:'freizeit', summary(){ const c=cycInfo(); return c.last?cycLine(c):'Periode, Symptome und Prognosen'; }, view:viewCycle},
   {id:'sleep', icon:'bed', name:'Schlaf', cat:'termin', summary(){ const t=sleepTxt(todayS()); return t?`Letzte Nacht: ${t}`:'Verknüpft mit dem Migränetagebuch'; }, view:viewSleep},
 ];
-const TOOL_GROUPS=[['Gesundheit',['cycle','migraine','sleep']],['Schaffen',['projects']],['Leona & Hilfe',['help','valka']],['App & Daten',['settings','backup']]];
+const TOOL_GROUPS=[['Gesundheit',['cycle','migraine','sleep']],['Schaffen',['projects']],['Leona & Hilfe',['help','valka']],['App & Daten',['import','settings','backup']]];
 function viewTools(){
   if(ui.tool==='cycle' && !cycOn()) ui.tool=null;
   if(ui.tool){ const t=TOOLS.find(x=>x.id===ui.tool); if(t) return t.view(); }
@@ -1448,7 +1599,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 
 /* ---------- Help ---------- */
 const HELP = [
-  ['Neu bei Leona','--c5',`<ul><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
+  ['Neu bei Leona','--c5',`<ul><li><b>Kalender importieren</b> unter Tools: Termine aus Google, Outlook, Apple übernehmen.</li><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>rote Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die rote Linie ist „jetzt“. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
@@ -1481,6 +1632,9 @@ const HELP = [
   ['Zyklus','--c5',`<p>Zuerst unter <b>Tools → Einstellungen</b> die Zyklus-Funktion einschalten. Dann trägst du unter <b>Tools → Zyklus</b> deine Periode ein: Blutungsstärke, Symptome, Stimmung und mehr. Daraus berechne ich deine nächste Periode, die fruchtbaren Tage und den Eisprung. Im Monat siehst du alles farbig markiert, im Migränetagebuch die Periodentage neben deinen Attacken.</p><p>Die Vorhersagen sind Schätzungen und kein Verhütungsmittel.</p>`],
   ['Projekte','--c2',`<p>Für alles, was länger dauert: Fortschritt in Prozent, der <b>nächste kleine Schritt</b> und Notizen, was du geschafft hast.</p>`],
   ['Leona & Einstellungen','--c5',`<p>Unter <b>Tools → Leona</b> schaltest du mich aus oder auf „nur Sprechblase“. Wie kannst du nur.</p><p>Unter <b>Tools → Einstellungen</b>: ruhiger Modus ohne Animationen, Töne und Vibration.</p><p><b>Klänge</b>: Schwertklirren mit Schlachtlärm beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Timer, Münzklimpern bei Quests und Knochenklappern beim Hellsehen. Klänge und Schlachtgetümmel schaltest du unter Einstellungen einzeln ab.</p>`],
+  ['Kalender importieren','--c2',`<p>Unter <b>Tools → Kalender importieren</b> übernimmst du deine Termine aus Google, Outlook, Apple und fast jedem anderen Kalender. Exportier dort eine <b>.ics</b>-Datei (bei Google eine <b>.zip</b>) und wähl sie hier aus. Wie der Export geht, steht im Tool für jeden Kalender einzeln.</p>
+    <ul><li>Termine mit Uhrzeit werden <b>feste</b> Termine. Serien wie wöchentlich, alle 2 Wochen, monatlich oder jährlich bleiben Serien, mit Ausnahmen und Enddatum.</li><li>Ganztägige Einträge wie Geburtstage werden Aufgaben ohne Uhrzeit, die nicht auf den nächsten Tag rutschen. Du kannst sie auch weglassen.</li><li>Vergangene Termine lasse ich weg. Importierst du erneut, werden schon übernommene Termine nur aktualisiert, nicht doppelt angelegt.</li><li>Ganz spezielle Serien wie „jeden 1. Dienstag im Monat“ übernehme ich nur mit dem ersten Termin.</li></ul>
+    <p>Es ist eine einmalige Übernahme. Neue Termine im alten Kalender kommen erst beim nächsten Import dazu.</p>`],
   ['Sicherung & neues Handy','--c1',`<p>Deine Daten liegen <b>nur auf diesem Handy</b>. Unter <b>Tools → Sichern & Übertragen</b> erstellst du eine Sicherungsdatei. Leg sie in iCloud oder Google Drive. Auf einem neuen Handy: App öffnen, „Sicherung laden“, fertig.</p>`],
   ['Installieren, offline & Updates','--c6',`<p><b>iPhone:</b> Link in Safari öffnen → Teilen → „Zum Home-Bildschirm“.<br><b>Android:</b> Link in Chrome öffnen → ⋮ → „App installieren“.</p><p>Danach läuft die App auch <b>ohne Internet</b>. Updates kommen automatisch, wenn du sie mit Internet öffnest. Öffne sie immer über das Symbol, nicht über den Browser.</p>`]
 ];
@@ -1600,7 +1754,7 @@ function viewValka(){
 function sleepMode(){ const t=todayS(), z=S.sleep[t]; if(!z) return null; if(sleepPoor(t)) return 'low'; if((z.q&&z.q>=4) && (!z.h||z.h>=7)) return 'high'; return 'mid'; }
 const dayEndMin = () => sleepMode()==='low' ? 21*60 : 22*60;
 function rollover(){ const t=todayS(); let ch=false;
-  S.events.forEach(e=>{ if(!e.rep && !e.fromSeries && !e.start && !e.done && !hasPh(e) && e.date<t){ if(!e.origDate) e.origDate=e.date; e.date=t; ch=true; } });
+  S.events.forEach(e=>{ if(!e.rep && !e.fromSeries && !e.start && !e.done && !hasPh(e) && !e.allday && e.date<t){ if(!e.origDate) e.origDate=e.date; e.date=t; ch=true; } });
   if(ch) save('events'); }
 function dueTxt(e){ if(!e.due) return ''; const n=dDiff(todayS(),e.due); return n<0?`${-n===1?'seit gestern':'seit '+(-n)+' Tagen'} überfällig`:n===0?'heute fällig':n===1?'bis morgen':`noch ${n} Tage`; }
 function ageTxt(e){ if(e.start || !e.origDate) return ''; const n=dDiff(e.origDate,todayS()); return n<=0?'':n===1?'seit gestern offen':`seit ${n} Tagen offen`; }
@@ -1612,7 +1766,7 @@ function taskScore(e,free){ const t=todayS(); let s=(e.skips||0)*3 + Math.min(dD
   const sm=sleepMode(); const du=e.dur||30; if(sm==='low'){ s+= du<=30?10: du>60?-12:0; } else if(sm==='high'){ s+= du>=45?5:0; }
   if(e.due){ const dl=dDiff(t,e.due); s+= dl<0?30: dl===0?25: dl<=2?15: dl<=6?5:0; }
   if(free!=null) s+= (e.dur||30)<=free?8:-12; return s; }
-function suggestions(free){ const t=todayS(); return untimed(evOn(t)).filter(e=>!e.done && e.sugDay!==t).sort((a,b)=>taskScore(b,free)-taskScore(a,free)); }
+function suggestions(free){ const t=todayS(); return untimed(evOn(t)).filter(e=>!e.done && !e.allday && e.sugDay!==t).sort((a,b)=>taskScore(b,free)-taskScore(a,free)); }
 function sugBox(free){
   const list=suggestions(free); if(free<10) return ''; if(!list.length) return questTeaser(free);
   const e=list[(ui.sugIdx||0)%list.length], nag=(e.skips||0)>=3, av=S.meta.hypeAv!==false;
@@ -2173,6 +2327,7 @@ function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remov
 /* ---------- actions ---------- */
 const A = {
   ...QA,
+  ...ICSA,
   ...DEA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
   dayShift(el){ ui.date=addDays(ui.date,+el.dataset.v); render(); window.scrollTo(0,0); },
