@@ -942,7 +942,7 @@ function timeline(tm,isToday,gh=[],wt=[]){
     cols[c]=endMin(e); pos[e.id]={col:c}; cluster.push(e); clusterEnd=Math.max(clusterEnd,endMin(e));
   });
   if(cluster.length) flush();
-  let h=`<div class="tl" style="height:${H}px">`;
+  let h=`<div class="tl" data-sh="${sh}" data-px="${PX}" style="height:${H}px">`;
   for(let i=sh;i<=eh;i++) h+=`<div class="hr num" style="top:${top(i*60)}px"><span>${pad(i%24)}:00</span></div>`;
   tm.forEach(e=>{
     const p=pos[e.id], w=100/p.n;
@@ -2344,7 +2344,14 @@ const A = {
   ...DEA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
   dayShift(el){ ui.date=addDays(ui.date,+el.dataset.v); render(); window.scrollTo(0,0); },
-  dayShiftSwipe(n){ ui.date=addDays(ui.date,n); render(); window.scrollTo(0,0); const app=$('#app'); if(!S.meta.calm && matchMedia('(prefers-reduced-motion:no-preference)').matches){ app.classList.remove('swl','swr'); void app.offsetWidth; app.classList.add(n>0?'swl':'swr'); setTimeout(()=>app.classList.remove('swl','swr'),320); } },
+  dayShiftSwipe(n){
+    // remember where we are: the time of day at the anchor line inside the timeline, or the plain scroll offset above it
+    const anchor=innerHeight*0.45, tl0=document.querySelector('.tl'); let min=null; const y0=scrollY;
+    if(tl0){ const r=tl0.getBoundingClientRect(); if(r.top<anchor && r.bottom>anchor) min=(+tl0.dataset.sh)*60+(anchor-r.top)/(+tl0.dataset.px); }
+    ui.scrolled=true; ui.date=addDays(ui.date,n); render();
+    const tl1=document.querySelector('.tl');
+    if(min!=null && tl1){ const r=tl1.getBoundingClientRect(); const yIn=(min-(+tl1.dataset.sh)*60)*(+tl1.dataset.px); window.scrollTo(0, Math.max(0, scrollY + r.top + yIn - anchor)); }
+    else window.scrollTo(0, Math.min(y0, document.documentElement.scrollHeight-innerHeight)); const app=$('#app'); if(!S.meta.calm && matchMedia('(prefers-reduced-motion:no-preference)').matches){ app.classList.remove('swl','swr'); void app.offsetWidth; app.classList.add(n>0?'swl':'swr'); setTimeout(()=>app.classList.remove('swl','swr'),320); } },
   dayToday(){ ui.date=todayS(); ui.scrolled=false; render(); },
   monthShift(el){ const [y,m]=ui.month.split('-').map(Number); const d=new Date(y,m-1+(+el.dataset.v),1); ui.month=`${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(); },
   openDay(el){ ui.date=el.dataset.v; ui.tab='day'; ls.set('tab','day'); render(); window.scrollTo(0,0); },
