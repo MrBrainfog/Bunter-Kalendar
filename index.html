@@ -293,7 +293,8 @@ nav.tabs button.tmr .knob.orb svg{stroke:#7A0C1E}
 nav.tabs button.tmr .knob.coink{background:radial-gradient(circle at 40% 30%,#FFE9A8 0,#E2B64A 45%,#A97B28 100%);box-shadow:0 6px 18px rgba(169,123,40,.5),inset 0 -4px 8px rgba(90,60,10,.35)}
 nav.tabs button.tmr .knob.coink svg.coin{width:34px;height:34px}
 nav.tabs button.tmr.on{color:var(--accent);font-weight:700}
-nav.tabs button.tmr .knob.torchk{background:radial-gradient(circle at 50% 30%,#FFB347 0,#C2410C 35%,#2A1408 80%);box-shadow:0 6px 18px rgba(194,65,12,.5),inset 0 -4px 8px rgba(0,0,0,.4)}
+nav.tabs button.tmr .knob.torchk{background:radial-gradient(circle at 40% 30%,#D7364E 0,#A61E32 50%,#5E0A18 100%);box-shadow:0 6px 18px rgba(166,30,50,.45),inset 0 0 0 2px #C99A4A,inset 0 -4px 8px rgba(0,0,0,.35)}
+nav.tabs button.tmr .knob.torchk svg{stroke:#F6E7C8}
 nav.tabs button.tmr:active .knob{transform:translateY(2px) scale(.96);box-shadow:0 3px 8px rgba(242,85,154,.4),inset 0 -1px 0 rgba(0,0,0,.12)}
 /* Onboarding */
 .ob{position:fixed;inset:0;z-index:40;background:linear-gradient(170deg,var(--accent) 0%,var(--c3) 60%,var(--c3) 100%);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -445,6 +446,37 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg-btn{align-self:center;border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;font-size:16px;min-height:48px}
 .dg-btn:active{background:rgba(255,255,255,.12)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+/* Tagesabschluss */
+.fab.defab{bottom:calc(76px + 62px + 14px + env(safe-area-inset-bottom,0px));width:62px;height:auto;min-height:62px;padding:8px 4px;border-radius:20px;background:linear-gradient(170deg,#2C2440,#16121F);color:#F3D9A0;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--brass) 65%,transparent),var(--shadow)}
+.fab.defab svg{width:26px;height:26px}
+.fab.defab span{font-size:9.5px;line-height:1.1;font-weight:700;text-align:center;color:#F6EEDF}
+.fab.defab[hidden]{display:none}
+@media (prefers-reduced-motion:no-preference){ .fab.defab svg path:nth-child(1){animation:zz 2.4s ease-in-out infinite} .fab.defab svg path:nth-child(2){animation:zz 2.4s .3s ease-in-out infinite} .fab.defab svg path:nth-child(3){animation:zz 2.4s .6s ease-in-out infinite} @keyframes zz{0%,100%{opacity:1}50%{opacity:.35}} }
+.calm .fab.defab svg path{animation:none!important}
+.yday{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;border-radius:var(--r);padding:12px 14px;background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.de{position:fixed;inset:0;z-index:46;overflow-y:auto;overscroll-behavior:contain;color:#FBF3E4;background:radial-gradient(90% 45% at 50% 30%,#E8913A 0,#B4462A 35%,#5A1E2C 70%,#24121C 100%);padding:env(safe-area-inset-top,0px) 0 calc(24px + env(safe-area-inset-bottom,0px))}
+.de.m-calm{background:radial-gradient(90% 45% at 50% 30%,#6A5A8C 0,#3E3358 45%,#1E1828 100%)}
+.de-top{position:sticky;top:0;display:flex;justify-content:flex-end;padding:10px 14px 0;z-index:2;height:0}
+.de-hero{display:flex;justify-content:center;padding-top:20px}
+.de-hero img{width:min(82vw,360px);height:auto;max-height:52vh;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.45))}
+.de.m-calm .de-hero img{width:min(64vw,280px)}
+.de-body{max-width:520px;margin:-18px auto 0;padding:0 16px;display:flex;flex-direction:column;gap:12px;position:relative}
+.de-say{background:rgba(20,10,14,.55);border:1px solid rgba(243,217,160,.35);border-radius:18px;padding:14px 16px}
+.de-say .label{color:#F3D9A0}.de-say p{margin:6px 0 0;font-size:18px;line-height:1.45;font-weight:700}
+.de-card{background:#F6EBD3;color:#2A1A0E;border-radius:16px;padding:14px 16px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.de-card .label{color:#8E1024}
+.de-h{display:flex;align-items:center;justify-content:space-between}.de-h b{font-family:var(--f-display);font-size:30px;color:#8E1024}
+.de-focus{margin:8px 0;padding:8px 12px;border-radius:10px;background:#8E1024;color:#FBF3E4}
+.de-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.de-list li{display:flex;gap:8px;align-items:flex-start;font-weight:600}.de-list li svg{width:18px;height:18px;flex:none;margin-top:2px;stroke:#138A86}
+.de-best{margin:10px 0 0;font-weight:700;color:#A97B28}
+.de-gold{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(90,60,35,.2)}
+.de-open{display:flex;align-items:center;gap:6px;padding:8px 0 8px 10px;border-left:4px solid var(--c);margin-bottom:6px}
+.de-open b{display:block}.de-open .btn.small{padding:6px 10px;min-height:38px}.de-open .btn.small svg{width:16px;height:16px}
+.de-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.de-actions .btn.ghost{background:rgba(255,255,255,.12);color:#FBF3E4;border-color:rgba(255,255,255,.35)}
+.de-actions .hint{color:rgba(251,243,228,.75)}
+@media (prefers-reduced-motion:no-preference){ .de.in{animation:vpop .35s ease-out both} .de.in .de-hero img{animation:lrise .6s cubic-bezier(.25,1.6,.5,1) both} }
 /* Quests */
 svg.coin{width:22px;height:22px;flex:none}
 .qcoinbig svg.coin{width:46px;height:46px;filter:drop-shadow(0 2px 3px rgba(90,60,10,.3))}
@@ -571,6 +603,7 @@ svg.coin{width:22px;height:22px;flex:none}
 </head>
 <body>
 <div class="app" id="app"></div>
+<button class="fab defab" id="deBtn" data-act="dayEnd" aria-label="Tag abschließen" hidden></button>
 <button class="fab" id="fab" data-act="newEvent" aria-label="Neuer Eintrag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 <nav class="tabs"><div class="in" id="tabs"></div></nav>
 <div id="sheetRoot"></div>
@@ -578,6 +611,7 @@ svg.coin{width:22px;height:22px;flex:none}
 <div id="hypeRoot"></div>
 <div id="obRoot"></div>
 <div id="dgRoot"></div>
+<div id="deRoot"></div>
 
 <script>
 (() => {
@@ -602,7 +636,7 @@ const ICON = {
   day:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
   month:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
   orb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 5.4a1.8 1.8 0 1 0-1.8 1.8 1.8 1.8 0 1 0 1.8 1.8l9 9a1.8 1.8 0 1 0 1.8-1.8 1.8 1.8 0 1 0-1.8-1.8z"/><path d="M16.8 5.4a1.8 1.8 0 1 1 1.8 1.8 1.8 1.8 0 1 1-1.8 1.8l-2.6 2.6M9.8 14.2l-2.6 2.6a1.8 1.8 0 1 1-1.8 1.8 1.8 1.8 0 1 1 1.8-1.8"/></svg>',
-  torch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c2.4 2.3 3.4 4.2 3.4 5.9a3.4 3.4 0 0 1-6.8 0c0-1.1.5-2 1.3-2.8.2 1 .8 1.6 1.4 1.8-.4-1.6-.1-3.2.7-4.9z"/><path d="M8.5 12h7l-1.5 2.5h-4zM11 14.5 10.4 22M13 14.5l.6 7.5"/></svg>',
+  torch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="4.4"/><circle cx="11" cy="13" r="1.2" fill="currentColor"/><path d="M11 13l9.5-9.5"/><path d="M17.5 3.5v3h3"/><path d="M19.5 1.5v3h3"/></svg>',
   focus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>',
   tools:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><path d="M17.25 14v6.5M14 17.25h6.5"/></svg>',
   left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
@@ -770,6 +804,7 @@ function render(){
   else if(ui.tab==='quest') app.innerHTML = viewQuest();
   else app.innerHTML = viewTools();
   $('#fab').hidden = !(ui.tab==='day'||ui.tab==='month');
+  { const b=$('#deBtn'); if(!b.innerHTML) b.innerHTML=ZZZ+'<span>Tag<br>abschließen</span>'; b.hidden = !(deShow() && (ui.tab==='day'||ui.tab==='month')); }
   if(ui.tab==='focus') paintTimer();
   if(ui.tab==='day' && ui.date===todayS() && !ui.scrolled){
     ui.scrolled=true;
@@ -807,6 +842,8 @@ function viewDay(){
   if(isToday && !S.meta.planned[d]) h += nudge(d,'Plane deinen Tag', sleepMode()==='low'?'Kurze Nacht: Plane heute weniger und mehr Pausen. Zwei Minuten reichen.':'Zwei Minuten: Was steht fest, was ist am wichtigsten?','Jetzt planen');
   else if(isToday && hr>=17 && !S.meta.planned[addDays(d,1)]) h += nudge(addDays(d,1),'Morgen schon geplant?','Kurz vorplanen macht den Morgen leichter.','Morgen planen');
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
+  if(isToday && hr<12){ const y=addDays(d,-1); if(!(S.meta.closed||{})[y]){ const yl=evOn(y); if(yl.length){ const yd=yl.filter(e=>e.done).length+(((S.meta.wins||{})[y])||[]).length, yo=list.filter(e=>!e.done && e.origDate && e.origDate<d).length;
+    h += `<button class="yday" data-act="deYesterday"><span class="grow"><b>Gestern: ${yd} ${yd===1?'Sieg':'Siege'}</b>${yo?` · ${yo} ${yo===1?'Sache ist':'Sachen sind'} heute dran`:''}</span><span class="hint">Ansehen</span></button>`; } } }
   if(isToday) h += nowCard(list, waitsOn(d));
   if(isToday && hr>=18) h += `<div class="tmrcard"><span class="knob orb">${ICON.orb}</span><div class="grow"><b>Ein Blick auf morgen</b><span>Die Seherin hat die Knochen schon geworfen.</span></div><button class="btn small" data-act="showTomorrow">Hellsehen</button></div>`;
   if(isToday){ const n=nowMin(); const miss=timed(list).find(e=>!e.done && !e.missAck && endMin(e)<=n);
@@ -1186,6 +1223,78 @@ const QA = {
 };
 setInterval(()=>{ const el=document.getElementById('qElapsed'); const a=S.quest&&S.quest.active; if(el && a){ const s=Math.floor((Date.now()-a.start)/1000); el.textContent=`${pad(Math.floor(s/60))}:${pad(s%60)}`; } },1000);
 
+/* ---------- Tagesabschluss ---------- */
+const ZZZ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 13h6.5l-6.5 7.5h6.5"/><path d="M11.5 6.5h5l-5 6h5"/><path d="M18.5 2.5h3.2l-3.2 3.8h3.2"/></svg>';
+const deDate = () => new Date().getHours()<4 ? addDays(todayS(),-1) : todayS();
+const deShow = () => { const h=new Date().getHours(); return (h>=20||h<4) && !(S.meta.closed||{})[deDate()]; };
+function deData(d){
+  const list=evOn(d), done=list.filter(e=>e.done), open=list.filter(e=>!e.done);
+  const mig=S.migraine.some(m=>m.date===d && !m.ex);
+  const q=QD(), gold=(q.log||[]).filter(l=>ymd(new Date(l.ts))===d).reduce((a,l)=>a+l.v,0);
+  const wins=((S.meta.wins||{})[d]||[]);
+  const focus=S.meta.focusOf[d]; const focusDone=!!focus && done.some(e=>e.title.trim().toLowerCase()===String(focus).trim().toLowerCase());
+  const n=done.length+wins.length;
+  // positive comparison: same weekday, last 3 weeks
+  let best=false; const prev=[7,14,21].map(k=>evOn(addDays(d,-k)).filter(e=>e.done).length+(((S.meta.wins||{})[addDays(d,-k)])||[]).length);
+  if(n>=3 && prev.some(x=>x>0) && n>Math.max(...prev)) best=true;
+  const mood = list.length && !open.length ? 'all' : (mig || n===0) ? 'calm' : 'win';
+  return {list,done,open,mig,gold,wins,focus,focusDone,n,best,mood};
+}
+const DE_LINES={
+  all:['ALLES erledigt! HAHAHA! Sieh dir diesen Hügel an. Den hast du heute aufgetürmt!','Nicht ein einziger Gegner steht noch. So endet ein Tag, wie ich ihn mag!'],
+  win:['Feierabend, Kriegerherz. Schau, was heute alles gefallen ist!','Der Tag ist geschlagen. Und zwar von dir!','Nicht jeder Kampf ist gewonnen, aber das Feld gehört dir. Gut gemacht!'],
+  calm:['Heute war ein Überlebenstag. Der zählt auch. Mehr als du denkst.','Manche Tage gewinnt man, indem man durchhält. Genau das hast du getan.']
+};
+function viewDayEnd(){
+  const d=ui.deDate||deDate(), x=deData(d), q=QD(), r=qRank(q.earned||0), nx=QRANKS[r+1];
+  const line=DE_LINES[x.mood][(ui.deLine||0)%DE_LINES[x.mood].length];
+  const img=x.mood==='calm'?'leona-calm.webp':'leona-victory.webp';
+  const tomorrow=addDays(d,1);
+  let h=`<div class="de m-${x.mood}" role="dialog" aria-modal="true" aria-label="Tagesabschluss"><div class="de-top"><button class="dg-x" data-act="deClose" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="de-hero"><img src="${img}" alt="Leona"></div>
+    <div class="de-body"><div class="de-say"><span class="label">Leona · ${fmtDay(d,{weekday:'long'})}</span><p>${line}</p></div>`;
+  // victories
+  h+=`<div class="de-card"><div class="de-h"><span class="label">Deine Siege</span><b class="num">${x.n}</b></div>`;
+  if(x.focusDone) h+=`<div class="de-focus">Das Wichtigste geschafft: <b>${esc(x.focus)}</b></div>`;
+  if(x.n){ const items=[...x.done.map(e=>e.title),...x.wins]; const show=ui.deAll?items:items.slice(0,6);
+    h+=`<ul class="de-list">${show.map(t=>`<li>${ICON.tick}<span>${esc(t)}</span></li>`).join('')}</ul>${items.length>6&&!ui.deAll?`<button class="pillbtn" data-act="deAll">+ ${items.length-6} weitere</button>`:''}`; }
+  else h+=`<p class="hint">Keine Haken heute. Das ist in Ordnung. Trag unten ein, was du trotzdem geschafft hast. Aufstehen zählt auch.</p>`;
+  if(x.best) h+=`<p class="de-best">Dein stärkster ${fmtDay(d,{weekday:'long'})} seit drei Wochen!</p>`;
+  if(x.gold) h+=`<div class="de-gold">${COIN}<span>Quests heute: <b>+${x.gold} Gold</b>${nx?` · noch ${nx[0]-(q.earned||0)} bis zum ${nx[1]}`:''}</span></div>`;
+  h+=`</div>`;
+  // invisible wins
+  h+=`<div class="de-card"><span class="label">Was hast du noch geschafft?</span><p class="hint" style="margin:4px 0 8px">Alles, was nicht im Plan stand: geholfen, aufgeräumt, angerufen, durchgehalten.</p>
+    <div class="row" style="flex-wrap:nowrap"><input class="inp" id="deWin" placeholder="z. B. Freundin beim Umzug geholfen" maxlength="80" style="flex:1"><button class="btn" data-act="deWinAdd">Zählt!</button></div></div>`;
+  // open
+  if(x.open.length){ const shown=x.open.slice(0,8);
+    h+=`<div class="de-card"><span class="label">Diese kämpfen morgen weiter</span><p class="hint" style="margin:4px 0 8px">Kein Rückzug, nur ein neuer Angriffstag.</p>
+      ${shown.map(e=>{ const fixed=String(e.id).includes('#')||(e.rep&&!String(e.id).includes('@'));
+        const since=e.origDate&&e.origDate<d?` · seit ${dDiff(e.origDate,d)+1} Tagen`:'';
+        return `<div class="de-open cat-${e.cat}"><span class="grow"><b>${esc(e.title)}</b><span class="hint">${e.start?e.start:'ohne Uhrzeit'}${since}</span></span>${fixed?'':`<button class="btn small ghost" data-act="deMove" data-id="${e.id}">Morgen</button><button class="btn small ghost" data-act="deDrop" data-id="${e.id}" aria-label="Streichen">${QX}</button>`}</div>`; }).join('')}
+      ${x.open.filter(e=>!(String(e.id).includes('#')||(e.rep&&!String(e.id).includes('@')))).length>1?`<button class="btn ghost" data-act="deMoveAll" style="width:100%">Alle auf morgen</button>`:''}</div>`; }
+  h+=`<div class="de-actions"><button class="btn" data-act="deFinish" data-v="tomorrow">Blick auf morgen</button><button class="btn ghost" data-act="deFinish" data-v="night">Gute Nacht, Leona</button>
+    <span class="hint" style="text-align:center">${(S.meta.closed||{})[d]?'Tag ist abgeschlossen.':'Für den Abschluss gibt es +3 Gold.'}</span></div></div></div>`;
+  return h;
+}
+function dayEndOpen(d){ ui.deDate=d||deDate(); ui.deAll=false; ui.deLine=Math.floor(Math.random()*9); dePaint(true);
+  const x=deData(ui.deDate); if(S.meta.sfx!==false) sfx(x.mood==='all'?'fanfareBig':x.mood==='win'?'fanfare':'chime'); }
+function dePaint(first){ const root=$('#deRoot'); const st=root.querySelector('.de')?.scrollTop||0; root.innerHTML=viewDayEnd(); document.body.style.overflow='hidden'; if(first) root.firstElementChild.classList.add('in'); else root.querySelector('.de').scrollTop=st; }
+function deMoveOne(id){ const d=ui.deDate, e=evGet(id); if(!e) return null; if(!e.origDate) e.origDate=e.date; e.date=addDays(d,1); return e; }
+const DEA = {
+  dayEnd(){ dayEndOpen(); },
+  deYesterday(){ dayEndOpen(addDays(todayS(),-1)); },
+  deClose(){ $('#deRoot').innerHTML=''; document.body.style.overflow=''; render(); },
+  deAll(){ ui.deAll=true; dePaint(); },
+  deWinAdd(){ const v=($('#deWin').value||'').trim(); if(!v){ $('#deWin').focus(); return; } S.meta.wins||={}; (S.meta.wins[ui.deDate]||=[]).push(v); save('meta'); dePaint(); if(S.meta.sfx!==false) sfx('sword'); toast('Sieg gezählt!'); },
+  deMove(el){ if(deMoveOne(el.dataset.id)){ save('events'); dePaint(); toast('Auf morgen gelegt'); } },
+  deDrop(el){ const e=evGet(el.dataset.id); if(!e) return; S.events=S.events.filter(x=>x!==e); save('events'); dePaint(); toast('Gestrichen',()=>{ S.events.push(e); save('events'); dePaint(); }); },
+  deMoveAll(){ const x=deData(ui.deDate); let n=0; x.open.forEach(e=>{ if(String(e.id).includes('#')||(e.rep&&!String(e.id).includes('@'))) return; if(deMoveOne(e.id)) n++; }); save('events'); dePaint(); toast(`${n} auf morgen gelegt`); },
+  deFinish(el){ const d=ui.deDate; S.meta.closed||={}; if(!S.meta.closed[d]){ S.meta.closed[d]=Date.now(); const q=QD(); q.coins=(q.coins||0)+3; q.earned=(q.earned||0)+3; save('quest'); toast('+3 Gold für den Tagesabschluss'); } save('meta');
+    $('#deRoot').innerHTML=''; document.body.style.overflow=''; render();
+    if(el.dataset.v==='tomorrow') A.showTomorrow(); else { if(S.meta.sfx!==false) sfx('chime'); hype('night','calm'); } }
+};
+setInterval(()=>{ const b=$('#deBtn'); if(b){ const v=deShow() && (ui.tab==='day'||ui.tab==='month'); if(b.hidden===v) b.hidden=!v; } },30000);
+
 /* ---------- tools ---------- */
 const TOOLS = [
   {id:'help', icon:'help', name:'Hilfe', cat:'termin', summary(){ return 'Leona erklärt dir alle Funktionen'; }, view:viewHelp},
@@ -1319,8 +1428,8 @@ const OB = [
   {img:'smirk', h:'Eintragen, ohne nachzudenken', p:'Drück auf das <b>rote Plus</b> und schreib einfach drauflos: „Zahnarzt morgen 14:30“. Tag, Uhrzeit und Dauer erkenne ich selbst. Ausreden erkenne ich übrigens auch.', tip:'Kommt etwas regelmäßig wieder? Unter „Wann?“ stellst du <b>Wiederholen</b> ein. Für Wäsche und Co. gibt es <b>Etappen</b>: Ich erinnere dich genau dann, wenn du wieder ran musst.'},
   {img:'wink', h:'Dein Tag auf einen Blick', p:'Oben siehst du, was <b>jetzt dran</b> ist und was als Nächstes kommt, mit Countdown. Darunter dein Zeitplan in Farben. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.', tip:'Hast du gerade Luft, schlage ich dir <b>eine</b> offene Aufgabe vor. Nur eine. Ich kenne dich doch.'},
   {img:'cheer', h:'Quests & Gold', p:'Leerlauf? Dann tipp unten auf die <b>Goldmünze</b> und zieh eine <b>Quest</b>: kleine Aufgaben, die man gern vergisst oder vor sich herschiebt. Erledigst du sie, zahle ich dich in <b>Gold</b> aus. Je unangenehmer, desto mehr.', tip:'Das Gold gibst du in der <b>Schatzkammer</b> für Belohnungen aus, die du selbst festlegst. Kleiner Snack, Essen bestellen, ein Ausflug: Du bestimmst.'},
-  {img:'wink', h:'Nur das Jetzt', p:'Die <b>Fackel</b> unten öffnet den <b>Fokus</b>: schwarzer Bildschirm, nur was jetzt dran ist, was danach kommt und wie viel Zeit bleibt.', tip:'Der Rest der Welt darf warten. Und der Bildschirm bleibt an, solange du kämpfst. Daneben liegt der <b>Timer</b> für alles, was du einfach nur durchziehen willst.'},
-  {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Abends ab 18 Uhr wartet im Tag das <b>Hellsehen</b>: Die Knochen zeigen dir, was morgen ansteht.'},
+  {img:'wink', h:'Nur das Jetzt', p:'Die <b>Zielscheibe</b> unten öffnet den <b>Fokus</b>: schwarzer Bildschirm, nur was jetzt dran ist, was danach kommt und wie viel Zeit bleibt.', tip:'Der Rest der Welt darf warten. Und der Bildschirm bleibt an, solange du kämpfst. Daneben liegt der <b>Timer</b> für alles, was du einfach nur durchziehen willst.'},
+  {img:'smirk', h:'Pläne gehen schief. Na und?', p:'Etwas verpasst? Ich frage dich, ob du es nachholen, verschieben oder lassen willst, und sortiere den Rest des Tages neu. Feste Termine wie den Arzt rühre ich nicht an.', tip:'Ab 20 Uhr erscheint über dem Plus der Knopf mit den <b>drei Z</b>: Damit schließt du den Tag ab, und ich zähle deine Siege. Ab 18 Uhr wartet im Tag außerdem das <b>Hellsehen</b> mit einem Blick auf morgen.'},
   {img:'calm', h:'Auch Kriegerinnen ruhen sich aus', p:'Tipp morgens kurz auf den <b>Schlaf-Check</b>. Im <b>Migränetagebuch</b> zeige ich dir mit der Zeit, ob schlechte Nächte Attacken begünstigen. Unter Tools gibt es außerdem <b>Zyklus</b>, <b>Projekte</b> und mehr. An harten Tagen schaltest du unter Einstellungen den <b>ruhigen Modus</b> ein.', tip:'Deine Daten bleiben nur auf deinem Handy. Mach ab und zu eine Sicherung unter Tools.'},
   {img:'cheer', h:'Bereit?', p:'Wenn du nicht weiterweißt: <b>Tools → Hilfe</b>. Da erkläre ich dir alles noch mal, ohne zu meckern. Fast ohne.', tip:'Und jetzt raus mit dir. Der Tag erobert sich nicht von allein!'}
 ];
@@ -1338,7 +1447,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 
 /* ---------- Help ---------- */
 const HELP = [
-  ['Neu bei Leona','--c5',`<ul><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
+  ['Neu bei Leona','--c5',`<ul><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>rote Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten immer mit dem heutigen Datum. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die rote Linie ist „jetzt“. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.</p><p>Mit den Pfeilen oben blätterst du durch die Tage.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
@@ -1356,8 +1465,14 @@ const HELP = [
     <p>In der <b>Schatzkammer</b> legst du Belohnungen mit Preis an und löst sie ein. Richtwert: An einem guten Tag verdienst du 15 bis 20 Gold. Klein: 20–30, mittel: um 100, groß: 300–500.</p>
     <p>Im <b>Questbuch</b> schaltest du Quests ab, die nicht zu dir passen, und schreibst eigene dazu.</p>
     <p>Dein <b>Rang</b> zählt alles Gold, das du je verdient hast. Ausgeben senkt ihn nie: Holzschwert, Eisenschwert, Stahlschwert, Silberschwert, Goldschwert, Löwenschwert.</p><p class="say">„Leerlauf ist nur Zeit, die auf dich wartet.“</p>`],
+  ['Tagesabschluss','--c4',`<p>Ab 20 Uhr erscheint über dem roten Plus der Knopf mit den <b>drei Z</b>. Tippst du ihn an, stehe ich auf meinem Siegeshügel und gehe den Tag mit dir durch:</p>
+    <ul><li><b>Deine Siege</b>: alles, was du abgehakt hast. Hast du das Wichtigste des Tages geschafft, steht es ganz oben. Dazu das Gold aus deinen Quests.</li>
+    <li><b>Was hast du noch geschafft?</b> Trag ein, was nicht im Plan stand: geholfen, aufgeräumt, durchgehalten. Das zählt als Sieg.</li>
+    <li><b>Diese kämpfen morgen weiter</b>: Offenes legst du mit einem Tipp auf morgen oder streichst es. Oder alles auf einmal.</li>
+    <li>Zum Schluss: <b>Blick auf morgen</b> öffnet das Hellsehen, <b>Gute Nacht, Leona</b> beendet den Tag. Für den Abschluss gibt es <b>+3 Gold</b>, einmal pro Tag.</li></ul>
+    <p>Der Knopf bleibt bis 4 Uhr nachts sichtbar. Hast du vergessen abzuschließen, zeige ich dir morgens kurz, wie viele Siege es gestern waren.</p><p>An Tagen mit Migräne oder ohne Haken stehe ich nicht auf dem Hügel, sondern sage dir, dass Durchhalten auch zählt.</p><p class="say">„Ein Tag, an dem du aufgestanden bist, ist kein verlorener Tag.“</p>`],
   ['Hellsehen','--c5',`<p>Abends ab 18 Uhr erscheint im Tag die Karte <b>„Ein Blick auf morgen“</b>. Ich war bei der Seherin, und sie wirft die Knochen auf die Karte. Jeder <b>Knochen</b> ist ein Termin von <b>morgen</b>, mit Uhrzeit darauf. Jede rote <b>Marke</b> ist eine Aufgabe ohne Uhrzeit.</p><p>Darunter berichte ich dir, wann es losgeht, wann du fertig bist und wie hart der Tag wird. Mit <b>Morgen planen</b> legst du deine wichtigste Sache fest, mit <b>Gute Nacht, Leona</b> schließt du ab.</p>`],
-  ['Fokus','--c6',`<p>Die <b>Fackel</b> unten öffnet den Fokus: ein schwarzer Bildschirm mit weißer Schrift. Du siehst nur, was <b>jetzt</b> dran ist, wie lange noch, und was <b>als Nächstes</b> kommt. Mit <b>Geschafft</b> hakst du den jetzigen Termin ab. Der Bildschirm bleibt an, solange der Fokus offen ist. Oben rechts beendest du ihn.</p><p>Ist gerade nichts dran, steht dort „Durchatmen“. Für freie Zeit gibt es die Quests.</p><p class="say">„Ein Schritt nach dem anderen. So erobert man Burgen. Und Küchen.“</p>`],
+  ['Fokus','--c6',`<p>Die <b>Zielscheibe</b> unten öffnet den Fokus: ein schwarzer Bildschirm mit weißer Schrift. Du siehst nur, was <b>jetzt</b> dran ist, wie lange noch, und was <b>als Nächstes</b> kommt. Mit <b>Geschafft</b> hakst du den jetzigen Termin ab. Der Bildschirm bleibt an, solange der Fokus offen ist. Oben rechts beendest du ihn.</p><p>Ist gerade nichts dran, steht dort „Durchatmen“. Für freie Zeit gibt es die Quests.</p><p class="say">„Ein Schritt nach dem anderen. So erobert man Burgen. Und Küchen.“</p>`],
   ['Tagesplanung','--c3',`<p>Morgens erscheint die goldene Karte „Plane deinen Tag“. In zwei Minuten: Was steht fest? Was ist die <b>eine wichtigste Sache</b>? Ab 17 Uhr frage ich, ob du morgen schon vorplanen willst.</p><p>Darunter wartet der <b>Schlaf-Check</b>: einmal antippen, wie du geschlafen hast. Danach verschwindet er, ich merke es mir aber. Nach einer kurzen Nacht schlage ich dir leichtere Aufgaben vor.</p>`],
   ['Mini-Schritte & Timer','--c6',`<p>Große Aufgabe? Unter Extras → <b>Mini-Schritte</b> in kleine Häppchen teilen. Im <b>Timer</b>-Tab läuft ein Zeitmesser, der die Zeit sichtbar macht, und du hakst dort die Schritte ab.</p><p class="say">„Fünf Minuten anfangen ist besser als eine Stunde drüber nachdenken.“</p>`],
   ['Monat','--c1',`<p>Der Monatsüberblick mit farbigen Punkten pro Eintrag und einer roten Raute an Migränetagen. Tipp auf einen Tag, um ihn zu öffnen.</p>`],
@@ -2057,6 +2172,7 @@ function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remov
 /* ---------- actions ---------- */
 const A = {
   ...QA,
+  ...DEA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
   dayShift(el){ ui.date=addDays(ui.date,+el.dataset.v); render(); window.scrollTo(0,0); },
   dayToday(){ ui.date=todayS(); ui.scrolled=false; render(); },
