@@ -1395,6 +1395,7 @@ function viewImport(){
   const st=ui.ics||(ui.ics={allday:true});
   let h=`<header class="top">${back()}<h1>Kalender importieren<span class="sub">Google, Outlook, Apple und mehr</span></h1></header><div class="stack">`;
   h+=`<div class="helphead"><img src="leona-wink.webp" alt="Leona"><p>Gib mir deinen alten Kalender. Ich übernehme jeden Termin, damit du nichts abtippen musst.</p></div>`;
+  if(st.err) h+=`<div class="card" style="border-left:5px solid var(--accent)"><b>Hat nicht geklappt</b><p class="hint" style="margin:6px 0 0">${st.err}</p></div>`;
   if(st.res){ const r=st.res, srs=r.add.filter(e=>e.rep).length+r.upd.filter(([,e])=>e.rep).length, ad=r.add.filter(e=>e.allday).length+r.upd.filter(([,e])=>e.allday).length;
     h+=`<div class="card stack"><span class="label">Gefunden${st.files>1?` in ${st.files} Kalendern`:''}</span>
       <div class="imp-n"><b class="num">${r.add.length}</b><span>${r.add.length===1?'neuer Termin':'neue Termine'}${srs?`, davon ${srs} ${srs===1?'Serie':'Serien'}`:''}${ad?`, ${ad} ganztägig`:''}</span></div>
@@ -1408,7 +1409,6 @@ function viewImport(){
       <button class="btn ghost" data-act="icsReset">Andere Datei wählen</button></div>`; }
   else {
     h+=`<div class="card stack"><label class="icschk"><input type="checkbox" id="icsAllday" ${st.allday?'checked':''}><span class="grow"><b>Ganztägige Einträge übernehmen</b><span class="hint">Geburtstage, Urlaub, Feiertage. Sie werden Aufgaben ohne Uhrzeit, ohne Nachrücken.</span></span></label>
-      <input type="file" id="icsFile" accept=".ics,.zip,text/calendar,application/zip" multiple hidden>
       <button class="btn" data-act="icsPick">Kalenderdatei wählen (.ics oder .zip)</button>
       <p class="hint">Vergangene Termine lasse ich weg. Importierst du später noch mal, entstehen keine doppelten Einträge: Schon übernommene werden nur aktualisiert.</p></div>`;
   }
@@ -1423,17 +1423,28 @@ function viewImport(){
   return h+'</div>';
 }
 async function icsLoadFiles(files){
-  const texts=[];
+  toast('Ich lese deinen Kalender …');
+  const texts=[], errs=[];
   for(const f of files){ try{
-      if(/\.zip$/i.test(f.name) || f.type==='application/zip'){ texts.push(...await unzipIcs(await f.arrayBuffer())); }
-      else texts.push({name:f.name,text:await f.text()});
-    }catch(e){ toast('Diese Datei kann ich nicht lesen'); } }
-  const items=texts.flatMap(t=>icsParse(t.text));
-  if(!items.length){ toast('Keine Termine in der Datei gefunden'); return; }
-  ui.ics.files=texts.length; ui.ics.res=icsBuild(items,{allday:ui.ics.allday}); render();
+      const buf=await f.arrayBuffer(); const u8=new Uint8Array(buf);
+      if(u8[0]===0x50 && u8[1]===0x4B){
+        if(typeof DecompressionStream==='undefined'){ errs.push('zip'); continue; }
+        const inner=await unzipIcs(buf); if(!inner.length) errs.push('emptyzip'); texts.push(...inner); }
+      else texts.push({name:f.name,text:new TextDecoder().decode(u8)});
+    }catch(e){ errs.push('read'); } }
+  let items=[]; try{ items=texts.flatMap(t=>icsParse(t.text)); }catch(e){ errs.push('parse'); }
+  ui.tool='import'; ui.tab='tools'; ui.ics=ui.ics||{allday:true};
+  if(!items.length){ ui.ics.res=null; ui.ics.err=errs.includes('zip')?'Dein Handy kann .zip-Dateien hier nicht entpacken. Entpack die Datei zuerst (in der Dateien-App antippen) und wähl dann die .ics-Datei darin.'
+      : errs.includes('emptyzip')?'In der .zip-Datei ist keine Kalenderdatei (.ics). Bei Google heißt der Export meist „deinname@gmail.com.ical.zip“.'
+      : errs.length?'Diese Datei kann ich nicht lesen. Ist es wirklich eine .ics- oder .zip-Datei aus dem Kalender-Export?'
+      : 'In der Datei habe ich keine Termine gefunden.';
+    render(); return; }
+  try{ ui.ics.err=null; ui.ics.files=texts.length; ui.ics.res=icsBuild(items,{allday:ui.ics.allday}); }
+  catch(e){ ui.ics.err='Beim Lesen ist etwas schiefgegangen ('+esc(e.message||e)+'). Schick Claude im Chat gern die Fehlermeldung.'; }
+  render(); window.scrollTo(0,0);
 }
 const ICSA = {
-  icsPick(){ const c=$('#icsAllday'); if(c) ui.ics.allday=c.checked; $('#icsFile').click(); },
+  icsPick(){ const c=$('#icsAllday'); if(c) ui.ics.allday=c.checked; pickFile('.ics,.ical,.ifb,.zip,text/calendar,application/zip,application/x-zip-compressed',true,fs=>icsLoadFiles(fs)); },
   icsReset(){ ui.ics={allday:ui.ics.allday}; render(); },
   icsHow(el){ ui.icsHelp[el.dataset.v]=!ui.icsHelp[el.dataset.v]; render(); },
   icsGo(){ const r=ui.ics.res; if(!r) return; const now=Date.now();
@@ -1443,7 +1454,7 @@ const ICSA = {
   icsRemove(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Wirklich alle entfernen? Nochmal tippen'; return; }
     const gone=S.events.filter(e=>e.src==='ics'); S.events=S.events.filter(e=>e.src!=='ics'); save('events'); render(); toast(`${gone.length} entfernt`,()=>{ S.events.push(...gone); save('events'); render(); }); }
 };
-document.addEventListener('change',ev=>{ if(ev.target.id==='icsFile' && ev.target.files.length){ const c=$('#icsAllday'); if(c) ui.ics.allday=c.checked; icsLoadFiles([...ev.target.files]); ev.target.value=''; } if(ev.target.id==='icsAllday') ui.ics.allday=ev.target.checked; });
+document.addEventListener('change',ev=>{ if(ev.target.id==='icsAllday') ui.ics.allday=ev.target.checked; });
 
 /* ---------- tools ---------- */
 const TOOLS = [
@@ -1527,7 +1538,6 @@ function viewBackup(){
   h+=`<div class="card stack"><b style="font-family:var(--f-display);font-size:19px">Sicherung erstellen</b><span class="muted">Speichert alle Termine, Migräne-Einträge, Projekte und Check-ins in einer Datei. Leg sie in deine Cloud (iCloud, Google Drive) oder schick sie dir per Mail.</span><button class="btn" data-act="exportData">Sicherungsdatei erstellen</button></div>`;
   h+=`<div class="card stack"><b style="font-family:var(--f-display);font-size:19px">Auf neues Handy übertragen</b>
     <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px"><li>Auf dem alten Handy: Sicherungsdatei erstellen.</li><li>Auf dem neuen Handy die App öffnen und zum Home-Bildschirm hinzufügen.</li><li>Hier auf „Sicherung laden“ tippen und die Datei auswählen.</li></ol>
-    <input type="file" id="importFile" accept=".json,application/json" hidden>
     <button class="btn ghost" data-act="importPick">Sicherung laden</button><span class="hint" id="importMsg"></span></div>`;
   h+=`<div class="card stack"><b style="font-family:var(--f-display);font-size:19px">Benachrichtigungen</b><span class="muted">Erinnerungen erscheinen in der App. Mit Erlaubnis zeigt das Handy sie zusätzlich als Mitteilung, solange die App im Hintergrund noch läuft.</span>
     ${perm==='granted'?'<span class="hint">Mitteilungen sind erlaubt.</span>':perm==='denied'?'<span class="hint">Mitteilungen sind in den Handy-Einstellungen blockiert.</span>':perm==='unsupported'?'<span class="hint">Auf diesem Gerät erst nach „Zum Home-Bildschirm“ verfügbar.</span>':'<button class="btn ghost" data-act="notifOn">Mitteilungen erlauben</button>'}</div>`;
@@ -2493,7 +2503,7 @@ const A = {
     if(!ok){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
     ls.set('lastBackup',todayS()); toast('Sicherung erstellt'); render();
   },
-  importPick(){ $('#importFile').click(); },
+  importPick(){ pickFile('.json,application/json',false,fs=>handleBackupFile(fs[0])); },
   importConfirm(el){
     if(!pendingImport) return;
     if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Sicher? Ersetzt alles auf diesem Handy. Nochmal tippen'; return; }
@@ -2522,13 +2532,20 @@ const A = {
 };
 function act(name,el,ev){ if(A[name]) A[name](el,ev); }
 document.addEventListener('click',ev=>{ const el=ev.target.closest('[data-act]'); if(!el) return; if(el.dataset.act!=='scrim') ev.stopPropagation(); act(el.dataset.act,el,ev); });
-document.addEventListener('change',ev=>{
-  if(ev.target.id==='importFile'){ const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
+/* file picker that survives re-renders (the app redraws when returning from the system picker) */
+function pickFile(accept,multiple,cb){ let inp=document.getElementById('filePick');
+  if(!inp){ inp=document.createElement('input'); inp.type='file'; inp.id='filePick'; inp.setAttribute('aria-hidden','true'); inp.tabIndex=-1; inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0'; document.body.appendChild(inp); }
+  inp.accept=accept; inp.multiple=!!multiple; inp.value='';
+  inp.onchange=()=>{ const fs=[...(inp.files||[])]; if(fs.length) cb(fs); setTimeout(()=>{ inp.value=''; },0); };
+  inp.click(); }
+function handleBackupFile(f){ const r=new FileReader();
     r.onload=()=>{ const msg=$('#importMsg'); try{ const j=JSON.parse(r.result); if(j.app!=='bunter-kalender'||!j.data) throw 0;
         pendingImport=j; const n=(j.data.events||[]).length, m=(j.data.migraine||[]).length, p=(j.data.projects||[]).length;
         msg.innerHTML=`Gefunden: Sicherung vom ${esc(new Date(j.exported).toLocaleDateString('de-DE'))} mit ${n} Einträgen, ${m} Migräne-Einträgen, ${p} Projekten.<br><button class="btn" style="margin-top:8px" data-act="importConfirm">Diese Sicherung laden</button>`; }
       catch(e){ msg.textContent='Diese Datei ist keine Sicherung von Leona.'; } };
-    r.readAsText(f); ev.target.value=''; }
+    r.readAsText(f); }
+document.addEventListener('change',ev=>{
+
   if(ev.target.id==='tTask'){ T.taskId=ev.target.value||null; ls.set('timer',T); render(); }
   if(ev.target.id==='moodNote'){ const d=todayS(); (S.mood[d]||(S.mood[d]={})).note=ev.target.value; save('mood'); }
 });
