@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>Leona</title>
 <meta name="theme-color" content="#F2EADB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15161B" media="(prefers-color-scheme: dark)">
@@ -2565,6 +2565,14 @@ document.addEventListener('click',ev=>{ const el=ev.target.closest('[data-act]')
     setTimeout(()=>{ A.dayShiftSwipe(n); setX(n*innerWidth*.5,false); requestAnimationFrame(()=>requestAnimationFrame(()=>{ setX(0,true); setTimeout(()=>{ app().style.transition=''; busy=false; },240); })); },200); };
   document.addEventListener('touchend',end,{passive:true});
   document.addEventListener('touchcancel',()=>{ if(ok){ ok=false; setX(0,true); } },{passive:true});
+})();
+/* no zoom on quick repeated taps (iOS ignores touch-action in some places): swallow the zoom, keep the tap */
+(()=>{ let last=0, lastEl=null;
+  document.addEventListener('touchend',e=>{ const now=Date.now(), t=e.target;
+    if(now-last<350 && e.changedTouches.length===1 && !t.closest('input,textarea,select,[contenteditable]')){
+      e.preventDefault(); const c=t.closest('button,a,label,[data-act]'); if(c) c.click(); }
+    last=now; lastEl=t; },{passive:false});
+  document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 })();
 /* file picker that survives re-renders (the app redraws when returning from the system picker) */
 function pickFile(accept,multiple,cb){ let inp=document.getElementById('filePick');
