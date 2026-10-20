@@ -448,9 +448,6 @@ nav.tabs{border-top:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
 .dg hr{border:0;height:1px;width:60%;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
 /* swipe feedback */
 @media (prefers-reduced-motion:no-preference){ #app.swl{animation:swl .3s ease-out} #app.swr{animation:swr .3s ease-out} @keyframes swl{from{transform:translateX(40px);opacity:.4}to{transform:none;opacity:1}} @keyframes swr{from{transform:translateX(-40px);opacity:.4}to{transform:none;opacity:1}} }
-/* Outlook */
-.olsteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
-.olcopy{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}.olcopy code{font-size:13px;background:var(--surface-2);padding:6px 8px;border-radius:8px;overflow-wrap:anywhere;flex:1;min-width:0}
 /* Import */
 .imp-n{display:flex;align-items:baseline;gap:10px}.imp-n b{font-family:var(--f-display);font-size:34px;color:var(--accent)}
 .icschk{display:flex;gap:12px;align-items:flex-start;cursor:pointer}.icschk input{width:22px;height:22px;margin-top:2px;accent-color:var(--accent);flex:none}.icschk b{display:block}
@@ -853,7 +850,6 @@ function viewDay(){
   else if(!isToday && !S.meta.planned[d] && d>todayS()) h += nudge(d,'Diesen Tag vorplanen?','Wichtigste Sache und feste Termine festhalten.','Planen');
   if(isToday && hr<12){ const y=addDays(d,-1); if(!(S.meta.closed||{})[y]){ const yl=evOn(y); if(yl.length){ const yd=yl.filter(e=>e.done).length+(((S.meta.wins||{})[y])||[]).length, yo=list.filter(e=>!e.done && e.origDate && e.origDate<d).length;
     h += `<button class="yday" data-act="deYesterday"><span class="grow"><b>Gestern: ${yd} ${yd===1?'Sieg':'Siege'}</b>${yo?` · ${yo} ${yo===1?'Sache ist':'Sachen sind'} heute dran`:''}</span><span class="hint">Ansehen</span></button>`; } } }
-  if(isToday){ const o=OL.get(); if(o.user && o.needLogin) h += `<button class="yday" data-act="olConnect"><span class="grow"><b>Outlook neu verbinden</b> · ein Tipp, dann sind deine Termine wieder aktuell</span><span class="hint">Anmelden</span></button>`; }
   if(isToday) h += nowCard(list, waitsOn(d));
   if(isToday && hr>=18) h += `<div class="tmrcard"><span class="knob orb">${ICON.orb}</span><div class="grow"><b>Ein Blick auf morgen</b><span>Die Seherin hat die Knochen schon geworfen.</span></div><button class="btn small" data-act="showTomorrow">Hellsehen</button></div>`;
   if(isToday){ const n=nowMin(); const miss=timed(list).find(e=>!e.done && !e.missAck && endMin(e)<=n);
@@ -1462,118 +1458,6 @@ const ICSA = {
 };
 document.addEventListener('change',ev=>{ if(ev.target.id==='icsAllday') ui.ics.allday=ev.target.checked; });
 
-/* ---------- Outlook-Sync (Microsoft Graph, Outlook -> Leona) ---------- */
-const OL = { get(){ return ls.get('outlook',{}); }, set(v){ ls.set('outlook',v); } };
-const olRedirect = () => location.origin + location.pathname.replace(/index\.html$/,'');
-const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const olTZ = () => { try{ return Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Berlin'; }catch(e){ return 'Europe/Berlin'; } };
-async function olConnect(){
-  const o=OL.get(); if(!o.clientId){ toast('Erst die Anwendungs-ID eintragen'); return; }
-  const v=b64url(crypto.getRandomValues(new Uint8Array(48))), ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v))), st=b64url(crypto.getRandomValues(new Uint8Array(16)));
-  ls.set('olPkce',{v,st,ts:Date.now()});
-  const q=new URLSearchParams({client_id:o.clientId,response_type:'code',redirect_uri:olRedirect(),response_mode:'query',scope:'offline_access User.Read Calendars.Read',code_challenge:ch,code_challenge_method:'S256',state:st,prompt:o.refresh?'none':'select_account'});
-  if(o.user) q.set('login_hint',o.user);
-  location.assign('https://login.microsoftonline.com/common/oauth2/v2.0/authorize?'+q);
-}
-async function olToken(params){
-  const o=OL.get();
-  const r=await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:o.clientId,redirect_uri:olRedirect(),scope:'offline_access User.Read Calendars.Read',...params})});
-  const j=await r.json(); if(!r.ok) throw new Error(j.error_description||j.error||('HTTP '+r.status));
-  Object.assign(o,{access:j.access_token,exp:Date.now()+(j.expires_in-120)*1000,refresh:j.refresh_token||o.refresh,rexp:j.refresh_token?Date.now()+23*3600e3:o.rexp,err:null}); OL.set(o); return o;
-}
-async function olHandleRedirect(){
-  const u=new URL(location.href), code=u.searchParams.get('code'), st=u.searchParams.get('state'), err=u.searchParams.get('error');
-  if(!code && !err) return false;
-  const pk=ls.get('olPkce',null); history.replaceState(null,'',olRedirect());
-  if(!pk || pk.st!==st){ return false; }
-  localStorage.removeItem('bk_olPkce');
-  ui.tab='tools'; ui.tool='outlook';
-  if(err){ const o=OL.get(); if(err==='interaction_required'||err==='login_required'){ o.refresh=null; OL.set(o); olConnect(); return true; } o.err=u.searchParams.get('error_description')||err; OL.set(o); render(); return true; }
-  try{ await olToken({grant_type:'authorization_code',code,code_verifier:pk.v});
-    const me=await olGraph('https://graph.microsoft.com/v1.0/me?$select=displayName,userPrincipalName,mail'); const o=OL.get(); o.user=me.mail||me.userPrincipalName; o.name=me.displayName; OL.set(o);
-    await olSync(true); }
-  catch(e){ const o=OL.get(); o.err=String(e.message||e); OL.set(o); render(); }
-  return true;
-}
-async function olAccess(){
-  let o=OL.get(); if(o.access && Date.now()<o.exp) return o.access;
-  if(o.refresh && Date.now()<(o.rexp||0)){ try{ o=await olToken({grant_type:'refresh_token',refresh_token:o.refresh}); return o.access; }catch(e){} }
-  o.needLogin=true; OL.set(o); throw new Error('login');
-}
-async function olGraph(url){
-  const t=await olAccess();
-  const r=await fetch(url,{headers:{Authorization:'Bearer '+t,Prefer:`outlook.timezone="${olTZ()}"`}});
-  if(r.status===401){ const o=OL.get(); o.access=null; OL.set(o); throw new Error('login'); }
-  const j=await r.json(); if(!r.ok) throw new Error((j.error&&j.error.message)||('HTTP '+r.status)); return j;
-}
-let olBusy=false;
-async function olSync(manual){
-  const o=OL.get(); if(!o.clientId || !o.user || olBusy) return; if(!navigator.onLine){ if(manual) toast('Kein Internet. Ich synchronisiere, sobald du wieder online bist.'); return; }
-  olBusy=true; if(manual) toast('Hole deine Outlook-Termine …');
-  try{
-    const from=addDays(todayS(),-1), to=addDays(todayS(),(+o.days||60));
-    let url=`https://graph.microsoft.com/v1.0/me/calendarView?startDateTime=${from}T00:00:00&endDateTime=${to}T23:59:59&$top=200&$orderby=start/dateTime&$select=id,subject,start,end,isAllDay,isCancelled,showAs,type,seriesMasterId`;
-    const items=[]; for(let k=0;url && k<15;k++){ const j=await olGraph(url); items.push(...(j.value||[])); url=j['@odata.nextLink']; }
-    const seen=new Set(); let add=0, upd=0, del=0;
-    items.forEach(x=>{ if(x.isCancelled) return; if(x.isAllDay && o.allday===false) return; if(x.showAs==='free' && o.skipFree) return;
-      const key='ol:'+x.id; seen.add(key);
-      const sd=x.start.dateTime.slice(0,10), st=x.start.dateTime.slice(11,16), ed=new Date(x.end.dateTime), sdt=new Date(x.start.dateTime);
-      const title=(x.subject||'(ohne Titel)').trim();
-      const v={title,date:sd,start:x.isAllDay?null:st,dur:x.isAllDay?30:Math.max(5,Math.min(Math.round((ed-sdt)/60000),1440)),allday:!!x.isAllDay};
-      if(x.isAllDay){ const days=Math.round((ed-sdt)/864e5); if(days>1) v.title=`${title} (bis ${fmtDay(addDays(sd,days-1),{day:'numeric',month:'short'})})`; }
-      const ex=S.events.find(e=>e.olKey===key);
-      if(ex){ if(ex.title!==v.title||ex.date!==v.date||ex.start!==v.start||ex.dur!==v.dur){ Object.assign(ex,v); upd++; } }
-      else { S.events.push({id:uid(),...v,cat:icsCat(title),steps:[],fixed:!x.isAllDay,src:'outlook',olKey:key,created:todayS()}); add++; } });
-    // removed or moved out in Outlook -> remove here (only inside the synced window)
-    S.events=S.events.filter(e=>{ if(e.src!=='outlook' || seen.has(e.olKey)) return true; if(e.date<from || e.date>to) return true; del++; return false; });
-    save('events'); const o2=OL.get(); o2.last=Date.now(); o2.err=null; o2.needLogin=false; o2.stats={add,upd,del,n:seen.size}; OL.set(o2);
-    render(); if(manual || add || del) toast(add||upd||del?`Outlook: ${add} neu, ${upd} geändert, ${del} entfernt`:'Outlook ist aktuell');
-  }catch(e){ const o2=OL.get(); if(String(e.message)==='login'){ o2.needLogin=true; if(manual) toast('Bitte einmal neu anmelden'); } else { o2.err=String(e.message||e); if(manual) toast('Outlook-Sync hat nicht geklappt'); } OL.set(o2); render(); }
-  finally{ olBusy=false; }
-}
-function viewOutlook(){
-  const o=OL.get(), red=olRedirect();
-  let h=`<header class="top">${back()}<h1>Outlook-Kalender<span class="sub">Termine automatisch übernehmen</span></h1></header><div class="stack">`;
-  if(o.user){
-    h+=`<div class="card stack"><span class="label">Verbunden</span><b>${esc(o.name||'')}</b><span class="hint">${esc(o.user)}</span>
-      <p class="hint" style="margin:0">${o.last?`Zuletzt synchronisiert: ${new Date(o.last).toLocaleString('de-DE',{weekday:'short',hour:'2-digit',minute:'2-digit'})}${o.stats?` · ${o.stats.n} Termine in den nächsten ${o.days||60} Tagen`:''}`:'Noch nicht synchronisiert.'}</p>
-      ${o.needLogin?`<div class="nudge" style="background:var(--c4);color:#fff"><div class="grow"><b>Neu anmelden</b><span style="font-size:14px">Microsoft verlangt bei Web-Apps etwa einmal am Tag eine neue Anmeldung. Meist reicht ein Tipp.</span></div><button class="btn small" data-act="olConnect">Anmelden</button></div>`:''}
-      ${o.err?`<p class="hint" style="color:var(--accent);margin:0">Fehler: ${esc(o.err)}</p>`:''}
-      <button class="btn" data-act="olSync">Jetzt synchronisieren</button></div>
-      <div class="card stack"><span class="label">Einstellungen</span>
-      <div class="chips">${[30,60,120].map(d=>`<button class="chip ${(+o.days||60)===d?'on':''}" data-act="olSet" data-k="days" data-v="${d}">${d} Tage voraus</button>`).join('')}</div>
-      <div class="chips"><button class="chip ${o.allday!==false?'on':''}" data-act="olSet" data-k="allday" data-v="${o.allday===false?1:0}">Ganztägige übernehmen</button><button class="chip ${o.skipFree?'on':''}" data-act="olSet" data-k="skipFree" data-v="${o.skipFree?0:1}">„Frei“-Termine weglassen</button></div>
-      <p class="hint" style="margin:0">Outlook gibt den Ton an: Änderst du einen Outlook-Termin hier in Leona, überschreibt der nächste Abgleich Titel und Uhrzeit wieder. Erledigt-Haken, Mini-Schritte und Erinnerungen bleiben.</p></div>
-      <button class="btn ghost" data-act="olOff">Verbindung trennen</button>`;
-  } else {
-    h+=`<div class="helphead"><img src="leona-wink.webp" alt="Leona"><p>Verbinde Outlook, und ich hole mir deine Termine jedes Mal, wenn du mich öffnest. Neue, geänderte und gelöschte Termine gleiche ich automatisch ab.</p></div>`;
-    if(o.err) h+=`<div class="card" style="border-left:5px solid var(--accent)"><b>Hat nicht geklappt</b><p class="hint" style="margin:6px 0 0">${esc(o.err)}</p></div>`;
-    h+=`<div class="card stack"><span class="label">Einmalig einrichten · etwa 10 Minuten</span>
-      <ol class="olsteps">
-      <li>Am Computer <b>entra.microsoft.com</b> öffnen und mit deinem Microsoft-Konto anmelden.</li>
-      <li>Links <b>Anwendungen → App-Registrierungen</b> → <b>Neue Registrierung</b>.</li>
-      <li>Name: <b>Leona</b>. Bei „Unterstützte Kontotypen“: <b>Konten in einem beliebigen Organisationsverzeichnis und persönliche Microsoft-Konten</b>.</li>
-      <li>Bei „Umleitungs-URI“: Plattform <b>Single-Page-Anwendung (SPA)</b> wählen und genau diese Adresse eintragen:<div class="olcopy"><code>${esc(red)}</code><button class="pillbtn" data-act="olCopy">Kopieren</button></div></li>
-      <li><b>Registrieren</b> tippen. Auf der Übersichtsseite die <b>Anwendungs-ID (Client-ID)</b> kopieren und unten einfügen.</li>
-      <li>Fertig. Die Berechtigung „Kalender lesen“ fragt Microsoft bei der ersten Anmeldung selbst ab.</li></ol>
-      <input class="inp" id="olId" placeholder="Anwendungs-ID, z. B. 1a2b3c4d-…" value="${esc(o.clientId||'')}" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <button class="btn" data-act="olStart">Mit Outlook verbinden</button>
-      <p class="hint" style="margin:0">Leona liest nur deine Termine. Sie schreibt nichts in Outlook und schickt deine Daten an niemanden außer Microsoft selbst.</p></div>
-      <p class="hint">Nutzt du Outlook bei der Arbeit, kann es sein, dass deine Firma fremde Apps sperrt. Dann erscheint bei der Anmeldung ein Hinweis, dass ein Administrator zustimmen muss. Mit einem privaten Outlook-, Hotmail- oder Live-Konto klappt es ohne. Falls Microsoft beim Registrieren ein Azure-Konto verlangt, sag Claude Bescheid.</p>`;
-  }
-  return h+'</div>';
-}
-const OLA = {
-  olStart(){ const id=($('#olId').value||'').trim(); if(!/^[0-9a-f-]{36}$/i.test(id)){ toast('Das sieht nicht wie eine Anwendungs-ID aus'); $('#olId').focus(); return; } const o=OL.get(); o.clientId=id; o.err=null; o.refresh=null; OL.set(o); olConnect(); },
-  olConnect(){ olConnect(); },
-  olSync(){ olSync(true); },
-  olSet(el){ const o=OL.get(), k=el.dataset.k; o[k]=k==='days'?+el.dataset.v:el.dataset.v==='1'; OL.set(o); render(); if(k==='days') olSync(true); },
-  olCopy(){ const t=olRedirect(); try{ navigator.clipboard.writeText(t); toast('Adresse kopiert'); }catch(e){ toast(t); } },
-  olOff(el){ if(!el.dataset.sure){ el.dataset.sure=1; el.textContent='Trennen und Outlook-Termine aus Leona entfernen? Nochmal tippen'; return; }
-    const o=OL.get(); OL.set({clientId:o.clientId}); S.events=S.events.filter(e=>e.src!=='outlook'); save('events'); render(); toast('Outlook getrennt'); }
-};
-function olAuto(){ const o=OL.get(); if(o.user && !o.needLogin && (!o.last || Date.now()-o.last>10*60e3)) olSync(false); }
-
 /* ---------- tools ---------- */
 const TOOLS = [
   {id:'help', icon:'help', name:'Hilfe', cat:'termin', summary(){ return 'Leona erklärt dir alle Funktionen'; }, view:viewHelp},
@@ -1582,12 +1466,11 @@ const TOOLS = [
   {id:'settings', icon:'gear', name:'Einstellungen', cat:'pause', summary(){ return [S.meta.calm?'Ruhiger Modus':'Normale Bewegung', S.meta.sound===false?'Töne aus':'Töne an'].join(' · '); }, view:viewSettings},
   {id:'valka', icon:'sword', name:'Leona', cat:'haushalt', summary(){ return S.meta.hype===false?'Ausgeschaltet':'Deine Kriegerin feuert dich an'; }, view:viewValka},
   {id:'backup', icon:'cloud', name:'Sichern & Übertragen', cat:'arbeit', summary(){ const b=ls.get('lastBackup',null); return b?`Letzte Sicherung: ${fmtDay(b,{day:'numeric',month:'short'})}`:'Für ein neues Handy oder als Absicherung'; }, view:viewBackup},
-  {id:'outlook', icon:'cloud', name:'Outlook-Kalender', cat:'arbeit', summary(){ const o=OL.get(); return o.user?(o.needLogin?'Bitte neu anmelden':`Verbunden · ${o.user}`):'Termine automatisch abgleichen'; }, view:viewOutlook},
   {id:'import', icon:'month', name:'Kalender importieren', cat:'termin', summary(){ const n=S.events.filter(e=>e.src==='ics').length; return n?`${n} Termine übernommen`:'Google, Outlook, Apple: Termine übernehmen'; }, view:viewImport},
   {id:'cycle', icon:'drop', name:'Zyklus', cat:'freizeit', summary(){ const c=cycInfo(); return c.last?cycLine(c):'Periode, Symptome und Prognosen'; }, view:viewCycle},
   {id:'sleep', icon:'bed', name:'Schlaf', cat:'termin', summary(){ const t=sleepTxt(todayS()); return t?`Letzte Nacht: ${t}`:'Verknüpft mit dem Migränetagebuch'; }, view:viewSleep},
 ];
-const TOOL_GROUPS=[['Gesundheit',['cycle','migraine','sleep']],['Schaffen',['projects']],['Leona & Hilfe',['help','valka']],['App & Daten',['outlook','import','settings','backup']]];
+const TOOL_GROUPS=[['Gesundheit',['cycle','migraine','sleep']],['Schaffen',['projects']],['Leona & Hilfe',['help','valka']],['App & Daten',['import','settings','backup']]];
 function viewTools(){
   if(ui.tool==='cycle' && !cycOn()) ui.tool=null;
   if(ui.tool){ const t=TOOLS.find(x=>x.id===ui.tool); if(t) return t.view(); }
@@ -1728,7 +1611,7 @@ function closeOnboarding(){ ls.set('onboarded',true); $('#obRoot').innerHTML='';
 
 /* ---------- Help ---------- */
 const HELP = [
-  ['Neu bei Leona','--c5',`<ul><li><b>Outlook-Kalender</b> unter Tools: Termine automatisch abgleichen.</li><li><b>Kalender importieren</b> unter Tools: Termine aus Google, Outlook, Apple übernehmen.</li><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
+  ['Neu bei Leona','--c5',`<ul><li><b>Kalender importieren</b> unter Tools: Termine aus Google, Outlook, Apple übernehmen.</li><li><b>Tagesabschluss</b>: Ab 20 Uhr erscheint über dem Plus der Knopf mit den drei Z.</li><li>Der <b>Fokus</b>-Knopf ist jetzt eine Zielscheibe.</li><li><b>Quests & Gold</b>: die Goldmünze unten. Zieh in deiner Leerlaufzeit eine Quest und verdiene Gold für Belohnungen, die du selbst festlegst.</li><li><b>Hellsehen</b> ist jetzt abends ab 18 Uhr eine Karte im Tag.</li><li><b>Fokus</b> ist wieder schlicht: schwarzer Bildschirm, nur Jetzt, Als Nächstes und Countdown.</li><li>Neue Bilder von mir. Mit allen Haaren. Endlich.</li></ul><p class="say">„Neue Waffen. Gleiche Kriegerin. Und du hast keine Ausrede mehr.“</p>`],
   ['Eintragen','--c3',`<p>Tipp auf das <b>rote Plus</b>. Schreib einfach los, zum Beispiel:</p><ul><li>„Zahnarzt morgen 14:30“</li><li>„Einkaufen Samstag 10 Uhr 1h“</li><li>„Mama anrufen 18.30 15 min“</li></ul><p>Tag, Uhrzeit, Dauer und Farbe füllen sich selbst. Neue Einträge starten mit dem Tag, den du gerade ansiehst. Ohne Uhrzeit wird es eine Aufgabe für den Tag.</p><p class="say">„Drei Felder. Mehr brauchst du nicht. Der Rest ist Bonus.“</p>`],
   ['Der Tag & die Jetzt-Karte','--c1',`<p>Die dunkle Karte zeigt, was <b>gerade dran</b> ist, wie lange noch und was als Nächstes kommt. Darunter: dein Fortschritt des Tages und der farbige Zeitplan. Die rote Linie ist „jetzt“. Aufgaben ohne Uhrzeit schlage ich dir gestrichelt in freien Lücken vor.</p><p>Mit den Pfeilen oben blätterst du durch die Tage. Lieber wischen? Unter <b>Tools → Einstellungen → Wischen zwischen Tagen</b> einschalten: nach links wischen für den nächsten Tag, nach rechts für den Vortag. Die Seite wandert mit dem Finger mit. Lässt du zu früh los, springt sie zurück.</p>`],
   ['Serien & Wiederholung','--c1',`<p>Im Eintrag unter „Wann?“ bei <b>Wiederholen</b>: täglich, werktags, wöchentlich, alle 2 Wochen, monatlich. Unter <b>Eigene …</b> wählst du beliebige Abstände (zum Beispiel alle 3 Wochen) und Wochentage. Ein Enddatum ist optional.</p><p>Serien-Termine tragen ein ↻. Tippst du einen an, entscheidest du: <b>nur dieser Termin</b> oder <b>ganze Serie</b>. Abhaken gilt immer nur für den einen Tag.</p>`],
@@ -1761,8 +1644,6 @@ const HELP = [
   ['Zyklus','--c5',`<p>Zuerst unter <b>Tools → Einstellungen</b> die Zyklus-Funktion einschalten. Dann trägst du unter <b>Tools → Zyklus</b> deine Periode ein: Blutungsstärke, Symptome, Stimmung und mehr. Daraus berechne ich deine nächste Periode, die fruchtbaren Tage und den Eisprung. Im Monat siehst du alles farbig markiert, im Migränetagebuch die Periodentage neben deinen Attacken.</p><p>Die Vorhersagen sind Schätzungen und kein Verhütungsmittel.</p>`],
   ['Projekte','--c2',`<p>Für alles, was länger dauert: Fortschritt in Prozent, der <b>nächste kleine Schritt</b> und Notizen, was du geschafft hast.</p>`],
   ['Leona & Einstellungen','--c5',`<p>Unter <b>Tools → Leona</b> schaltest du mich aus oder auf „nur Sprechblase“. Wie kannst du nur.</p><p>Unter <b>Tools → Einstellungen</b>: ruhiger Modus ohne Animationen, Töne und Vibration.</p><p><b>Klänge</b>: Schwertklirren mit Schlachtlärm beim Abhaken, Harfe bei Mini-Schritten, Laute beim Eintragen, Fanfare wenn der Tag geschafft ist, Gong nach dem Timer, Münzklimpern bei Quests und Knochenklappern beim Hellsehen. Klänge und Schlachtgetümmel schaltest du unter Einstellungen einzeln ab.</p>`],
-  ['Outlook-Kalender','--c1',`<p>Unter <b>Tools → Outlook-Kalender</b> verbindest du Outlook dauerhaft mit Leona. Dafür meldest du Leona einmalig bei Microsoft an (Anleitung im Tool, etwa 10 Minuten) und loggst dich dann mit deinem Outlook-Konto ein.</p>
-    <ul><li>Bei jedem Öffnen hole ich deine Outlook-Termine der nächsten 30, 60 oder 120 Tage. Neue kommen dazu, geänderte werden angepasst, gelöschte verschwinden.</li><li>Outlook-Termine sind in Leona <b>feste</b> Termine. Erledigt-Haken, Mini-Schritte und Erinnerungen kannst du trotzdem nutzen.</li><li>Leona liest nur. In Outlook wird nichts verändert.</li><li>Microsoft verlangt bei Web-Apps etwa einmal am Tag eine neue Anmeldung. Dann erscheint im Tag „Outlook neu verbinden“, meist reicht ein Tipp.</li></ul>`],
   ['Kalender importieren','--c2',`<p>Unter <b>Tools → Kalender importieren</b> übernimmst du deine Termine aus Google, Outlook, Apple und fast jedem anderen Kalender. Exportier dort eine <b>.ics</b>-Datei (bei Google eine <b>.zip</b>) und wähl sie hier aus. Wie der Export geht, steht im Tool für jeden Kalender einzeln.</p>
     <ul><li>Termine mit Uhrzeit werden <b>feste</b> Termine. Serien wie wöchentlich, alle 2 Wochen, monatlich oder jährlich bleiben Serien, mit Ausnahmen und Enddatum.</li><li>Ganztägige Einträge wie Geburtstage werden Aufgaben ohne Uhrzeit, die nicht auf den nächsten Tag rutschen. Du kannst sie auch weglassen.</li><li>Vergangene Termine lasse ich weg. Importierst du erneut, werden schon übernommene Termine nur aktualisiert, nicht doppelt angelegt.</li><li>Ganz spezielle Serien wie „jeden 1. Dienstag im Monat“ übernehme ich nur mit dem ersten Termin.</li></ul>
     <p>Es ist eine einmalige Übernahme. Neue Termine im alten Kalender kommen erst beim nächsten Import dazu.</p>`],
@@ -2459,7 +2340,6 @@ function toast(msg,undo){ document.querySelectorAll('.toast').forEach(t=>t.remov
 /* ---------- actions ---------- */
 const A = {
   ...QA,
-  ...OLA,
   ...ICSA,
   ...DEA,
   tab(el){ ui.tab=el.dataset.v; ui.tool=null; ls.set('tab',ui.tab); if(ui.tab==='day'){ ui.scrolled=false; } render(); window.scrollTo(0,0); },
@@ -2706,9 +2586,6 @@ document.addEventListener('change',ev=>{
 /* ---------- boot ---------- */
 render();
 if(!ls.get('onboarded',false)) showOnboarding(0);
-olHandleRedirect().then(h=>{ if(!h) olAuto(); });
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) olAuto(); });
-window.addEventListener('online',()=>olAuto());
 if(T.endAt){ if(tLeft()>0) startTick(); else tickTimer(); }
 setInterval(checkReminders,15000); setTimeout(checkReminders,1500);
 setInterval(proactiveNudge,60000); setTimeout(proactiveNudge,8000);
